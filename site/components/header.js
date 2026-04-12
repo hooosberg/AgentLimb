@@ -12,6 +12,7 @@ export function renderHeader() {
     <ul class="nav-center">
       <li><a href="/#features" data-i18n="nav.features">${t('nav.features')}</a></li>
       <li><a href="/tutorials.html" data-i18n="nav.tutorials">${t('nav.tutorials')}</a></li>
+      <li><a href="/muscles.html" data-i18n="store.title">${t('store.title')}</a></li>
       <li><a href="/tools.html" data-i18n="nav.tools">${t('nav.tools')}</a></li>
       <li><a href="/news.html" data-i18n="nav.news">${t('nav.news')}</a></li>
     </ul>
@@ -23,7 +24,7 @@ export function renderHeader() {
         </div>
       </div>
       <button class="theme-toggle" id="theme-toggle" title="Toggle theme">🌙</button>
-      <a href="https://github.com/hooosberg/AgentLimb" class="nav-link">GitHub</a>
+      <a href="https://github.com/hooosberg/AgentLimb" class="nav-link" title="Star us on GitHub">⭐ GitHub</a>
       <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Menu">
         <span></span><span></span><span></span>
       </button>
@@ -38,6 +39,7 @@ export function renderHeader() {
   mobileMenu.innerHTML = `
     <a href="/#features" data-i18n="nav.features">${t('nav.features')}</a>
     <a href="/tutorials.html" data-i18n="nav.tutorials">${t('nav.tutorials')}</a>
+    <a href="/muscles.html" data-i18n="store.title">${t('store.title')}</a>
     <a href="/tools.html" data-i18n="nav.tools">${t('nav.tools')}</a>
     <a href="/news.html" data-i18n="nav.news">${t('nav.news')}</a>
   `;

@@ -14,8 +14,12 @@
     <img src="https://img.shields.io/badge/Website-agentlimb.com-F5A623?style=for-the-badge" alt="Website">
   </a>
   <a href="https://github.com/hooosberg/AgentLimb">
-    <img src="https://img.shields.io/badge/Source-GitHub-24292f?style=for-the-badge&logo=github&logoColor=white" alt="GitHub">
+    <img src="https://img.shields.io/github/stars/hooosberg/AgentLimb?style=for-the-badge&logo=github&label=Star&color=24292f" alt="Star on GitHub">
   </a>
+</p>
+
+<p align="center">
+  <em>If AgentLimb is useful to you, please ⭐ star this repo — it helps others discover the project and keeps us motivated!</em>
 </p>
 
 <p align="center">

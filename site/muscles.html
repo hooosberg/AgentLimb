@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Muscle Library — AgentLimb | Ready-to-Use Browser Automation Sequences</title>
+  <meta name="description" content="Download ready-to-use muscle files for AgentLimb. Automate Reddit posting, Baidu Tieba, and more without AI exploration. Community-verified action sequences.">
+  <meta name="keywords" content="AgentLimb muscles, browser automation presets, Reddit automation, Tieba automation, action sequences, zero-token replay">
+  <meta name="robots" content="index, follow">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
+  <link rel="canonical" href="https://agentlimb.com/muscles.html">
+</head>
+<body>
+
+<div class="muscle-page">
+  <div class="section-label" data-i18n="store.title">Muscle Library</div>
+  <h1 class="section-title" id="page-title">Ready-to-Use Muscles</h1>
+  <p class="section-desc" id="page-desc">Download community-verified action sequences. Import into AgentLimb and replay — zero exploration, zero tokens.</p>
+
+  <div class="muscle-grid" id="muscle-grid"></div>
+</div>
+
+<!-- Preview Modal -->
+<div class="muscle-modal-overlay" id="modal-overlay">
+  <div class="muscle-modal">
+    <button class="muscle-modal-close" id="modal-close">&times;</button>
+    <h3 id="modal-title"></h3>
+    <pre id="modal-code"></pre>
+  </div>
+</div>
+
+<script type="module">
+  import { renderHeader } from '/components/header.js';
+  import { renderFooter } from '/components/footer.js';
+  import { pick, getLang } from '/components/i18n.js';
+  import { initSEO } from '/components/seo.js';
+  renderHeader();
+  renderFooter('full');
+  initSEO({ breadcrumbs: [{ name: 'Home', url: '/' }, { name: 'Muscle Library', url: '/muscles.html' }] });
+
+  const L = getLang();
+
+  const muscles = [
+    {
+      id: 'old-reddit-text-post',
+      file: '/content/muscles/old-reddit-text-post.json',
+      name: 'old-reddit-text-post',
+      platform: 'old.reddit.com',
+      confidence: 'low',
+      steps: 7,
+      runs: 0,
+      category: { en: 'Social Posting', zh: '社交发帖', ja: 'SNS投稿', ko: '소셜 게시' },
+      title: { en: 'Reddit Text Post (Old Reddit)', zh: 'Reddit 文字帖 (旧版)', ja: 'Reddit テキスト投稿 (旧版)', ko: 'Reddit 텍스트 게시 (구버전)' },
+      desc: { en: 'Submit a text post on old.reddit.com. Fills title, body, optional flair, and submits. Waits for redirect to confirm success.', zh: '在 old.reddit.com 发布文字帖。填写标题、正文、可选 flair，提交后等待跳转确认。', ja: 'old.reddit.comでテキスト投稿を作成。タイトル、本文、オプションのflairを入力して送信。リダイレクトで成功を確認。', ko: 'old.reddit.com에서 텍스트 게시물을 작성합니다. 제목, 본문, 선택적 flair를 입력하고 제출합니다.' },
+    },
+    {
+      id: 'tieba-post',
+      file: '/content/muscles/tieba-post.json',
+      name: 'tieba-post',
+      platform: 'tieba.baidu.com',
+      confidence: 'medium',
+      steps: 6,
+      runs: 2,
+      category: { en: 'Social Posting', zh: '社交发帖', ja: 'SNS投稿', ko: '소셜 게시' },
+      title: { en: 'Baidu Tieba Post', zh: '百度贴吧发帖', ja: '百度貼吧投稿', ko: '바이두 티에바 게시' },
+      desc: { en: 'Create a new post in any Baidu Tieba forum. Opens editor, fills title and body, submits. Verified with 2 successful runs.', zh: '在百度贴吧任意吧内发帖。打开编辑器、填写标题和内容、提交。已验证 2 次成功运行。', ja: '百度貼吧の任意のフォーラムで新規投稿を作成。エディタを開き、タイトルと本文を入力して送信。2回の成功実行で検証済み。', ko: '바이두 티에바의 모든 포럼에서 새 게시물을 작성합니다. 편집기를 열고 제목과 본문을 입력하고 제출합니다. 2회 성공 실행으로 검증됨.' },
+    },
+  ];
+
+  // Page title/desc i18n
+  const titles = { en: 'Ready-to-Use Muscles', zh: '即用肌肉库', ja: 'すぐに使えるマッスル', ko: '즉시 사용 가능한 근육' };
+  const descs = { en: 'Download community-verified action sequences. Import into AgentLimb and replay — zero exploration, zero tokens.', zh: '下载社区验证的操作序列。导入 AgentLimb 直接回放 — 零探索、零 token。', ja: 'コミュニティ検証済みのアクションシーケンスをダウンロード。AgentLimbにインポートしてリプレイ — 探索ゼロ、トークンゼロ。', ko: '커뮤니티 검증된 액션 시퀀스를 다운로드하세요. AgentLimb에 가져와서 리플레이 — 탐색 제로, 토큰 제로.' };
+  document.getElementById('page-title').textContent = titles[L] || titles.en;
+  document.getElementById('page-desc').textContent = descs[L] || descs.en;
+
+  const dlLabel = { en: 'Download', zh: '下载', ja: 'ダウンロード', ko: '다운로드' };
+  const pvLabel = { en: 'Preview', zh: '预览', ja: 'プレビュー', ko: '미리보기' };
+  const stepsLabel = { en: 'steps', zh: '步', ja: 'ステップ', ko: '단계' };
+  const runsLabel = { en: 'runs', zh: '次运行', ja: '回実行', ko: '회 실행' };
+
+  const grid = document.getElementById('muscle-grid');
+
+  muscles.forEach(m => {
+    const card = document.createElement('div');
+    card.className = 'muscle-card';
+    card.innerHTML = `
+      <div class="muscle-card-header">
+        <span class="muscle-card-name">${m.name}</span>
+        <span class="muscle-card-badge ${m.confidence}">${m.confidence}</span>
+      </div>
+      <div class="muscle-card-platform">${m.platform}</div>
+      <div class="muscle-card-desc">${pick(m.desc)}</div>
+      <div class="muscle-card-meta">
+        <span>${pick(m.category)}</span>
+        <span>${m.steps} ${pick(stepsLabel)}</span>
+        <span>${m.runs} ${pick(runsLabel)}</span>
+      </div>
+      <div class="muscle-card-actions">
+        <a class="muscle-btn muscle-btn-download" href="${m.file}" download="${m.id}.json">${pick(dlLabel)}</a>
+        <button class="muscle-btn muscle-btn-preview" data-file="${m.file}" data-name="${m.name}">${pick(pvLabel)}</button>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+
+  // Preview modal
+  const overlay = document.getElementById('modal-overlay');
+  const modalTitle = document.getElementById('modal-title');
+  const modalCode = document.getElementById('modal-code');
+
+  document.getElementById('modal-close').addEventListener('click', () => overlay.classList.remove('open'));
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('open'); });
+
+  document.querySelectorAll('.muscle-btn-preview').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const file = btn.dataset.file;
+      const name = btn.dataset.name;
+      modalTitle.textContent = name;
+      modalCode.textContent = 'Loading...';
+      overlay.classList.add('open');
+      try {
+        const res = await fetch(file);
+        const data = await res.json();
+        modalCode.textContent = JSON.stringify(data, null, 2);
+      } catch {
+        modalCode.textContent = 'Failed to load muscle file.';
+      }
+    });
+  });
+</script>
+</body>
+</html>

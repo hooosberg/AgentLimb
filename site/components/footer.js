@@ -22,7 +22,7 @@ export function renderFooter(style = 'full') {
             <ul>
               <li><a href="/#features" data-i18n="nav.features">Features</a></li>
               <li><a href="/#get-started" data-i18n="start.label">Get Started</a></li>
-              <li><a href="/#muscles" data-i18n="store.title">Muscle Store</a></li>
+              <li><a href="/muscles.html" data-i18n="store.title">Muscle Store</a></li>
               <li><a href="${CHROME_STORE_URL}">Chrome Web Store</a></li>
             </ul>
           </div>

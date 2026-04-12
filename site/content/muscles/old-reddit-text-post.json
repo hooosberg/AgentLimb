@@ -1,0 +1,19 @@
+{
+  "id": "old-reddit-text-post",
+  "name": "old-reddit-text-post",
+  "url_pattern": "old.reddit.com/r/*/submit",
+  "version": 1,
+  "confidence": "low",
+  "successful_runs": 0,
+  "created_at": "2026-04-10T16:58:32.351Z",
+  "updated_at": "2026-04-10T16:58:32.351Z",
+  "actions": [
+    { "type": "click", "selector": "a#text-desc, a[href*='selftext=true'], .tabmenu li:last-child a" },
+    { "type": "wait", "selector": "textarea[name='text']", "timeout": 3000 },
+    { "type": "type", "field": "title", "selector": "textarea[name='title']" },
+    { "type": "type", "field": "body", "selector": "textarea[name='text']" },
+    { "type": "type", "field": "flair_id", "selector": "input[name='flair_id']" },
+    { "type": "evaluate", "code": "document.querySelector('button.btn[name=\"submit\"]').click(); 'submitted'" },
+    { "type": "wait_url", "url_pattern": "/comments/", "timeout": 8000 }
+  ]
+}
