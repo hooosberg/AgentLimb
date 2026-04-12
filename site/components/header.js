@@ -1,6 +1,7 @@
 import { LANGS, t, getLang, setLang, applyAll } from '/components/i18n.js';
 
 export function renderHeader() {
+  // ── Nav bar ──
   const nav = document.createElement('nav');
   nav.className = 'nav';
   nav.innerHTML = `
@@ -8,7 +9,7 @@ export function renderHeader() {
       <img src="/icons/icon.svg" alt="">
       Agent<span class="brand">Limb</span>
     </a>
-    <ul class="nav-center" id="nav-center">
+    <ul class="nav-center">
       <li><a href="/#features" data-i18n="nav.features">${t('nav.features')}</a></li>
       <li><a href="/tutorials.html" data-i18n="nav.tutorials">${t('nav.tutorials')}</a></li>
       <li><a href="/tools.html" data-i18n="nav.tools">${t('nav.tools')}</a></li>
@@ -23,30 +24,41 @@ export function renderHeader() {
       </div>
       <button class="theme-toggle" id="theme-toggle" title="Toggle theme">🌙</button>
       <a href="https://github.com/hooosberg/AgentLimb" class="nav-link">GitHub</a>
-      <button class="mobile-menu-btn hidden" id="mobile-menu-btn" aria-label="Menu">
+      <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Menu">
         <span></span><span></span><span></span>
       </button>
     </div>
   `;
   document.body.prepend(nav);
 
-  // Mobile menu
+  // ── Mobile dropdown (separate element, sits BEHIND nav bar) ──
+  const mobileMenu = document.createElement('div');
+  mobileMenu.className = 'mobile-dropdown';
+  mobileMenu.id = 'mobile-dropdown';
+  mobileMenu.innerHTML = `
+    <a href="/#features" data-i18n="nav.features">${t('nav.features')}</a>
+    <a href="/tutorials.html" data-i18n="nav.tutorials">${t('nav.tutorials')}</a>
+    <a href="/tools.html" data-i18n="nav.tools">${t('nav.tools')}</a>
+    <a href="/news.html" data-i18n="nav.news">${t('nav.news')}</a>
+  `;
+  nav.after(mobileMenu);
+
+  // Mobile menu toggle
   const menuBtn = document.getElementById('mobile-menu-btn');
-  const navCenter = document.getElementById('nav-center');
 
   menuBtn.addEventListener('click', (e) => {
     e.stopPropagation();
-    navCenter.classList.toggle('mobile-open');
+    mobileMenu.classList.toggle('open');
     menuBtn.classList.toggle('active');
   });
 
   document.addEventListener('click', () => {
-    navCenter.classList.remove('mobile-open');
+    mobileMenu.classList.remove('open');
     menuBtn.classList.remove('active');
   });
 
-  navCenter.addEventListener('click', () => {
-    navCenter.classList.remove('mobile-open');
+  mobileMenu.addEventListener('click', () => {
+    mobileMenu.classList.remove('open');
     menuBtn.classList.remove('active');
   });
 

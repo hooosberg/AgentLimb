@@ -155,7 +155,23 @@ const T = {
   'footer.copy':      { en:'Licensed under BSL 1.1 — free for personal use.', zh:'基于 BSL 1.1 许可 — 个人使用免费。', ja:'BSL 1.1ライセンス — 個人利用無料。', ko:'BSL 1.1 라이선스 — 개인 사용 무료.', es:'Licencia BSL 1.1 — gratis para uso personal.', fr:'Licence BSL 1.1 — gratuit pour usage personnel.', de:'BSL 1.1 Lizenz — kostenlos für Privatnutzung.', pt:'Licença BSL 1.1 — grátis para uso pessoal.', ru:'Лицензия BSL 1.1 — бесплатно для личного использования.', ar:'مرخص بموجب BSL 1.1 — مجاني للاستخدام الشخصي.', it:'Licenza BSL 1.1 — gratuito per uso personale.', hi:'BSL 1.1 लाइसेंस — व्यक्तिगत उपयोग के लिए मुफ़्त।' },
 };
 
-let currentLang = localStorage.getItem('lang') || 'en';
+const SUPPORTED = LANGS.map(l => l.code);
+
+function detectLang() {
+  // 1. User explicitly set a language before
+  const saved = localStorage.getItem('lang');
+  if (saved && SUPPORTED.includes(saved)) return saved;
+  // 2. Auto-detect from browser language
+  const browserLang = (navigator.language || '').toLowerCase();
+  // Exact match: "zh-cn" → "zh", "ja" → "ja"
+  for (const code of SUPPORTED) {
+    if (browserLang === code || browserLang.startsWith(code + '-')) return code;
+  }
+  // Fallback
+  return 'en';
+}
+
+let currentLang = detectLang();
 
 export function t(key) {
   const entry = T[key];
