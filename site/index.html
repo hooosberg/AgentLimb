@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgentLimb — AI Browser Automation | Give Your AI a Browser Arm</title>
+  <meta name="description" content="AgentLimb is a Chrome extension that lets Claude Code, Cursor, Codex, Trae, Windsurf or any AI tool automate your browser. One prompt setup. Muscle memory saves 16x tokens. 100% local, private, non-invasive. Free for personal use.">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
+  <link rel="canonical" href="https://agentlimb.com/">
+  <!-- Open Graph -->
+  <meta property="og:title" content="AgentLimb — Give Your AI a Browser Arm">
+  <meta property="og:description" content="Chrome extension for AI browser automation. One prompt setup, muscle memory for 16x token savings, works with Claude Code, Cursor, Codex. 100% local and private.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://agentlimb.com/">
+  <meta property="og:site_name" content="AgentLimb">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:locale:alternate" content="zh_CN">
+  <meta property="og:locale:alternate" content="ja_JP">
+  <meta property="og:locale:alternate" content="ko_KR">
+  <meta property="og:locale:alternate" content="es_ES">
+  <meta property="og:locale:alternate" content="fr_FR">
+  <meta property="og:locale:alternate" content="de_DE">
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="AgentLimb — AI Browser Automation Extension">
+  <meta name="twitter:description" content="Give your AI a browser arm. One prompt, any AI tool, muscle memory for 16x savings. Free & local.">
+  <!-- SEO Keywords -->
+  <meta name="keywords" content="AI browser automation, Chrome extension, Claude Code browser, Cursor browser automation, Codex browser, MCP tools, muscle memory AI, token savings, browser agent, AI coding agent, web automation, Windsurf, Trae, no-code browser automation, AI web scraping, automated testing, social media automation, local AI tools, privacy-first AI, browser extension AI, AgentLimb">
+  <meta name="author" content="hooosberg">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+  <meta name="googlebot" content="index, follow">
+  <!-- Structured Data: SoftwareApplication -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "AgentLimb",
+    "applicationCategory": "DeveloperApplication",
+    "applicationSubCategory": "Browser Automation",
+    "operatingSystem": "Chrome",
+    "description": "Chrome extension that lets any AI coding tool (Claude Code, Cursor, Codex, Trae, Windsurf) drive your browser. One prompt setup, muscle memory for 16x token savings, 100% local and private.",
+    "url": "https://agentlimb.com",
+    "author": {"@type": "Person", "name": "hooosberg", "url": "https://github.com/hooosberg"},
+    "license": "https://agentlimb.com/license.html",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD",
+      "description": "Free for personal use"
+    },
+    "featureList": ["One-prompt setup", "Muscle memory (16x token savings)", "Zero intrusion (uses existing Chrome sessions)", "100% local and private", "8 standardized MCP tools", "Works with any AI coding tool"],
+    "softwareRequirements": "Google Chrome",
+    "inLanguage": ["en", "zh-CN", "ja", "ko", "es", "fr", "de", "pt", "ru", "ar", "it", "hi"]
+  }
+  </script>
+  <!-- Structured Data: FAQPage (boosts rich snippets) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is AgentLimb?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "AgentLimb is a Chrome extension that lets any AI coding tool (Claude Code, Cursor, Codex, Trae, Windsurf) drive your browser. It uses your existing login sessions — no headless browsers, no re-login needed."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How does muscle memory save tokens?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "When AI completes a task for the first time (~30 API calls, ~5000 tokens), AgentLimb saves the action sequence as a 'muscle'. Next time, it replays with just 1 API call (~300 tokens) — a ~16x efficiency boost with zero errors."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is AgentLimb free?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes, AgentLimb is free for personal use under the Business Source License 1.1. Commercial use requires a separate license. The license converts to Apache 2.0 on April 12, 2030."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is my data private with AgentLimb?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. AgentLimb runs 100% locally. The bridge operates on localhost (127.0.0.1:7789), no data is sent to external servers, and there are no analytics or tracking. Privacy is guaranteed by architecture, not just policy."
+        }
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+
+<main>
+<!-- Hero -->
+<section class="hero" aria-label="Hero">
+  <img src="/icons/icon.svg" alt="" class="hero-icon">
+  <div class="hero-badge">
+    <span class="dot"></span>
+    <span data-i18n="hero.badge">Open Source · Free for Personal Use</span>
+  </div>
+  <h1><span data-i18n="hero.line1">Give Your AI a</span><br><span class="gradient" data-i18n="hero.line2">Browser Arm</span></h1>
+  <p class="hero-sub" data-i18n="hero.sub">One prompt. Any AI tool. Your existing Chrome sessions. No re-login. No invasive agents. Just muscle.</p>
+  <p class="hero-desc" data-i18n="hero.desc">AgentLimb turns any AI coding tool — Claude Code, Cursor, Codex, Trae, Windsurf, or anything that can run commands — into a browser automation powerhouse. Copy one prompt, paste it to your AI, done.</p>
+  <div class="hero-buttons">
+    <a href="#" class="btn btn-primary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="21.17" y1="8" x2="12" y2="8"/><line x1="3.95" y1="6.06" x2="8.54" y2="14"/><line x1="10.88" y1="21.94" x2="15.46" y2="14"/></svg>
+      <span data-i18n="hero.chrome">Add to Chrome</span>
+    </a>
+    <a href="https://github.com/hooosberg/AgentLimb" class="btn btn-outline">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      <span data-i18n="hero.github">View on GitHub</span>
+    </a>
+  </div>
+</section>
+
+<!-- Agents Marquee -->
+<section class="agents-section">
+  <p class="agents-label" data-i18n="agents.label">Works with these AI coding agents</p>
+  <div class="agents-track-wrapper">
+    <div class="agents-track" id="agents-track"></div>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="section section-center" id="features">
+  <div class="section-label" data-i18n="feat.label">Why AgentLimb</div>
+  <h2 class="section-title" data-i18n="feat.title">Everything your AI needs to work the web. Nothing it doesn't.</h2>
+  <p class="section-desc" data-i18n="feat.desc">8 minimal tools. Unix philosophy. No bloat, no cloud. Inspired by Claude Code's development philosophy.</p>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">📋</div>
+      <div class="feature-title" data-i18n="feat.1.title">One-Prompt Setup</div>
+      <div class="feature-desc" data-i18n="feat.1.desc">Copy a single prompt, paste it to any AI tool that can run commands. Claude Code, Cursor, Codex, Trae, Windsurf — if it can operate your computer, it can use AgentLimb.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">💪</div>
+      <div class="feature-title" data-i18n="feat.2.title">Muscle Memory</div>
+      <div class="feature-desc" data-i18n="feat.2.desc">AI explores once, saves the action sequence as a "muscle". Next time, replay with zero tokens. Real test data: ~30 API calls down to 1. ~16x token savings.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔑</div>
+      <div class="feature-title" data-i18n="feat.3.title">Zero Intrusion</div>
+      <div class="feature-desc" data-i18n="feat.3.desc">Works inside your existing Chrome. No headless browsers. No re-login. No separate sessions. Your cookies, logins, and extensions — all intact.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔒</div>
+      <div class="feature-title" data-i18n="feat.4.title">100% Local & Private</div>
+      <div class="feature-desc" data-i18n="feat.4.desc">Bridge runs on localhost. No analytics, no tracking, no cloud. Your browsing data never leaves your machine. Privacy by architecture.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🌐</div>
+      <div class="feature-title" data-i18n="feat.5.title">Any Website, Any Platform</div>
+      <div class="feature-desc" data-i18n="feat.5.desc">Any page your Chrome can open, AgentLimb can operate. Social media, SaaS dashboards, internal tools, email — if you can see it, your AI can use it.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔌</div>
+      <div class="feature-title" data-i18n="feat.6.title">Unlock Your AI Subscriptions</div>
+      <div class="feature-desc" data-i18n="feat.6.desc">You already pay for AI. AgentLimb gives it a browser. Marketing, research, data collection, form filling — let your AI subscription earn its keep.</div>
+    </div>
+  </div>
+</section>
+
+<!-- Muscle Memory Highlight -->
+<section class="highlight-section" id="muscle-memory">
+  <div class="highlight-inner">
+    <div class="highlight-text">
+      <div class="section-label" data-i18n="muscle.label">Core Innovation</div>
+      <h2 class="section-title" data-i18n="muscle.title">Muscle Memory: Explore Once, Replay Forever</h2>
+      <p data-i18n="muscle.p1">When your AI navigates a platform for the first time, it explores, clicks, and learns the flow. AgentLimb saves that entire sequence as a "muscle" — like muscle memory for your AI.</p>
+      <p data-i18n="muscle.p2">Next time you need the same task? One command. Zero exploration. Zero token waste. The muscle replays the exact steps — faster and error-free.</p>
+      <p style="color:var(--text)" data-i18n="muscle.p3">Each platform needs one exploration, one save — then permanent reuse. The more tasks you automate, the more you save.</p>
+    </div>
+    <div class="highlight-visual">
+      <div class="compare-row">
+        <span class="compare-label"></span>
+        <span class="compare-head" data-i18n="cmp.explore">First Explore</span>
+        <span class="compare-head" data-i18n="cmp.replay">Muscle Replay</span>
+      </div>
+      <div class="compare-row">
+        <span class="compare-label" data-i18n="cmp.calls">API Calls</span>
+        <span class="compare-value bad">~30</span>
+        <span class="compare-value good">1</span>
+      </div>
+      <div class="compare-row">
+        <span class="compare-label" data-i18n="cmp.tokens">Tokens</span>
+        <span class="compare-value bad">~5,000</span>
+        <span class="compare-value good">~300</span>
+      </div>
+      <div class="compare-row">
+        <span class="compare-label" data-i18n="cmp.errors">Errors</span>
+        <span class="compare-value bad" data-i18n="cmp.possible">Possible</span>
+        <span class="compare-value good">0</span>
+      </div>
+      <div class="compare-result" data-i18n="cmp.result">~16x Efficiency Boost</div>
+    </div>
+  </div>
+</section>
+
+<!-- Architecture -->
+<section class="section section-center" id="how-it-works">
+  <div class="section-label" data-i18n="arch.label">Architecture</div>
+  <h2 class="section-title" data-i18n="arch.title">Three layers. All localhost. Zero cloud.</h2>
+  <p class="section-desc" data-i18n="arch.desc">8 standardized MCP tools. Any AI that can send HTTP or use MCP can drive your browser.</p>
+  <div class="arch-card">
+    <div class="arch-flow">
+      <div class="arch-node">
+        <span class="arch-node-label" data-i18n="arch.ai">Your AI Tool</span>
+        <span class="arch-node-sub">Claude Code / Cursor / Codex / Trae / any script</span>
+      </div>
+      <div class="arch-arrow"><div class="arch-arrow-line"></div><span class="arch-arrow-proto">MCP / HTTP</span><div class="arch-arrow-line"></div></div>
+      <div class="arch-node">
+        <span class="arch-node-label" data-i18n="arch.bridge">AgentLimb Bridge</span>
+        <span class="arch-node-sub">local Node.js &middot; 127.0.0.1:7789</span>
+      </div>
+      <div class="arch-arrow"><div class="arch-arrow-line"></div><span class="arch-arrow-proto">WebSocket</span><div class="arch-arrow-line"></div></div>
+      <div class="arch-node">
+        <span class="arch-node-label" data-i18n="arch.ext">AgentLimb Extension</span>
+        <span class="arch-node-sub">Chrome MV3 &middot; Side Panel UI</span>
+      </div>
+      <div class="arch-arrow"><div class="arch-arrow-line"></div><span class="arch-arrow-proto">DOM Ops</span><div class="arch-arrow-line"></div></div>
+      <div class="arch-node">
+        <span class="arch-node-label" data-i18n="arch.browser">Your Browser</span>
+        <span class="arch-node-sub" data-i18n="arch.browser.sub">logged in · cookies · real sessions</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Use Cases -->
+<section class="section">
+  <div class="section-label" data-i18n="uc.label">Use Cases</div>
+  <h2 class="section-title" data-i18n="uc.title">What can your AI do with a browser?</h2>
+  <p class="section-desc" data-i18n="uc.desc">Anything you do manually — automated, repeatable, and token-efficient.</p>
+  <div class="usecases-grid">
+    <div class="usecase-card">
+      <div class="usecase-icon">📣</div>
+      <div class="usecase-title" data-i18n="uc.1.title">Marketing & Social</div>
+      <div class="usecase-desc" data-i18n="uc.1.desc">Post to multiple platforms, manage campaigns, engage with communities — using your real accounts.</div>
+    </div>
+    <div class="usecase-card">
+      <div class="usecase-icon">🔍</div>
+      <div class="usecase-title" data-i18n="uc.2.title">Research & Data</div>
+      <div class="usecase-desc" data-i18n="uc.2.desc">Gather competitive intelligence, compare products, collect structured data from any website.</div>
+    </div>
+    <div class="usecase-card">
+      <div class="usecase-icon">📝</div>
+      <div class="usecase-title" data-i18n="uc.3.title">Form Automation</div>
+      <div class="usecase-desc" data-i18n="uc.3.desc">Fill applications, submit forms, update profiles across platforms — save muscles and reuse.</div>
+    </div>
+    <div class="usecase-card">
+      <div class="usecase-icon">🧪</div>
+      <div class="usecase-title" data-i18n="uc.4.title">Testing & QA</div>
+      <div class="usecase-desc" data-i18n="uc.4.desc">Test your web app on a real browser with real sessions. Click through flows, verify states.</div>
+    </div>
+  </div>
+</section>
+
+<!-- Get Started -->
+<section class="section" id="get-started" style="background:var(--bg2);max-width:100%;border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+  <div style="max-width:var(--max-w);margin:0 auto">
+    <div class="section-label" data-i18n="start.label">Quick Start</div>
+    <h2 class="section-title" data-i18n="start.title2">Ready in 10 seconds</h2>
+    <p class="section-desc" data-i18n="start.desc2">Install the extension, copy the prompt, paste to your AI — it auto-configures and starts working.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h3 data-i18n="start.s1.title2">Install Extension</h3>
+          <p data-i18n="start.s1.desc2">Add AgentLimb from the Chrome Web Store with one click.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h3 data-i18n="start.s2.title2">Copy the Prompt</h3>
+          <p data-i18n="start.s2.desc2">Open the side panel, click "Copy Onboard Prompt" — one button, done.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h3 data-i18n="start.s3.title2">Paste & Go</h3>
+          <p data-i18n="start.s3.desc2">Paste the prompt to any AI tool — it auto-configures AgentLimb and starts driving your browser immediately.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Muscle Store -->
+<section class="store-section" id="muscles">
+  <div style="max-width:var(--max-w);margin:0 auto">
+    <span class="store-pill" data-i18n="store.badge">Coming Soon</span>
+    <h2 class="section-title" style="margin:12px auto 16px" data-i18n="store.title">Muscle Store</h2>
+    <p class="section-desc" style="margin:0 auto 48px" data-i18n="store.desc">Discover, share, and download community-built muscles. Automate new platforms without exploration — just install a muscle and run.</p>
+    <div class="store-preview">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+        <div class="usecase-card" style="text-align:left">
+          <div style="font-size:16px;font-weight:600;margin-bottom:4px">📮 Post to Reddit</div>
+          <div style="font-size:12px;color:var(--muted)">3 steps &middot; by community</div>
+        </div>
+        <div class="usecase-card" style="text-align:left">
+          <div style="font-size:16px;font-weight:600;margin-bottom:4px">🐦 Tweet Thread</div>
+          <div style="font-size:12px;color:var(--muted)">5 steps &middot; by community</div>
+        </div>
+        <div class="usecase-card" style="text-align:left">
+          <div style="font-size:16px;font-weight:600;margin-bottom:4px">📧 Gmail Compose</div>
+          <div style="font-size:12px;color:var(--muted)">4 steps &middot; by community</div>
+        </div>
+      </div>
+      <p class="store-coming" data-i18n="store.cta">Star the repo to get notified when Muscle Store launches.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script type="module">
+  import { renderHeader } from '/components/header.js';
+  import { renderFooter } from '/components/footer.js';
+  import { initSEO } from '/components/seo.js';
+  renderHeader();
+  renderFooter('full');
+  initSEO({ breadcrumbs: [{ name: 'Home', url: '/' }] });
+
+  // Agents marquee
+  const agents = [
+    { name: 'Claude Code', icon: '/icons/agents/code ide icon_Claude Code.svg' },
+    { name: 'Cursor',      icon: '/icons/agents/code ide icon_cursor.svg' },
+    { name: 'Windsurf',    icon: '/icons/agents/code ide icon_windsurf.svg' },
+    { name: 'OpenAI Codex',icon: '/icons/agents/code ide icon_openai.svg' },
+    { name: 'Copilot',     icon: '/icons/agents/code ide icon_copilot.svg' },
+    { name: 'Gemini',      icon: '/icons/agents/code ide icon_gemini.svg' },
+    { name: 'Cline',       icon: '/icons/agents/code ide icon_cline.svg' },
+    { name: 'Trae',        icon: '/icons/agents/code ide icon_trae.svg' },
+    { name: 'AmpCode',     icon: '/icons/agents/code ide icon_ampcode.svg' },
+    { name: 'Kiro',        icon: '/icons/agents/code ide icon_kiro.svg' },
+    { name: 'Roo Code',    icon: '/icons/agents/code ide icon_roocode.svg' },
+    { name: 'Goose',       icon: '/icons/agents/code ide icon_goose.svg' },
+    { name: 'Kilo',        icon: '/icons/agents/code ide icon_kilo.svg' },
+    { name: 'Factory',     icon: '/icons/agents/code ide icon_factory.svg' },
+    { name: 'OpenCode',    icon: '/icons/agents/code ide icon_opencode.svg' },
+  ];
+  const track = document.getElementById('agents-track');
+  [...agents, ...agents].forEach(a => {
+    const el = document.createElement('a');
+    el.className = 'agent-item';
+    el.innerHTML = `<img src="${a.icon}" alt="${a.name}"><span>${a.name}</span>`;
+    track.appendChild(el);
+  });
+</script>
+</body>
+</html>

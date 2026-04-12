@@ -1,0 +1,82 @@
+License text copyright (c) 2020 MariaDB Corporation Ab, All Rights Reserved.
+"Business Source License" is a trademark of MariaDB Corporation Ab.
+
+Note: The above attribution refers to the BSL 1.1 license template format
+created by MariaDB. AgentLimb is an independent project by hooosberg.
+
+Parameters
+
+Licensor:             hooosberg
+Licensed Work:        AgentLimb. The Licensed Work is (c) 2025 hooosberg.
+Additional Use Grant: You may use the Licensed Work for personal,
+                      non-commercial purposes only. Any use by or on behalf
+                      of a company, organization, or other entity requires a
+                      separate commercial license from the Licensor.
+
+                      For clarity, the following uses are permitted without a
+                      commercial license:
+
+                      - Personal use by individuals for their own purposes
+                      - Academic research and education
+                      - Evaluation and testing
+
+                      The following uses require a commercial license:
+
+                      - Use within or on behalf of any company, organization,
+                        or other legal entity
+                      - Offering the Licensed Work or derivative works as a
+                        commercial product or service
+                      - Bundling the Licensed Work into a product distributed
+                        to customers
+
+                      For information about commercial licensing, please
+                      contact the Licensor via GitHub:
+                      https://github.com/hooosberg/AgentLimb
+Change Date:          2030-04-12
+Change License:       Apache License, Version 2.0
+
+Notice
+
+Business Source License 1.1
+
+Terms
+
+The Licensor hereby grants you the right to copy, modify, create derivative
+works, redistribute, and make non-production use of the Licensed Work. The
+Licensor may make an Additional Use Grant, above, permitting limited
+production use.
+
+Effective on the Change Date, or the fourth anniversary of the first publicly
+available distribution of a specific version of the Licensed Work under this
+License, whichever comes first, the Licensor hereby grants you rights under
+the terms of the Change License, and the rights granted in the paragraph
+above terminate.
+
+If your use of the Licensed Work does not comply with the requirements
+currently in effect as described in this License, you must purchase a
+commercial license from the Licensor, its affiliated entities, or authorized
+resellers, or you must refrain from using the Licensed Work.
+
+All copies of the original and modified Licensed Work, and derivative works
+of the Licensed Work, are subject to this License. This License applies
+separately for each version of the Licensed Work and the Change Date may vary
+for each version of the Licensed Work released by Licensor.
+
+You must conspicuously display this License on each original or modified copy
+of the Licensed Work. If you receive the Licensed Work in original or
+modified form from a third party, the terms and conditions set forth in this
+License apply to your use of that work.
+
+Any use of the Licensed Work in violation of this License will automatically
+terminate your rights under this License for the current and all other
+versions of the Licensed Work.
+
+This License does not grant you any right in any trademark or logo of
+Licensor or its affiliates (provided that you may use a trademark or logo of
+Licensor as expressly required by this License).
+
+TO THE EXTENT PERMITTED BY APPLICABLE LAW, THE LICENSED WORK IS PROVIDED ON
+AN "AS IS" BASIS. LICENSOR HEREBY DISCLAIMS ALL WARRANTIES AND CONDITIONS,
+EXPRESS OR IMPLIED, INCLUDING (WITHOUT LIMITATION) WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT, AND
+TITLE.

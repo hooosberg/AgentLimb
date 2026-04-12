@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy — AgentLimb</title>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
+</head>
+<body>
+
+<div class="legal-page">
+  <a href="/" class="back-link">&larr; Back to home</a>
+  <h1>Privacy Policy</h1>
+  <p class="updated">Last updated: April 12, 2026</p>
+
+  <h2>Overview</h2>
+  <p>AgentLimb is a Chrome extension that enables AI coding tools to interact with your browser. This policy explains what data AgentLimb accesses and how it is handled.</p>
+
+  <h2>Data Collection</h2>
+  <p>AgentLimb does <strong>not</strong> collect, transmit, or store any personal data on external servers.</p>
+  <p>All data stays on your local machine:</p>
+  <ul>
+    <li><strong>Muscle data</strong> (saved action sequences) is stored locally in <code>chrome.storage</code> and <code>~/.agentlimb/muscles.json</code></li>
+    <li><strong>Project data</strong> is stored locally in <code>chrome.storage</code> and IndexedDB</li>
+    <li><strong>Bridge communication</strong> occurs only between the Chrome extension and a local Node.js process on <code>127.0.0.1:7789</code> via WebSocket — no data leaves your machine</li>
+  </ul>
+
+  <h2>Permissions</h2>
+  <table>
+    <tr><th>Permission</th><th>Why</th></tr>
+    <tr><td><code>tabs</code></td><td>To read current tab URL and title for the observe tool</td></tr>
+    <tr><td><code>scripting</code></td><td>To execute JavaScript on pages via the eval and act tools</td></tr>
+    <tr><td><code>activeTab</code></td><td>To interact with the currently active tab</td></tr>
+    <tr><td><code>storage</code></td><td>To persist muscle and project data locally</td></tr>
+    <tr><td><code>sidePanel</code></td><td>To display the monitoring UI in Chrome's side panel</td></tr>
+    <tr><td><code>host_permissions</code></td><td>To operate on any webpage the user navigates to</td></tr>
+  </table>
+
+  <h2>Third-Party Services</h2>
+  <p>AgentLimb does not integrate with any third-party analytics, tracking, or advertising services. The extension communicates only with a local bridge process and your terminal AI tool.</p>
+
+  <h2>Data Sharing</h2>
+  <p>AgentLimb does not share any data with third parties. All operations are local.</p>
+
+  <h2>Changes</h2>
+  <p>Updates to this policy will be posted on this page and the <a href="https://github.com/hooosberg/AgentLimb">GitHub repository</a>.</p>
+
+  <h2>Contact</h2>
+  <p>For questions about this privacy policy:</p>
+  <ul>
+    <li>Email: <a href="mailto:zikedece@proton.me">zikedece@proton.me</a></li>
+    <li>GitHub: <a href="https://github.com/hooosberg/AgentLimb/issues">hooosberg/AgentLimb/issues</a></li>
+  </ul>
+</div>
+
+<script type="module">
+  import { renderHeader } from '/components/header.js';
+  import { renderFooter } from '/components/footer.js';
+  renderHeader();
+  renderFooter('compact');
+</script>
+</body>
+</html>

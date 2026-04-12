@@ -1,0 +1,37 @@
+backend:
+  name: github
+  repo: hooosberg/AgentLimb
+  branch: github
+  base_url: https://agentlimb.com
+  site_domain: agentlimb.com
+
+media_folder: "site/content/images"
+public_folder: "/content/images"
+
+collections:
+  - name: "tutorials"
+    label: "Tutorials"
+    folder: "site/content/tutorials"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Date", name: "date", widget: "datetime" }
+      - { label: "Tag", name: "tag", widget: "string" }
+      - { label: "Icon", name: "icon", widget: "string", default: "📖" }
+      - { label: "Description", name: "description", widget: "text" }
+      - { label: "Read Time", name: "readTime", widget: "string", default: "5 min" }
+      - { label: "Difficulty", name: "difficulty", widget: "select", options: ["Beginner", "Intermediate", "Advanced"] }
+      - { label: "Body", name: "body", widget: "markdown" }
+
+  - name: "news"
+    label: "News"
+    folder: "site/content/news"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Date", name: "date", widget: "datetime" }
+      - { label: "Tag", name: "tag", widget: "string" }
+      - { label: "Description", name: "description", widget: "text" }
+      - { label: "Body", name: "body", widget: "markdown" }

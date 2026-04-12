@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #919191;
+      }
+    </style>
+  </defs>
+  <path id="opencode" class="cls-1" d="M117.48,57.7v64.59h-54.96V57.7h54.96ZM103.49,70.62h-27.98v38.26l1.5,1.49h26.48v-39.75Z"/>
+</svg>

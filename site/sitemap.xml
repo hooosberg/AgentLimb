@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://agentlimb.com/</loc>
+    <lastmod>2025-06-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://agentlimb.com/tutorials.html</loc>
+    <lastmod>2025-06-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://agentlimb.com/tools.html</loc>
+    <lastmod>2025-06-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://agentlimb.com/news.html</loc>
+    <lastmod>2025-06-20</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <!-- Tutorial articles -->
+  <url><loc>https://agentlimb.com/article.html?type=tutorials&amp;slug=quick-start</loc><lastmod>2025-06-01</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://agentlimb.com/article.html?type=tutorials&amp;slug=first-muscle</loc><lastmod>2025-06-02</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://agentlimb.com/article.html?type=tutorials&amp;slug=onboard-prompt</loc><lastmod>2025-06-03</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://agentlimb.com/article.html?type=tutorials&amp;slug=social-media-marketing</loc><lastmod>2025-06-04</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://agentlimb.com/article.html?type=tutorials&amp;slug=competitive-research</loc><lastmod>2025-06-05</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://agentlimb.com/article.html?type=tutorials&amp;slug=token-optimization</loc><lastmod>2025-06-06</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://agentlimb.com/article.html?type=tutorials&amp;slug=project-system</loc><lastmod>2025-06-07</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://agentlimb.com/article.html?type=tutorials&amp;slug=mcp-integration</loc><lastmod>2025-06-08</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://agentlimb.com/article.html?type=tutorials&amp;slug=qa-testing</loc><lastmod>2025-06-09</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <!-- News articles -->
+  <url><loc>https://agentlimb.com/article.html?type=news&amp;slug=claude-code-background-agents</loc><lastmod>2025-06-20</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://agentlimb.com/article.html?type=news&amp;slug=mcp-protocol-standard</loc><lastmod>2025-06-15</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://agentlimb.com/article.html?type=news&amp;slug=ai-ide-wars</loc><lastmod>2025-06-10</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://agentlimb.com/article.html?type=news&amp;slug=bsl-license-trend</loc><lastmod>2025-06-05</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://agentlimb.com/article.html?type=news&amp;slug=headless-to-real-sessions</loc><lastmod>2025-05-28</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://agentlimb.com/article.html?type=news&amp;slug=muscle-memory-token-savings</loc><lastmod>2025-05-20</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://agentlimb.com/article.html?type=news&amp;slug=google-aws-bytedance-ides</loc><lastmod>2025-05-15</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://agentlimb.com/article.html?type=news&amp;slug=local-first-privacy</loc><lastmod>2025-05-10</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://agentlimb.com/article.html?type=news&amp;slug=unix-philosophy-ai</loc><lastmod>2025-05-05</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://agentlimb.com/article.html?type=news&amp;slug=witNote-ai-writing</loc><lastmod>2025-04-10</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://agentlimb.com/article.html?type=news&amp;slug=domprompter-visual-ai</loc><lastmod>2025-04-08</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://agentlimb.com/article.html?type=news&amp;slug=glotshot-app-store-assets</loc><lastmod>2025-04-05</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://agentlimb.com/article.html?type=news&amp;slug=trekreel-outdoor-storytelling</loc><lastmod>2025-04-03</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://agentlimb.com/article.html?type=news&amp;slug=uixskills-design-protocol</loc><lastmod>2025-04-01</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <!-- Legal pages -->
+  <url><loc>https://agentlimb.com/privacy.html</loc><lastmod>2025-04-12</lastmod><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://agentlimb.com/terms.html</loc><lastmod>2025-04-12</lastmod><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://agentlimb.com/license.html</loc><lastmod>2025-04-12</lastmod><changefreq>yearly</changefreq><priority>0.3</priority></url>
+</urlset>

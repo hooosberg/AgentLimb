@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loading... — AgentLimb</title>
+  <meta name="robots" content="index, follow">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    .article { max-width: 720px; margin: 0 auto; padding: 100px 24px 80px; }
+    .article-tag { display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 3px 10px; border-radius: 4px; background: rgba(245,166,35,0.08); color: var(--accent); margin-bottom: 12px; }
+    .article h1 { font-size: 32px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px; line-height: 1.2; }
+    .article-meta { font-size: 13px; color: var(--muted); margin-bottom: 36px; display: flex; gap: 16px; }
+    .article-body { font-size: 16px; line-height: 1.9; color: var(--text2); }
+    .article-body h2 { font-size: 22px; font-weight: 700; color: var(--text); margin: 36px 0 12px; }
+    .article-body h3 { font-size: 18px; font-weight: 700; color: var(--text); margin: 28px 0 8px; }
+    .article-body p { margin-bottom: 16px; }
+    .article-body ul, .article-body ol { padding-left: 24px; margin-bottom: 16px; }
+    .article-body li { margin-bottom: 6px; }
+    .article-body code { background: var(--bg); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-family: 'SF Mono','Fira Code',monospace; font-size: 14px; }
+    .article-body pre { background: var(--code-bg); color: var(--code-text); padding: 16px 20px; border-radius: 8px; overflow-x: auto; margin-bottom: 16px; font-size: 13px; line-height: 1.6; }
+    .article-body pre code { background: none; border: none; padding: 0; color: inherit; }
+    .article-body blockquote { border-left: 3px solid var(--accent); padding: 8px 16px; margin: 16px 0; color: var(--muted); font-style: italic; }
+    .article-body strong { color: var(--text); }
+    .article-body a { color: var(--blue); }
+    .article-body a:hover { color: var(--accent); }
+    .article-body table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+    .article-body th, .article-body td { text-align: left; padding: 8px 12px; border: 1px solid var(--border); }
+    .article-body th { background: var(--bg); font-weight: 600; color: var(--text); }
+    .back-link { display: inline-flex; align-items: center; gap: 4px; color: var(--muted); font-size: 13px; font-weight: 500; margin-bottom: 24px; }
+    .back-link:hover { color: var(--text); }
+  </style>
+</head>
+<body>
+<div class="article" id="article">
+  <a href="/" class="back-link" id="back-link">&larr; Back</a>
+  <div id="article-content" style="color:var(--muted);padding:40px 0" data-i18n="article.loading">Loading...</div>
+</div>
+
+<script type="module">
+  import { renderHeader } from '/components/header.js';
+  import { renderFooter } from '/components/footer.js';
+  import { t } from '/components/i18n.js';
+  import { initSEO } from '/components/seo.js';
+  renderHeader();
+  renderFooter('full');
+
+  const params = new URLSearchParams(location.search);
+  const type = params.get('type') || 'tutorials';
+  const slug = params.get('slug');
+
+  const backLink = document.getElementById('back-link');
+  backLink.href = type === 'news' ? '/news.html' : '/tutorials.html';
+  backLink.innerHTML = type === 'news' ? `&larr; ${t('article.back.news')}` : `&larr; ${t('article.back.tut')}`;
+
+  if (!slug) {
+    document.getElementById('article-content').textContent = t('article.notfound');
+  } else {
+    const path = `/content/${type}/${slug}.md`;
+    fetch(path).then(r => {
+      if (!r.ok) throw new Error('Not found');
+      return r.text();
+    }).then(raw => {
+      const { meta, body } = parseFrontmatter(raw);
+      document.title = `${meta.title} — AgentLimb`;
+
+      const metaItems = [];
+      if (meta.date) metaItems.push(meta.date.slice(0, 10));
+      if (meta.readTime) metaItems.push(`⏱ ${meta.readTime}`);
+      if (meta.difficulty) metaItems.push(`📊 ${meta.difficulty}`);
+
+      // SEO: set meta description and structured data
+      if (meta.description) {
+        const metaDesc = document.createElement('meta');
+        metaDesc.name = 'description';
+        metaDesc.content = meta.description;
+        document.head.appendChild(metaDesc);
+      }
+      initSEO({ breadcrumbs: [
+        { name: 'Home', url: '/' },
+        { name: type === 'news' ? 'News' : 'Tutorials', url: type === 'news' ? '/news.html' : '/tutorials.html' },
+        { name: meta.title }
+      ]});
+
+      document.getElementById('article-content').innerHTML = `
+        ${meta.tag ? `<span class="article-tag">${meta.tag}</span>` : ''}
+        <h1>${meta.title || 'Untitled'}</h1>
+        <div class="article-meta">${metaItems.map(m => `<span>${m}</span>`).join('')}</div>
+        <div class="article-body">${marked.parse(body)}</div>
+      `;
+    }).catch(() => {
+      document.getElementById('article-content').textContent = t('article.notfound');
+    });
+  }
+
+  function parseFrontmatter(text) {
+    const match = text.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
+    if (!match) return { meta: {}, body: text };
+    const meta = {};
+    match[1].split('\n').forEach(line => {
+      const idx = line.indexOf(':');
+      if (idx > 0) {
+        const key = line.slice(0, idx).trim();
+        let val = line.slice(idx + 1).trim();
+        if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'")))
+          val = val.slice(1, -1);
+        meta[key] = val;
+      }
+    });
+    return { meta, body: match[2] };
+  }
+</script>
+</body>
+</html>

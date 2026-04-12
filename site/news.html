@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>News — AgentLimb | AI Agents, Browser Automation & Developer Tools News</title>
+  <meta name="description" content="Latest news on AI coding agents (Claude Code, Cursor, Codex), browser automation, MCP protocol, muscle memory technology, and the agentic AI ecosystem. Updated regularly.">
+  <meta name="keywords" content="AI news, AI coding agents, browser automation news, Claude Code, Cursor, MCP protocol, AI IDE, muscle memory, token efficiency, local-first AI, AgentLimb news">
+  <meta name="robots" content="index, follow">
+  <meta property="og:title" content="AI Agents & Automation News — AgentLimb">
+  <meta property="og:description" content="Curated updates on AI coding tools and browser automation.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://agentlimb.com/news.html">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="AI Agents & Automation News — AgentLimb">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
+  <link rel="canonical" href="https://agentlimb.com/news.html">
+</head>
+<body>
+
+<div class="news-page">
+  <div class="section-label" data-i18n="page.news.label">News & Insights</div>
+  <h1 class="section-title" data-i18n="page.news.title">AI Agents & Automation News</h1>
+  <p class="section-desc" data-i18n="page.news.desc">Curated updates on AI coding tools, browser automation, and the agentic AI ecosystem.</p>
+  <div class="news-list" id="news-list"></div>
+</div>
+
+<script type="module">
+  import { renderHeader } from '/components/header.js';
+  import { renderFooter } from '/components/footer.js';
+  import { pick } from '/components/i18n.js';
+  import { initSEO } from '/components/seo.js';
+  renderHeader();
+  renderFooter('full');
+  initSEO({ breadcrumbs: [{ name: 'Home', url: '/' }, { name: 'News', url: '/news.html' }] });
+
+  const articles = [
+    { tag:{ en:'AI Agents', zh:'AI 智能体', ja:'AIエージェント', ko:'AI 에이전트', es:'Agentes IA', fr:'Agents IA', de:'KI-Agenten', pt:'Agentes IA', ru:'ИИ-агенты', ar:'وكلاء الذكاء', it:'Agenti IA', hi:'AI एजेंट' }, title:{ en:'Claude Code Introduces Background Agents for Autonomous Development', zh:'Claude Code 推出后台智能体，实现自主开发', ja:'Claude Codeがバックグラウンドエージェントを導入、自律的な開発を実現', ko:'Claude Code, 자율 개발을 위한 백그라운드 에이전트 도입' }, date:'2025-06-20', slug:'claude-code-background-agents' },
+    { tag:{ en:'Protocol', zh:'协议', ja:'プロトコル', ko:'프로토콜', es:'Protocolo', fr:'Protocole', de:'Protokoll', pt:'Protocolo', ru:'Протокол', ar:'بروتوكول', it:'Protocollo', hi:'प्रोटोकॉल' }, title:{ en:'MCP Protocol Becomes the Standard for AI Tool Integration', zh:'MCP 协议成为 AI 工具集成标准', ja:'MCPプロトコルがAIツール統合の標準に', ko:'MCP 프로토콜이 AI 도구 통합 표준이 되다' }, date:'2025-06-15', slug:'mcp-protocol-standard' },
+    { tag:{ en:'AI IDEs', zh:'AI 编辑器', ja:'AI IDE', ko:'AI IDE', es:'IDEs IA', fr:'IDE IA', de:'KI-IDEs', pt:'IDEs IA', ru:'ИИ-IDE', ar:'محررات الذكاء', it:'IDE IA', hi:'AI IDE' }, title:{ en:'Cursor, Windsurf, and Trae: The AI IDE Wars Heat Up', zh:'Cursor、Windsurf 和 Trae：AI IDE 大战升温', ja:'Cursor、Windsurf、Trae：AI IDE戦争が激化', ko:'Cursor, Windsurf, Trae: AI IDE 전쟁 가열' }, date:'2025-06-10', slug:'ai-ide-wars' },
+    { tag:{ en:'Open Source', zh:'开源', ja:'オープンソース', ko:'오픈소스', es:'Código Abierto', fr:'Open Source', de:'Open Source', pt:'Código Aberto', ru:'Открытый код', ar:'مفتوح المصدر', it:'Open Source', hi:'ओपन सोर्स' }, title:{ en:'Why Business Source License Is Gaining Traction in AI Tools', zh:'为什么 BSL 许可在 AI 工具中越来越流行', ja:'なぜBSLライセンスがAIツールで普及しているのか', ko:'AI 도구에서 BSL 라이선스가 주목받는 이유' }, date:'2025-06-05', slug:'bsl-license-trend' },
+    { tag:{ en:'Automation', zh:'自动化', ja:'自動化', ko:'자동화', es:'Automatización', fr:'Automatisation', de:'Automatisierung', pt:'Automação', ru:'Автоматизация', ar:'الأتمتة', it:'Automazione', hi:'ऑटोमेशन' }, title:{ en:'From Headless Browsers to Real Sessions: The Next Era', zh:'从无头浏览器到真实会话：下一个时代', ja:'ヘッドレスブラウザから実セッションへ：次の時代', ko:'헤드리스 브라우저에서 실제 세션으로: 다음 시대' }, date:'2025-05-28', slug:'headless-to-real-sessions' },
+    { tag:{ en:'Efficiency', zh:'效率', ja:'効率', ko:'효율', es:'Eficiencia', fr:'Efficacité', de:'Effizienz', pt:'Eficiência', ru:'Эффективность', ar:'الكفاءة', it:'Efficienza', hi:'दक्षता' }, title:{ en:'Token Efficiency: Why Muscle Memory Matters', zh:'Token 效率：为什么肌肉记忆很重要', ja:'トークン効率：なぜマッスルメモリーが重要か', ko:'토큰 효율: 근육 기억이 중요한 이유' }, date:'2025-05-20', slug:'muscle-memory-token-savings' },
+    { tag:{ en:'Industry', zh:'行业', ja:'業界', ko:'업계', es:'Industria', fr:'Industrie', de:'Branche', pt:'Indústria', ru:'Индустрия', ar:'الصناعة', it:'Industria', hi:'उद्योग' }, title:{ en:'Google, AWS, and ByteDance Enter the AI IDE Market', zh:'Google、AWS 和字节跳动进入 AI IDE 市场', ja:'Google、AWS、ByteDanceがAI IDE市場に参入', ko:'Google, AWS, ByteDance가 AI IDE 시장에 진출' }, date:'2025-05-15', slug:'google-aws-bytedance-ides' },
+    { tag:{ en:'Privacy', zh:'隐私', ja:'プライバシー', ko:'프라이버시', es:'Privacidad', fr:'Confidentialité', de:'Datenschutz', pt:'Privacidade', ru:'Конфиденциальность', ar:'الخصوصية', it:'Privacy', hi:'गोपनीयता' }, title:{ en:'Local-First AI: Privacy by Architecture', zh:'本地优先 AI：架构级隐私', ja:'ローカルファーストAI：アーキテクチャによるプライバシー', ko:'로컬 우선 AI: 아키텍처에 의한 프라이버시' }, date:'2025-05-10', slug:'local-first-privacy' },
+    { tag:{ en:'Philosophy', zh:'哲学', ja:'哲学', ko:'철학', es:'Filosofía', fr:'Philosophie', de:'Philosophie', pt:'Filosofia', ru:'Философия', ar:'الفلسفة', it:'Filosofia', hi:'दर्शन' }, title:{ en:'Unix Philosophy in the Age of AI', zh:'AI 时代的 Unix 哲学', ja:'AI時代のUnix哲学', ko:'AI 시대의 Unix 철학' }, date:'2025-05-05', slug:'unix-philosophy-ai' },
+    { tag:{ en:'Tools', zh:'工具', ja:'ツール', ko:'도구', es:'Herramientas', fr:'Outils', de:'Tools', pt:'Ferramentas', ru:'Инструменты', ar:'الأدوات', it:'Strumenti', hi:'उपकरण' }, title:{ en:'Aider, Cline, Roo Code: Terminal AI Agents Rise', zh:'Aider、Cline、Roo Code：终端 AI 智能体崛起', ja:'Aider、Cline、Roo Code：ターミナルAIエージェントの台頭', ko:'Aider, Cline, Roo Code: 터미널 AI 에이전트의 부상' }, date:'2025-04-28', slug:'terminal-ai-agents-rise' },
+    { tag:{ en:'AI Agents', zh:'AI 智能体', ja:'AIエージェント', ko:'AI 에이전트' }, title:{ en:'OpenAI Codex and Kiro: Agentic Coding Goes Mainstream', zh:'OpenAI Codex 和 Kiro：智能编程进入主流', ja:'OpenAI CodexとKiro：エージェントコーディングが主流に', ko:'OpenAI Codex와 Kiro: 에이전트 코딩 주류화' }, date:'2025-04-20', slug:'codex-kiro-mainstream' },
+    { tag:{ en:'Automation', zh:'自动化', ja:'自動化', ko:'자동화' }, title:{ en:'Browser Use vs AgentLimb: Comparing Approaches', zh:'Browser Use 与 AgentLimb：方案对比', ja:'Browser Use vs AgentLimb：アプローチの比較', ko:'Browser Use vs AgentLimb: 접근 방식 비교' }, date:'2025-04-15', slug:'browser-use-vs-agentlimb' },
+    { tag:{ en:'Our Products', zh:'我们的产品', ja:'製品紹介', ko:'우리 제품' }, title:{ en:'WitNote: Local-First AI Writing Companion', zh:'WitNote：本地优先的 AI 写作伙伴', ja:'WitNote：ローカルファーストのAIライティングコンパニオン', ko:'WitNote: 로컬 우선 AI 글쓰기 동반자' }, date:'2025-04-10', slug:'witNote-ai-writing' },
+    { tag:{ en:'Our Products', zh:'我们的产品', ja:'製品紹介', ko:'우리 제품' }, title:{ en:'DOMPrompter: Visual Design Meets AI Code Editors', zh:'DOMPrompter：可视化设计与 AI 代码编辑器的桥梁', ja:'DOMPrompter：ビジュアルデザインとAIコードエディタの融合', ko:'DOMPrompter: 비주얼 디자인과 AI 코드 에디터의 만남' }, date:'2025-04-08', slug:'domprompter-visual-ai' },
+    { tag:{ en:'Our Products', zh:'我们的产品', ja:'製品紹介', ko:'우리 제품' }, title:{ en:'GlotShot: App Store Screenshots with AI Translation', zh:'GlotShot：AI 翻译的应用商店截图工具', ja:'GlotShot：AI翻訳によるApp Storeスクリーンショット', ko:'GlotShot: AI 번역으로 앱 스토어 스크린샷 제작' }, date:'2025-04-05', slug:'glotshot-app-store-assets' },
+    { tag:{ en:'Our Products', zh:'我们的产品', ja:'製品紹介', ko:'우리 제품' }, title:{ en:'TrekReel: Outdoor Trails into Cinematic 3D Stories', zh:'TrekReel：将户外路线变成电影级 3D 故事', ja:'TrekReel：アウトドアトレイルを映画的3Dストーリーに', ko:'TrekReel: 아웃도어 트레일을 시네마틱 3D 스토리로' }, date:'2025-04-03', slug:'trekreel-outdoor-storytelling' },
+    { tag:{ en:'Our Products', zh:'我们的产品', ja:'製品紹介', ko:'우리 제품' }, title:{ en:'UIXskills: Design Protocol Layer for AI Era', zh:'UIXskills：AI 时代的设计协议层', ja:'UIXskills：AI時代のデザインプロトコルレイヤー', ko:'UIXskills: AI 시대의 디자인 프로토콜 레이어' }, date:'2025-04-01', slug:'uixskills-design-protocol' },
+  ];
+
+  const list = document.getElementById('news-list');
+  articles.forEach(a => {
+    const item = document.createElement('a');
+    item.className = 'news-item';
+    item.href = `/article.html?type=news&slug=${a.slug}`;
+    item.innerHTML = `
+      <span class="news-item-date">${a.date}</span>
+      <span class="news-item-tag">${pick(a.tag)}</span>
+      <span class="news-item-title">${pick(a.title)}</span>
+    `;
+    list.appendChild(item);
+  });
+</script>
+</body>
+</html>

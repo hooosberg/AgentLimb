@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Tools Directory — AgentLimb | Best AI Coding Agents, Models & Automation Tools 2025</title>
+  <meta name="description" content="Curated directory of 40+ AI tools: Claude Code, Cursor, Windsurf, Codex, Gemini, Playwright, Zapier, n8n, v0, Bolt and more. AI coding agents, models & APIs, browser automation, no-code platforms, and dev tools.">
+  <meta name="keywords" content="AI tools directory, best AI coding tools, Claude Code, Cursor, Windsurf, Codex, Trae, Kiro, AI models API, OpenAI, Anthropic, Gemini, browser automation, Playwright, Puppeteer, no-code automation, Zapier, Make, n8n, AI dev tools, v0, Bolt, Lovable, Replit">
+  <meta name="robots" content="index, follow">
+  <meta property="og:title" content="AI Tools Directory — Best AI Coding & Automation Tools 2025">
+  <meta property="og:description" content="40+ curated AI tools for developers: coding agents, models, browser automation, and more.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://agentlimb.com/tools.html">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="AI Tools Directory — AgentLimb">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
+</head>
+<body>
+
+<div class="tools-page">
+  <div class="section-label" data-i18n="page.tools.label">AI Tools Directory</div>
+  <h1 class="section-title" data-i18n="page.tools.title">The Best AI Tools for Developers</h1>
+  <p class="section-desc" data-i18n="page.tools.desc">Curated collection of AI coding agents, models, automation platforms, and dev tools. All tools listed here work with or complement AgentLimb.</p>
+
+  <div id="tools-container"></div>
+</div>
+
+<script type="module">
+  import { renderHeader } from '/components/header.js';
+  import { renderFooter } from '/components/footer.js';
+  import { pick, getLang } from '/components/i18n.js';
+  import { initSEO } from '/components/seo.js';
+  renderHeader();
+  renderFooter('full');
+  initSEO({ breadcrumbs: [{ name: 'Home', url: '/' }, { name: 'AI Tools Directory', url: '/tools.html' }] });
+
+  const catNames = {
+    'Our Products':       { en:'Our Products', zh:'我们的产品', ja:'製品一覧', ko:'우리 제품', es:'Nuestros Productos', fr:'Nos Produits', de:'Unsere Produkte', pt:'Nossos Produtos', ru:'Наши продукты', ar:'منتجاتنا', it:'I Nostri Prodotti', hi:'हमारे उत्पाद' },
+    'AI Coding Agents':   { en:'AI Coding Agents', zh:'AI 编程智能体', ja:'AIコーディングエージェント', ko:'AI 코딩 에이전트', es:'Agentes de Codificación IA', fr:'Agents de Codage IA', de:'KI-Coding-Agenten', pt:'Agentes de Codificação IA', ru:'ИИ-агенты для кодинга', ar:'وكلاء البرمجة بالذكاء الاصطناعي', it:'Agenti di Codifica IA', hi:'AI कोडिंग एजेंट' },
+    'AI Models & APIs':   { en:'AI Models & APIs', zh:'AI 模型与 API', ja:'AIモデル＆API', ko:'AI 모델 & API', es:'Modelos IA y APIs', fr:'Modèles IA et APIs', de:'KI-Modelle & APIs', pt:'Modelos IA e APIs', ru:'ИИ-модели и API', ar:'نماذج وواجهات برمجة الذكاء الاصطناعي', it:'Modelli IA e API', hi:'AI मॉडल और API' },
+    'Browser Automation':  { en:'Browser Automation', zh:'浏览器自动化', ja:'ブラウザ自動化', ko:'브라우저 자동화', es:'Automatización del Navegador', fr:'Automatisation du Navigateur', de:'Browser-Automatisierung', pt:'Automação do Navegador', ru:'Автоматизация браузера', ar:'أتمتة المتصفح', it:'Automazione Browser', hi:'ब्राउज़र ऑटोमेशन' },
+    'No-Code Automation':  { en:'No-Code Automation', zh:'无代码自动化', ja:'ノーコード自動化', ko:'노코드 자동화', es:'Automatización Sin Código', fr:'Automatisation Sans Code', de:'No-Code Automatisierung', pt:'Automação Sem Código', ru:'Автоматизация без кода', ar:'أتمتة بدون كود', it:'Automazione No-Code', hi:'नो-कोड ऑटोमेशन' },
+    'AI Dev Tools':        { en:'AI Dev Tools', zh:'AI 开发工具', ja:'AI開発ツール', ko:'AI 개발 도구', es:'Herramientas de Desarrollo IA', fr:'Outils de Développement IA', de:'KI-Entwickler-Tools', pt:'Ferramentas de Desenvolvimento IA', ru:'ИИ-инструменты для разработки', ar:'أدوات تطوير الذكاء الاصطناعي', it:'Strumenti di Sviluppo IA', hi:'AI डेव टूल्स' },
+  };
+
+  const tools = [
+    {name:"AgentLimb",desc:{en:"Give your AI a browser arm — Chrome automation with muscle memory",zh:"赋予 AI 浏览器机械臂 — 带肌肉记忆的 Chrome 自动化",ja:"AIにブラウザアームを — マッスルメモリー付きChrome自動化",ko:"AI에게 브라우저 팔을 — 근육 기억이 있는 Chrome 자동화"},url:"https://agentlimb.com",category:"Our Products",icon:"🦾"},
+    {name:"WitNote",desc:{en:"Local-first AI writing companion for macOS, Windows, and Linux",zh:"本地优先的 AI 写作伙伴，支持 macOS、Windows 和 Linux",ja:"macOS/Windows/Linux対応のローカルファーストAIライティング",ko:"macOS, Windows, Linux용 로컬 우선 AI 글쓰기 도우미"},url:"https://hooosberg.github.io/WitNote/",category:"Our Products",icon:"✍️"},
+    {name:"DOMPrompter",desc:{en:"Visually annotate web pages and generate structured AI prompts",zh:"可视化标注网页并生成结构化 AI 提示词",ja:"Webページを視覚的に注釈してAIプロンプトを生成",ko:"웹 페이지를 시각적으로 주석하고 구조화된 AI 프롬프트 생성"},url:"https://hooosberg.github.io/DOMPrompter/",category:"Our Products",icon:"🎯"},
+    {name:"GlotShot",desc:{en:"Batch-generate localized App Store screenshots with AI translation",zh:"批量生成多语言应用商店截图，AI 自动翻译",ja:"AI翻訳で多言語App Storeスクリーンショットを一括生成",ko:"AI 번역으로 다국어 앱스토어 스크린샷 일괄 생성"},url:"https://hooosberg.github.io/GlotShot/",category:"Our Products",icon:"📸"},
+    {name:"TrekReel",desc:{en:"Transform outdoor trails into cinematic 3D video stories",zh:"将户外路线转化为电影级 3D 视频故事",ja:"アウトドアトレイルを映画的3Dビデオストーリーに変換",ko:"아웃도어 트레일을 시네마틱 3D 비디오 스토리로 변환"},url:"https://hooosberg.github.io/TrekReel/",category:"Our Products",icon:"🏔️"},
+    {name:"UIXskills",desc:{en:"Design protocol layer for AI — JSON to UI pipeline",zh:"AI 设计协议层 — JSON 到 UI 管道",ja:"AI向けデザインプロトコルレイヤー — JSONからUIへ",ko:"AI를 위한 디자인 프로토콜 레이어 — JSON에서 UI로"},url:"https://uixskills.com",category:"Our Products",icon:"🎨"},
+
+    {name:"Claude Code",desc:{en:"Terminal-based AI coding agent by Anthropic",zh:"Anthropic 的终端 AI 编程智能体",ja:"Anthropicのターミナルベースのコーディングエージェント",ko:"Anthropic의 터미널 기반 AI 코딩 에이전트"},url:"https://claude.ai/code",category:"AI Coding Agents",icon:"🤖"},
+    {name:"Cursor",desc:{en:"AI-first code editor built on VS Code",zh:"基于 VS Code 的 AI 优先代码编辑器",ja:"VS Code上に構築されたAIファーストコードエディタ",ko:"VS Code 기반 AI 우선 코드 편집기"},url:"https://www.cursor.com",category:"AI Coding Agents",icon:"⌨️"},
+    {name:"Windsurf",desc:{en:"AI-powered IDE by Codeium for agentic coding",zh:"Codeium 推出的 AI 驱动 IDE，支持智能体编程",ja:"CodeiumによるAI搭載IDE、エージェントコーディング対応",ko:"Codeium의 에이전트 코딩을 위한 AI 기반 IDE"},url:"https://windsurf.com",category:"AI Coding Agents",icon:"🏄"},
+    {name:"GitHub Copilot",desc:{en:"AI pair programmer integrated into your editor",zh:"集成到编辑器的 AI 结对编程助手",ja:"エディタに統合されたAIペアプログラマー",ko:"편집기에 통합된 AI 페어 프로그래머"},url:"https://github.com/features/copilot",category:"AI Coding Agents",icon:"🐙"},
+    {name:"Cline",desc:{en:"Autonomous AI coding agent for VS Code",zh:"VS Code 的自主 AI 编程智能体",ja:"VS Code用の自律型AIコーディングエージェント",ko:"VS Code용 자율 AI 코딩 에이전트"},url:"https://cline.bot",category:"AI Coding Agents",icon:"🔧"},
+    {name:"Trae",desc:{en:"AI-powered IDE by ByteDance with agentic features",zh:"字节跳动推出的 AI IDE，支持智能体功能",ja:"ByteDanceのAI搭載IDE、エージェント機能付き",ko:"ByteDance의 에이전트 기능을 갖춘 AI IDE"},url:"https://www.trae.ai",category:"AI Coding Agents",icon:"🚀"},
+    {name:"Kiro",desc:{en:"AI-powered IDE by AWS with spec-driven development",zh:"AWS 推出的 AI IDE，基于规格驱动开发",ja:"AWSのAI搭載IDE、仕様駆動開発対応",ko:"AWS의 사양 기반 개발을 위한 AI IDE"},url:"https://kiro.dev",category:"AI Coding Agents",icon:"📐"},
+    {name:"Aider",desc:{en:"AI pair programming in your terminal via CLI",zh:"终端中的 AI 结对编程，通过命令行操作",ja:"ターミナルでのAIペアプログラミング（CLI経由）",ko:"CLI를 통한 터미널에서의 AI 페어 프로그래밍"},url:"https://aider.chat",category:"AI Coding Agents",icon:"💬"},
+
+    {name:"OpenAI API",desc:{en:"GPT and o-series model APIs for developers",zh:"面向开发者的 GPT 和 o 系列模型 API",ja:"開発者向けGPTおよびoシリーズモデルAPI",ko:"개발자를 위한 GPT 및 o 시리즈 모델 API"},url:"https://platform.openai.com",category:"AI Models & APIs",icon:"🧠"},
+    {name:"Anthropic API",desc:{en:"Claude model family APIs for building AI apps",zh:"Claude 模型家族 API，用于构建 AI 应用",ja:"AIアプリ構築のためのClaudeモデルファミリーAPI",ko:"AI 앱 구축을 위한 Claude 모델 패밀리 API"},url:"https://docs.anthropic.com",category:"AI Models & APIs",icon:"🔮"},
+    {name:"Google Gemini",desc:{en:"Multimodal AI models and API by Google DeepMind",zh:"Google DeepMind 的多模态 AI 模型和 API",ja:"Google DeepMindのマルチモーダルAIモデルとAPI",ko:"Google DeepMind의 멀티모달 AI 모델 및 API"},url:"https://ai.google.dev",category:"AI Models & APIs",icon:"💎"},
+    {name:"Mistral AI",desc:{en:"Open and commercial LLMs with API access",zh:"开放和商用大语言模型，支持 API 访问",ja:"オープン＆商用LLM、API対応",ko:"API 액세스가 가능한 오픈/상용 LLM"},url:"https://mistral.ai",category:"AI Models & APIs",icon:"🌬️"},
+    {name:"Groq",desc:{en:"Ultra-fast LLM inference API platform",zh:"超快速 LLM 推理 API 平台",ja:"超高速LLM推論APIプラットフォーム",ko:"초고속 LLM 추론 API 플랫폼"},url:"https://groq.com",category:"AI Models & APIs",icon:"⚡"},
+    {name:"Ollama",desc:{en:"Run open-source LLMs locally on your machine",zh:"在本地设备运行开源大语言模型",ja:"ローカルマシンでオープンソースLLMを実行",ko:"로컬 머신에서 오픈소스 LLM 실행"},url:"https://ollama.com",category:"AI Models & APIs",icon:"🦙"},
+    {name:"OpenRouter",desc:{en:"Unified API gateway for multiple AI models",zh:"多个 AI 模型的统一 API 网关",ja:"複数AIモデルの統合APIゲートウェイ",ko:"여러 AI 모델을 위한 통합 API 게이트웨이"},url:"https://openrouter.ai",category:"AI Models & APIs",icon:"🔀"},
+    {name:"Hugging Face",desc:{en:"Open-source AI model hub and inference API",zh:"开源 AI 模型中心和推理 API",ja:"オープンソースAIモデルハブと推論API",ko:"오픈소스 AI 모델 허브 및 추론 API"},url:"https://huggingface.co",category:"AI Models & APIs",icon:"🤗"},
+
+    {name:"Playwright",desc:{en:"Cross-browser end-to-end testing by Microsoft",zh:"微软的跨浏览器端到端测试框架",ja:"Microsoftによるクロスブラウザのエンドツーエンドテスト",ko:"Microsoft의 크로스 브라우저 E2E 테스트"},url:"https://playwright.dev",category:"Browser Automation",icon:"🎭"},
+    {name:"Puppeteer",desc:{en:"Node.js library for controlling headless Chrome",zh:"控制无头 Chrome 的 Node.js 库",ja:"ヘッドレスChromeを制御するNode.jsライブラリ",ko:"헤드리스 Chrome을 제어하는 Node.js 라이브러리"},url:"https://pptr.dev",category:"Browser Automation",icon:"🎪"},
+    {name:"Selenium",desc:{en:"Web browser automation framework for testing",zh:"用于测试的网页浏览器自动化框架",ja:"テスト用Webブラウザ自動化フレームワーク",ko:"테스트를 위한 웹 브라우저 자동화 프레임워크"},url:"https://www.selenium.dev",category:"Browser Automation",icon:"🧪"},
+    {name:"Cypress",desc:{en:"Fast and reliable front-end testing framework",zh:"快速可靠的前端测试框架",ja:"高速で信頼性の高いフロントエンドテストフレームワーク",ko:"빠르고 신뢰할 수 있는 프론트엔드 테스트 프레임워크"},url:"https://www.cypress.io",category:"Browser Automation",icon:"🌲"},
+    {name:"Browser Use",desc:{en:"AI agent framework for browser automation with LLMs",zh:"使用大语言模型的 AI 浏览器自动化框架",ja:"LLMを活用したAIブラウザ自動化フレームワーク",ko:"LLM을 활용한 AI 브라우저 자동화 프레임워크"},url:"https://browser-use.com",category:"Browser Automation",icon:"🌐"},
+    {name:"Stagehand",desc:{en:"AI-powered browser automation SDK by Browserbase",zh:"Browserbase 推出的 AI 浏览器自动化 SDK",ja:"BrowserbaseのAI搭載ブラウザ自動化SDK",ko:"Browserbase의 AI 기반 브라우저 자동화 SDK"},url:"https://github.com/browserbase/stagehand",category:"Browser Automation",icon:"🎬"},
+    {name:"Crawl4AI",desc:{en:"Open-source AI-friendly web crawler and scraper",zh:"开源的 AI 友好型网页爬虫和采集器",ja:"オープンソースのAIフレンドリーWebクローラー＆スクレイパー",ko:"오픈소스 AI 친화적 웹 크롤러 및 스크래퍼"},url:"https://crawl4ai.com",category:"Browser Automation",icon:"🕷️"},
+
+    {name:"Zapier",desc:{en:"Connect apps and automate workflows without code",zh:"无代码连接应用并自动化工作流",ja:"ノーコードでアプリを接続しワークフローを自動化",ko:"코드 없이 앱을 연결하고 워크플로우를 자동화"},url:"https://zapier.com",category:"No-Code Automation",icon:"⚡"},
+    {name:"Make",desc:{en:"Visual automation platform for complex workflows",zh:"复杂工作流的可视化自动化平台",ja:"複雑なワークフローのためのビジュアル自動化プラットフォーム",ko:"복잡한 워크플로우를 위한 비주얼 자동화 플랫폼"},url:"https://www.make.com",category:"No-Code Automation",icon:"🔄"},
+    {name:"n8n",desc:{en:"Open-source workflow automation with fair-code license",zh:"公平代码许可的开源工作流自动化",ja:"フェアコードライセンスのオープンソースワークフロー自動化",ko:"페어코드 라이선스의 오픈소스 워크플로우 자동화"},url:"https://n8n.io",category:"No-Code Automation",icon:"🔗"},
+    {name:"Dify",desc:{en:"Open-source platform for building AI applications",zh:"构建 AI 应用的开源平台",ja:"AIアプリケーション構築のためのオープンソースプラットフォーム",ko:"AI 애플리케이션 구축을 위한 오픈소스 플랫폼"},url:"https://dify.ai",category:"No-Code Automation",icon:"🏗️"},
+    {name:"Langflow",desc:{en:"Visual framework for building multi-agent AI apps",zh:"构建多智能体 AI 应用的可视化框架",ja:"マルチエージェントAIアプリ構築のためのビジュアルフレームワーク",ko:"멀티 에이전트 AI 앱 구축을 위한 비주얼 프레임워크"},url:"https://www.langflow.org",category:"No-Code Automation",icon:"🌊"},
+    {name:"Flowise",desc:{en:"Drag-and-drop UI for building LLM workflows",zh:"拖拽式 UI 构建 LLM 工作流",ja:"LLMワークフロー構築のためのドラッグ＆ドロップUI",ko:"LLM 워크플로우 구축을 위한 드래그 앤 드롭 UI"},url:"https://flowiseai.com",category:"No-Code Automation",icon:"🌸"},
+
+    {name:"v0",desc:{en:"AI-powered UI generation tool by Vercel",zh:"Vercel 推出的 AI UI 生成工具",ja:"VercelのAI搭載UI生成ツール",ko:"Vercel의 AI 기반 UI 생성 도구"},url:"https://v0.dev",category:"AI Dev Tools",icon:"✨"},
+    {name:"Bolt",desc:{en:"Full-stack AI app builder in the browser",zh:"浏览器中的全栈 AI 应用构建器",ja:"ブラウザ上のフルスタックAIアプリビルダー",ko:"브라우저에서의 풀스택 AI 앱 빌더"},url:"https://bolt.new",category:"AI Dev Tools",icon:"⚡"},
+    {name:"Lovable",desc:{en:"AI full-stack engineer that builds apps from prompts",zh:"根据提示词构建应用的 AI 全栈工程师",ja:"プロンプトからアプリを構築するAIフルスタックエンジニア",ko:"프롬프트에서 앱을 빌드하는 AI 풀스택 엔지니어"},url:"https://lovable.dev",category:"AI Dev Tools",icon:"💜"},
+    {name:"Replit",desc:{en:"Cloud IDE with AI agent for building and deploying",zh:"带 AI 智能体的云端 IDE，支持构建和部署",ja:"ビルド＆デプロイ用のAIエージェント付きクラウドIDE",ko:"빌드 및 배포를 위한 AI 에이전트가 있는 클라우드 IDE"},url:"https://replit.com",category:"AI Dev Tools",icon:"🔁"},
+    {name:"Devin",desc:{en:"Autonomous AI software engineer by Cognition",zh:"Cognition 推出的自主 AI 软件工程师",ja:"Cognitionの自律型AIソフトウェアエンジニア",ko:"Cognition의 자율 AI 소프트웨어 엔지니어"},url:"https://devin.ai",category:"AI Dev Tools",icon:"🧑‍💻"},
+    {name:"Supabase",desc:{en:"Open-source Firebase alternative with AI integrations",zh:"集成 AI 的开源 Firebase 替代方案",ja:"AI統合を備えたオープンソースのFirebase代替",ko:"AI 통합이 있는 오픈소스 Firebase 대안"},url:"https://supabase.com",category:"AI Dev Tools",icon:"🗄️"},
+    {name:"Firebase Studio",desc:{en:"AI-assisted full-stack app builder by Google",zh:"Google 推出的 AI 辅助全栈应用构建器",ja:"GoogleのAI支援フルスタックアプリビルダー",ko:"Google의 AI 지원 풀스택 앱 빌더"},url:"https://firebase.studio",category:"AI Dev Tools",icon:"🔥"},
+  ];
+
+  const container = document.getElementById('tools-container');
+  const categories = [...new Set(tools.map(t => t.category))];
+
+  categories.forEach(cat => {
+    const section = document.createElement('div');
+    section.className = 'tools-category';
+
+    const items = tools.filter(t => t.category === cat);
+    section.innerHTML = `
+      <h2 class="tools-category-title">${catNames[cat] ? pick(catNames[cat]) : cat}</h2>
+      <div class="tools-list">
+        ${items.map(t => `
+          <a class="tool-item" href="${t.url}" target="_blank" rel="noopener">
+            <div class="tool-item-icon">${t.icon}</div>
+            <div>
+              <div class="tool-item-name">${t.name}</div>
+              <div class="tool-item-desc">${pick(t.desc)}</div>
+            </div>
+          </a>
+        `).join('')}
+      </div>
+    `;
+    container.appendChild(section);
+  });
+</script>
+</body>
+</html>

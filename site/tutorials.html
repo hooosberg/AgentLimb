@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tutorials — AgentLimb | Learn AI Browser Automation Step by Step</title>
+  <meta name="description" content="Learn AgentLimb with step-by-step tutorials. Muscle memory, social media marketing automation, competitive intelligence, token optimization, MCP integration, and QA testing guides.">
+  <meta name="keywords" content="AgentLimb tutorial, AI browser automation guide, muscle memory tutorial, MCP integration, Chrome extension automation, AI marketing automation, web scraping guide, token optimization">
+  <meta name="robots" content="index, follow">
+  <meta property="og:title" content="Tutorials — Learn AgentLimb">
+  <meta property="og:description" content="Step-by-step guides for AI browser automation with AgentLimb.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://agentlimb.com/tutorials.html">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="AgentLimb Tutorials">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
+  <link rel="canonical" href="https://agentlimb.com/tutorials.html">
+</head>
+<body>
+
+<div class="tutorial-page">
+  <div class="section-label" data-i18n="page.tut.label">Tutorials & Guides</div>
+  <h1 class="section-title" data-i18n="page.tut.title">Learn AgentLimb</h1>
+  <p class="section-desc" data-i18n="page.tut.desc">Step-by-step tutorials, use cases, and best practices for browser automation with AI.</p>
+  <div class="tutorial-grid" id="tutorial-grid"></div>
+</div>
+
+<script type="module">
+  import { renderHeader } from '/components/header.js';
+  import { renderFooter } from '/components/footer.js';
+  import { pick, getLang } from '/components/i18n.js';
+  import { initSEO } from '/components/seo.js';
+  renderHeader();
+  renderFooter('full');
+  initSEO({ breadcrumbs: [{ name: 'Home', url: '/' }, { name: 'Tutorials', url: '/tutorials.html' }] });
+
+  const L = getLang();
+  const tutorials = [
+    { icon:'🚀', slug:'quick-start',
+      tag:{ en:'Getting Started', zh:'入门指南', ja:'はじめに', ko:'시작하기', es:'Primeros Pasos', fr:'Démarrage', de:'Erste Schritte', pt:'Primeiros Passos', ru:'Начало работы', ar:'البداية', it:'Primi Passi', hi:'शुरू करें' },
+      title:{ en:'Quick Start: Install & Connect in 10 Seconds', zh:'快速开始：10 秒安装并连接', ja:'クイックスタート：10秒でインストール＆接続', ko:'빠른 시작: 10초 만에 설치 및 연결', es:'Inicio Rápido: Instala y Conecta en 10 Segundos', fr:'Démarrage Rapide : Installer et Connecter en 10 Secondes', de:'Schnellstart: In 10 Sekunden installieren und verbinden', pt:'Início Rápido: Instale e Conecte em 10 Segundos', ru:'Быстрый старт: установка и подключение за 10 секунд', ar:'بداية سريعة: التثبيت والاتصال في 10 ثوانٍ', it:'Avvio Rapido: Installa e Connetti in 10 Secondi', hi:'क्विक स्टार्ट: 10 सेकंड में इंस्टॉल और कनेक्ट' },
+      desc:{ en:'Install the extension, copy the prompt, paste to your AI. The fastest path from zero to browser automation.', zh:'安装扩展、复制提示词、粘贴给 AI。从零到浏览器自动化最快的路径。', ja:'拡張機能をインストール、プロンプトをコピー、AIに貼り付け。ゼロからブラウザ自動化への最速ルート。', ko:'확장 프로그램 설치, 프롬프트 복사, AI에 붙여넣기. 제로에서 브라우저 자동화까지 가장 빠른 경로.', es:'Instala la extensión, copia el prompt, pégalo en tu IA. El camino más rápido a la automatización.', fr:'Installez l\'extension, copiez le prompt, collez dans votre IA. Le chemin le plus rapide vers l\'automatisation.', de:'Extension installieren, Prompt kopieren, in deine KI einfügen. Der schnellste Weg zur Browser-Automatisierung.', pt:'Instale a extensão, copie o prompt, cole na sua IA. O caminho mais rápido para automação do navegador.', ru:'Установите расширение, скопируйте промпт, вставьте в ИИ. Самый быстрый путь к автоматизации браузера.', ar:'ثبّت الإضافة، انسخ الموجه، الصقه في ذكائك الاصطناعي. أسرع طريق لأتمتة المتصفح.', it:'Installa l\'estensione, copia il prompt, incolla nella tua IA. Il percorso più veloce per l\'automazione.', hi:'एक्सटेंशन इंस्टॉल करें, प्रॉम्प्ट कॉपी करें, AI में पेस्ट करें। ब्राउज़र ऑटोमेशन का सबसे तेज़ रास्ता।' },
+      time:'2 min',
+      diff:{ en:'Beginner', zh:'入门', ja:'初級', ko:'초급', es:'Principiante', fr:'Débutant', de:'Anfänger', pt:'Iniciante', ru:'Начинающий', ar:'مبتدئ', it:'Principiante', hi:'शुरुआती' }
+    },
+    { icon:'💪', slug:'first-muscle',
+      tag:{ en:'Muscle Memory', zh:'肌肉记忆', ja:'マッスルメモリー', ko:'근육 기억', es:'Memoria Muscular', fr:'Mémoire Musculaire', de:'Muskelgedächtnis', pt:'Memória Muscular', ru:'Мышечная память', ar:'ذاكرة العضلات', it:'Memoria Muscolare', hi:'मसल मेमोरी' },
+      title:{ en:'Save Your First Muscle: Automate Reddit Posting', zh:'保存你的第一个肌肉：自动化 Reddit 发帖', ja:'最初のマッスルを保存：Reddit投稿を自動化', ko:'첫 번째 근육 저장: Reddit 게시 자동화', es:'Guarda Tu Primer Músculo: Automatiza Reddit', fr:'Sauvegardez Votre Premier Muscle : Automatisez Reddit', de:'Speichere Deinen Ersten Muskel: Reddit automatisieren', pt:'Salve Seu Primeiro Músculo: Automatize Reddit', ru:'Сохраните первый мускул: автоматизация Reddit', ar:'احفظ أول عضلة: أتمتة النشر على Reddit', it:'Salva il Tuo Primo Muscolo: Automatizza Reddit', hi:'अपनी पहली मसल सेव करें: Reddit पोस्टिंग ऑटोमेट करें' },
+      desc:{ en:'Walk through a complete workflow: AI explores Reddit, posts content, and saves the action sequence as a reusable muscle.', zh:'完整演示：AI 探索 Reddit、发布内容、将操作序列保存为可复用的肌肉。', ja:'完全なワークフロー：AIがRedditを探索、コンテンツを投稿、操作シーケンスを再利用可能なマッスルとして保存。', ko:'완전한 워크플로우: AI가 Reddit을 탐색하고 콘텐츠를 게시하고 작업 시퀀스를 재사용 가능한 근육으로 저장합니다.', es:'Recorre un flujo completo: IA explora Reddit, publica contenido y guarda la secuencia como músculo reutilizable.', fr:'Parcourez un workflow complet : l\'IA explore Reddit, publie du contenu et sauvegarde la séquence comme muscle réutilisable.', de:'Durchlaufe einen kompletten Workflow: KI erkundet Reddit, postet Inhalte und speichert die Aktionssequenz als wiederverwendbaren Muskel.', pt:'Percorra um workflow completo: IA explora Reddit, publica conteúdo e salva a sequência como músculo reutilizável.', ru:'Пройдите полный рабочий процесс: ИИ исследует Reddit, публикует контент и сохраняет последовательность как многоразовый мускул.', ar:'تعرف على سير عمل كامل: الذكاء الاصطناعي يستكشف Reddit وينشر المحتوى ويحفظ التسلسل كعضلة قابلة لإعادة الاستخدام.', it:'Segui un workflow completo: l\'IA esplora Reddit, pubblica contenuti e salva la sequenza come muscolo riutilizzabile.', hi:'पूरा वर्कफ्लो: AI Reddit एक्सप्लोर करता है, कंटेंट पोस्ट करता है, और एक्शन सीक्वेंस को रीयूजेबल मसल के रूप में सेव करता है।' },
+      time:'5 min',
+      diff:{ en:'Beginner', zh:'入门', ja:'初級', ko:'초급', es:'Principiante', fr:'Débutant', de:'Anfänger', pt:'Iniciante', ru:'Начинающий', ar:'مبتدئ', it:'Principiante', hi:'शुरुआती' }
+    },
+    { icon:'📋', slug:'onboard-prompt',
+      tag:{ en:'Configuration', zh:'配置', ja:'設定', ko:'설정', es:'Configuración', fr:'Configuration', de:'Konfiguration', pt:'Configuração', ru:'Настройка', ar:'الإعداد', it:'Configurazione', hi:'कॉन्फ़िगरेशन' },
+      title:{ en:'Writing the Perfect Onboard Prompt', zh:'编写完美的接入提示词', ja:'完璧なオンボードプロンプトの書き方', ko:'완벽한 온보드 프롬프트 작성하기', es:'Escribir el Prompt de Incorporación Perfecto', fr:'Écrire le Prompt d\'Intégration Parfait', de:'Den Perfekten Onboard-Prompt Schreiben', pt:'Escrevendo o Prompt de Integração Perfeito', ru:'Создание идеального промпта для подключения', ar:'كتابة موجه البدء المثالي', it:'Scrivere il Prompt di Onboarding Perfetto', hi:'परफेक्ट ऑनबोर्ड प्रॉम्प्ट लिखना' },
+      desc:{ en:'How to customize the onboard prompt for different AI tools to get the best results.', zh:'如何为不同的 AI 工具定制接入提示词以获得最佳效果。', ja:'異なるAIツールに合わせてオンボードプロンプトをカスタマイズする方法。', ko:'최상의 결과를 위해 다양한 AI 도구에 맞게 온보드 프롬프트를 커스터마이즈하는 방법.', es:'Cómo personalizar el prompt para diferentes herramientas IA.', fr:'Comment personnaliser le prompt pour différents outils IA.', de:'So passt du den Onboard-Prompt für verschiedene KI-Tools an.', pt:'Como personalizar o prompt para diferentes ferramentas IA.', ru:'Как настроить промпт для разных ИИ-инструментов.', ar:'كيفية تخصيص الموجه لأدوات الذكاء الاصطناعي المختلفة.', it:'Come personalizzare il prompt per diversi strumenti IA.', hi:'विभिन्न AI टूल्स के लिए ऑनबोर्ड प्रॉम्प्ट को कस्टमाइज़ कैसे करें।' },
+      time:'3 min', diff:{ en:'Beginner', zh:'入门', ja:'初級', ko:'초급', es:'Principiante', fr:'Débutant', de:'Anfänger', pt:'Iniciante', ru:'Начинающий', ar:'مبتدئ', it:'Principiante', hi:'शुरुआती' }
+    },
+    { icon:'📣', slug:'social-media-marketing',
+      tag:{ en:'Use Case', zh:'使用案例', ja:'ユースケース', ko:'사용 사례', es:'Caso de Uso', fr:'Cas d\'Usage', de:'Anwendungsfall', pt:'Caso de Uso', ru:'Пример использования', ar:'حالة استخدام', it:'Caso d\'Uso', hi:'उपयोग केस' },
+      title:{ en:'Multi-Platform Social Media Marketing', zh:'多平台社交媒体营销', ja:'マルチプラットフォームSNSマーケティング', ko:'멀티플랫폼 소셜 미디어 마케팅', es:'Marketing Multi-Plataforma en Redes', fr:'Marketing Multi-Plateforme sur les Réseaux', de:'Multi-Plattform Social Media Marketing', pt:'Marketing Multi-Plataforma em Redes Sociais', ru:'Мультиплатформенный маркетинг в соцсетях', ar:'التسويق عبر منصات التواصل المتعددة', it:'Marketing Multi-Piattaforma sui Social', hi:'मल्टी-प्लेटफॉर्म सोशल मीडिया मार्केटिंग' },
+      desc:{ en:'Automate posting to Reddit, Twitter, Product Hunt. Create muscles for each platform.', zh:'自动发布到 Reddit、Twitter、Product Hunt。为每个平台创建肌肉。', ja:'Reddit、Twitter、Product Huntへの投稿を自動化。プラットフォームごとにマッスルを作成。', ko:'Reddit, Twitter, Product Hunt에 자동 게시. 플랫폼별 근육 생성.', es:'Automatiza publicaciones en Reddit, Twitter, Product Hunt. Crea músculos por plataforma.', fr:'Automatisez la publication sur Reddit, Twitter, Product Hunt. Créez des muscles par plateforme.', de:'Automatisiere Posts auf Reddit, Twitter, Product Hunt. Erstelle Muskeln pro Plattform.', pt:'Automatize publicações no Reddit, Twitter, Product Hunt. Crie músculos por plataforma.', ru:'Автоматизируйте публикации на Reddit, Twitter, Product Hunt. Создавайте мускулы для каждой платформы.', ar:'أتمت النشر على Reddit وTwitter وProduct Hunt. أنشئ عضلات لكل منصة.', it:'Automatizza la pubblicazione su Reddit, Twitter, Product Hunt. Crea muscoli per piattaforma.', hi:'Reddit, Twitter, Product Hunt पर ऑटो-पोस्ट करें। हर प्लेटफॉर्म के लिए मसल बनाएं।' },
+      time:'10 min', diff:{ en:'Intermediate', zh:'中级', ja:'中級', ko:'중급', es:'Intermedio', fr:'Intermédiaire', de:'Fortgeschritten', pt:'Intermediário', ru:'Средний', ar:'متوسط', it:'Intermedio', hi:'मध्यम' }
+    },
+    { icon:'🔍', slug:'competitive-research',
+      tag:{ en:'Use Case', zh:'使用案例', ja:'ユースケース', ko:'사용 사례', es:'Caso de Uso', fr:'Cas d\'Usage', de:'Anwendungsfall', pt:'Caso de Uso', ru:'Пример использования', ar:'حالة استخدام', it:'Caso d\'Uso', hi:'उपयोग केस' },
+      title:{ en:'Competitive Intelligence: Scrape & Compare', zh:'竞品情报：采集与对比', ja:'競合情報：スクレイプ＆比較', ko:'경쟁 정보: 스크래핑 & 비교', es:'Inteligencia Competitiva: Recopilar y Comparar', fr:'Intelligence Concurrentielle : Scraper et Comparer', de:'Wettbewerbsanalyse: Scrapen und Vergleichen', pt:'Inteligência Competitiva: Extrair e Comparar', ru:'Конкурентная разведка: сбор и сравнение', ar:'الاستخبارات التنافسية: الاستخراج والمقارنة', it:'Intelligence Competitiva: Scraping e Confronto', hi:'प्रतिस्पर्धी जानकारी: स्क्रैप और तुलना' },
+      desc:{ en:'Navigate competitor sites, extract pricing and features, save structured data.', zh:'浏览竞品网站、提取定价和功能、保存结构化数据。', ja:'競合サイトを閲覧、価格と機能を抽出、構造化データを保存。', ko:'경쟁사 사이트 탐색, 가격 및 기능 추출, 구조화된 데이터 저장.', es:'Navega sitios de competidores, extrae precios y funciones, guarda datos estructurados.', fr:'Naviguez sur les sites concurrents, extrayez les prix et fonctionnalités, sauvegardez les données structurées.', de:'Navigiere Konkurrenz-Websites, extrahiere Preise und Features, speichere strukturierte Daten.', pt:'Navegue sites concorrentes, extraia preços e funcionalidades, salve dados estruturados.', ru:'Просматривайте сайты конкурентов, извлекайте цены и функции, сохраняйте структурированные данные.', ar:'تصفح مواقع المنافسين واستخرج الأسعار والميزات واحفظ البيانات المنظمة.', it:'Naviga i siti concorrenti, estrai prezzi e funzionalità, salva dati strutturati.', hi:'प्रतिस्पर्धी साइट ब्राउज़ करें, मूल्य और सुविधाएं निकालें, संरचित डेटा सेव करें।' },
+      time:'8 min', diff:{ en:'Intermediate', zh:'中级', ja:'中級', ko:'중급', es:'Intermedio', fr:'Intermédiaire', de:'Fortgeschritten', pt:'Intermediário', ru:'Средний', ar:'متوسط', it:'Intermedio', hi:'मध्यम' }
+    },
+    { icon:'⚡', slug:'token-optimization',
+      tag:{ en:'Advanced', zh:'高级', ja:'上級', ko:'고급', es:'Avanzado', fr:'Avancé', de:'Fortgeschritten', pt:'Avançado', ru:'Продвинутый', ar:'متقدم', it:'Avanzato', hi:'उन्नत' },
+      title:{ en:'Token Optimization: 5000 → 300', zh:'Token 优化：5000 → 300', ja:'トークン最適化：5000 → 300', ko:'토큰 최적화: 5000 → 300', es:'Optimización de Tokens: 5000 → 300', fr:'Optimisation des Tokens : 5000 → 300', de:'Token-Optimierung: 5000 → 300', pt:'Otimização de Tokens: 5000 → 300', ru:'Оптимизация токенов: 5000 → 300', ar:'تحسين الرموز: 5000 → 300', it:'Ottimizzazione Token: 5000 → 300', hi:'टोकन ऑप्टिमाइज़ेशन: 5000 → 300' },
+      desc:{ en:'Deep dive into muscle memory mechanics for maximum replay efficiency.', zh:'深入了解肌肉记忆机制，实现最高回放效率。', ja:'マッスルメモリーの仕組みを深掘りし、最大のリプレイ効率を実現。', ko:'최대 리플레이 효율을 위한 근육 기억 메커니즘 심층 분석.', es:'Inmersión en los mecanismos de memoria muscular para máxima eficiencia.', fr:'Plongée dans les mécanismes de mémoire musculaire pour une efficacité maximale.', de:'Tiefere Einblicke in Muskelgedächtnis-Mechanismen für maximale Replay-Effizienz.', pt:'Aprofundamento nos mecanismos de memória muscular para máxima eficiência.', ru:'Глубокое погружение в механику мышечной памяти для максимальной эффективности.', ar:'تعمق في آليات ذاكرة العضلات لتحقيق أقصى كفاءة في إعادة التشغيل.', it:'Approfondimento sui meccanismi della memoria muscolare per la massima efficienza.', hi:'अधिकतम रीप्ले दक्षता के लिए मसल मेमोरी मैकेनिक्स में गहराई से जानें।' },
+      time:'6 min', diff:{ en:'Advanced', zh:'高级', ja:'上級', ko:'고급', es:'Avanzado', fr:'Avancé', de:'Fortgeschritten', pt:'Avançado', ru:'Продвинутый', ar:'متقدم', it:'Avanzato', hi:'उन्नत' }
+    },
+    { icon:'📁', slug:'project-system',
+      tag:{ en:'Projects', zh:'项目系统', ja:'プロジェクト', ko:'프로젝트', es:'Proyectos', fr:'Projets', de:'Projekte', pt:'Projetos', ru:'Проекты', ar:'المشاريع', it:'Progetti', hi:'प्रोजेक्ट' },
+      title:{ en:'Project System for Long-Term AI Collaboration', zh:'项目系统：AI 长期协作', ja:'長期AIコラボのためのプロジェクトシステム', ko:'장기적 AI 협업을 위한 프로젝트 시스템', es:'Sistema de Proyectos para Colaboración a Largo Plazo', fr:'Système de Projets pour Collaboration IA à Long Terme', de:'Projektsystem für Langzeit-KI-Zusammenarbeit', pt:'Sistema de Projetos para Colaboração IA de Longo Prazo', ru:'Проектная система для долгосрочного сотрудничества с ИИ', ar:'نظام المشاريع للتعاون طويل الأمد مع الذكاء الاصطناعي', it:'Sistema Progetti per Collaborazione IA a Lungo Termine', hi:'दीर्घकालिक AI सहयोग के लिए प्रोजेक्ट सिस्टम' },
+      desc:{ en:'Set up a work project folder for cross-session AI context.', zh:'设置工作项目文件夹，实现跨会话的 AI 上下文。', ja:'セッション間のAIコンテキストのためのプロジェクトフォルダを設定。', ko:'세션 간 AI 컨텍스트를 위한 작업 프로젝트 폴더 설정.', es:'Configura una carpeta de proyecto para contexto IA entre sesiones.', fr:'Configurez un dossier projet pour le contexte IA entre sessions.', de:'Richte einen Projektordner für sitzungsübergreifenden KI-Kontext ein.', pt:'Configure uma pasta de projeto para contexto IA entre sessões.', ru:'Настройте рабочую папку проекта для контекста ИИ между сессиями.', ar:'أعد مجلد مشروع لسياق الذكاء الاصطناعي عبر الجلسات.', it:'Imposta una cartella progetto per il contesto IA tra sessioni.', hi:'क्रॉस-सेशन AI कॉन्टेक्स्ट के लिए वर्क प्रोजेक्ट फोल्डर सेट करें।' },
+      time:'5 min', diff:{ en:'Intermediate', zh:'中级', ja:'中級', ko:'중급', es:'Intermedio', fr:'Intermédiaire', de:'Fortgeschritten', pt:'Intermediário', ru:'Средний', ar:'متوسط', it:'Intermedio', hi:'मध्यम' }
+    },
+    { icon:'🔌', slug:'mcp-integration',
+      tag:{ en:'Integration', zh:'集成', ja:'統合', ko:'통합', es:'Integración', fr:'Intégration', de:'Integration', pt:'Integração', ru:'Интеграция', ar:'التكامل', it:'Integrazione', hi:'एकीकरण' },
+      title:{ en:'Connecting to Claude Code via MCP', zh:'通过 MCP 连接 Claude Code', ja:'MCPでClaude Codeに接続', ko:'MCP를 통해 Claude Code 연결', es:'Conectar a Claude Code vía MCP', fr:'Connexion à Claude Code via MCP', de:'Verbindung zu Claude Code über MCP', pt:'Conectando ao Claude Code via MCP', ru:'Подключение к Claude Code через MCP', ar:'الاتصال بـ Claude Code عبر MCP', it:'Connessione a Claude Code tramite MCP', hi:'MCP के माध्यम से Claude Code से कनेक्ट करें' },
+      desc:{ en:'Step-by-step MCP configuration and tool mapping.', zh:'逐步 MCP 配置和工具映射。', ja:'ステップバイステップのMCP設定とツールマッピング。', ko:'단계별 MCP 구성 및 도구 매핑.', es:'Configuración MCP paso a paso y mapeo de herramientas.', fr:'Configuration MCP étape par étape et mappage des outils.', de:'Schritt-für-Schritt MCP-Konfiguration und Tool-Mapping.', pt:'Configuração MCP passo a passo e mapeamento de ferramentas.', ru:'Пошаговая настройка MCP и сопоставление инструментов.', ar:'إعداد MCP خطوة بخطوة وربط الأدوات.', it:'Configurazione MCP passo-passo e mappatura degli strumenti.', hi:'स्टेप-बाय-स्टेप MCP कॉन्फ़िगरेशन और टूल मैपिंग।' },
+      time:'4 min', diff:{ en:'Beginner', zh:'入门', ja:'初級', ko:'초급', es:'Principiante', fr:'Débutant', de:'Anfänger', pt:'Iniciante', ru:'Начинающий', ar:'مبتدئ', it:'Principiante', hi:'शुरुआती' }
+    },
+    { icon:'🧪', slug:'qa-testing',
+      tag:{ en:'Use Case', zh:'使用案例', ja:'ユースケース', ko:'사용 사례', es:'Caso de Uso', fr:'Cas d\'Usage', de:'Anwendungsfall', pt:'Caso de Uso', ru:'Пример использования', ar:'حالة استخدام', it:'Caso d\'Uso', hi:'उपयोग केस' },
+      title:{ en:'Automated QA Testing with Real Sessions', zh:'真实会话下的自动化 QA 测试', ja:'実セッションでの自動QAテスト', ko:'실제 세션을 사용한 자동 QA 테스트', es:'Testing QA Automatizado con Sesiones Reales', fr:'Tests QA Automatisés avec Sessions Réelles', de:'Automatisiertes QA-Testing mit echten Sitzungen', pt:'Testes QA Automatizados com Sessões Reais', ru:'Автоматическое QA-тестирование с реальными сессиями', ar:'اختبار QA آلي مع جلسات حقيقية', it:'Test QA Automatizzati con Sessioni Reali', hi:'वास्तविक सत्रों के साथ स्वचालित QA परीक्षण' },
+      desc:{ en:'Test your web app on a real browser with real sessions.', zh:'在真实浏览器和真实会话中测试你的网页应用。', ja:'実際のブラウザと実セッションでWebアプリをテスト。', ko:'실제 브라우저와 실제 세션으로 웹 앱을 테스트합니다.', es:'Prueba tu app web en un navegador real con sesiones reales.', fr:'Testez votre app web sur un vrai navigateur avec de vraies sessions.', de:'Teste deine Web-App in einem echten Browser mit echten Sitzungen.', pt:'Teste seu app web em um navegador real com sessões reais.', ru:'Тестируйте веб-приложение в реальном браузере с реальными сессиями.', ar:'اختبر تطبيق الويب في متصفح حقيقي مع جلسات حقيقية.', it:'Testa la tua app web su un browser reale con sessioni reali.', hi:'वास्तविक ब्राउज़र और वास्तविक सत्रों में अपने वेब ऐप का परीक्षण करें।' },
+      time:'7 min', diff:{ en:'Intermediate', zh:'中级', ja:'中級', ko:'중급', es:'Intermedio', fr:'Intermédiaire', de:'Fortgeschritten', pt:'Intermediário', ru:'Средний', ar:'متوسط', it:'Intermedio', hi:'मध्यम' }
+    },
+  ];
+
+  const grid = document.getElementById('tutorial-grid');
+  tutorials.forEach(t => {
+    const card = document.createElement('a');
+    card.className = 'tutorial-card';
+    card.href = `/article.html?type=tutorials&slug=${t.slug}`;
+    card.innerHTML = `
+      <div class="tutorial-card-icon">${t.icon}</div>
+      <span class="tutorial-card-tag">${pick(t.tag)}</span>
+      <h3>${pick(t.title)}</h3>
+      <p>${pick(t.desc)}</p>
+      <div class="tutorial-card-meta">
+        <span>⏱ ${t.time}</span>
+        <span>📊 ${pick(t.diff)}</span>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+</script>
+</body>
+</html>
