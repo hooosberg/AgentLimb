@@ -1,7 +1,5 @@
 import { LANGS, t, getLang, setLang, applyAll } from '/components/i18n.js';
 
-const CHROME_STORE_URL = '#'; // TODO: replace with real Chrome Web Store URL
-
 export function renderHeader() {
   const nav = document.createElement('nav');
   nav.className = 'nav';
@@ -10,7 +8,7 @@ export function renderHeader() {
       <img src="/icons/icon.svg" alt="">
       Agent<span class="brand">Limb</span>
     </a>
-    <ul class="nav-center">
+    <ul class="nav-center" id="nav-center">
       <li><a href="/#features" data-i18n="nav.features">${t('nav.features')}</a></li>
       <li><a href="/tutorials.html" data-i18n="nav.tutorials">${t('nav.tutorials')}</a></li>
       <li><a href="/tools.html" data-i18n="nav.tools">${t('nav.tools')}</a></li>
@@ -25,13 +23,32 @@ export function renderHeader() {
       </div>
       <button class="theme-toggle" id="theme-toggle" title="Toggle theme">🌙</button>
       <a href="https://github.com/hooosberg/AgentLimb" class="nav-link">GitHub</a>
-      <a href="${CHROME_STORE_URL}" class="nav-cta" data-i18n="hero.chrome">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="21.17" y1="8" x2="12" y2="8"/><line x1="3.95" y1="6.06" x2="8.54" y2="14"/><line x1="10.88" y1="21.94" x2="15.46" y2="14"/></svg>
-        ${t('hero.chrome')}
-      </a>
+      <button class="mobile-menu-btn hidden" id="mobile-menu-btn" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   `;
   document.body.prepend(nav);
+
+  // Mobile menu
+  const menuBtn = document.getElementById('mobile-menu-btn');
+  const navCenter = document.getElementById('nav-center');
+
+  menuBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    navCenter.classList.toggle('mobile-open');
+    menuBtn.classList.toggle('active');
+  });
+
+  document.addEventListener('click', () => {
+    navCenter.classList.remove('mobile-open');
+    menuBtn.classList.remove('active');
+  });
+
+  navCenter.addEventListener('click', () => {
+    navCenter.classList.remove('mobile-open');
+    menuBtn.classList.remove('active');
+  });
 
   // Theme toggle
   const themeBtn = document.getElementById('theme-toggle');
@@ -63,12 +80,10 @@ export function renderHeader() {
       e.stopPropagation();
       const code = opt.dataset.code;
       setLang(code);
-      // Reload to re-render all JS-generated content with new language
       location.reload();
     });
   });
 
-  // Apply i18n on load
   applyAll();
 }
 
