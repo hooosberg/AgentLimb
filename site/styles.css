@@ -123,8 +123,10 @@ a:hover { color: var(--accent2); }
 
 .nav-right { display: flex; align-items: center; gap: 14px; }
 
-.nav-link { color: var(--muted); font-weight: 500; }
+.nav-link { color: var(--muted); font-weight: 500; display: flex; align-items: center; }
 .nav-link:hover { color: var(--text); }
+.nav-github { opacity: 0.7; transition: opacity 0.2s; }
+.nav-github:hover { opacity: 1; }
 
 .nav-cta {
   display: inline-flex; align-items: center; gap: 5px;
