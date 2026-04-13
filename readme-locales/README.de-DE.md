@@ -5,6 +5,10 @@
 
 ---
 
+<p align="center">
+  <img src="../assets/demo.gif" alt="AgentLimb Demo — AI agent controlling the browser" width="720">
+</p>
+
 ## Über
 
 **AgentLimb** ist eine Chrome-Extension, die jedem KI-Coding-Tool erlaubt, deinen Browser zu steuern. Extension installieren, Prompt kopieren, in deine KI einfügen — automatische Konfiguration in 10 Sekunden.

@@ -48,6 +48,10 @@
   </strong>
 </p>
 
+<p align="center">
+  <img src="assets/demo.gif" alt="AgentLimb Demo — AI agent controlling the browser" width="720">
+</p>
+
 ---
 
 ## About

@@ -16,6 +16,10 @@
 
 ---
 
+<p align="center">
+  <img src="../assets/demo.gif" alt="AgentLimb Demo — AI agent controlling the browser" width="720">
+</p>
+
 ## 概要
 
 **AgentLimb**は、あらゆるAIコーディングツール（Claude Code、Cursor、Codex、Trae、Windsurf）でブラウザを操作できるChrome拡張機能です。拡張機能をインストールし、プロンプトを1つコピーしてAIに貼り付けるだけ — 10秒で自動設定完了。

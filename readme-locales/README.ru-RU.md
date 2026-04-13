@@ -5,6 +5,10 @@
 
 ---
 
+<p align="center">
+  <img src="../assets/demo.gif" alt="AgentLimb Demo — AI agent controlling the browser" width="720">
+</p>
+
 ## О проекте
 
 **AgentLimb** — расширение Chrome, позволяющее любому ИИ-инструменту управлять вашим браузером. Установите расширение, скопируйте промпт, вставьте в ИИ — автонастройка за 10 секунд.

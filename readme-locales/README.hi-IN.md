@@ -5,6 +5,10 @@
 
 ---
 
+<p align="center">
+  <img src="../assets/demo.gif" alt="AgentLimb Demo — AI agent controlling the browser" width="720">
+</p>
+
 ## परिचय
 
 **AgentLimb** एक Chrome एक्सटेंशन है जो किसी भी AI कोडिंग टूल को आपके ब्राउज़र को चलाने देता है। एक्सटेंशन इंस्टॉल करें, प्रॉम्प्ट कॉपी करें, AI में पेस्ट करें — 10 सेकंड में ऑटो-कॉन्फ़िगर।

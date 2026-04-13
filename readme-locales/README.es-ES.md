@@ -5,6 +5,10 @@
 
 ---
 
+<p align="center">
+  <img src="../assets/demo.gif" alt="AgentLimb Demo — AI agent controlling the browser" width="720">
+</p>
+
 ## Acerca de
 
 **AgentLimb** es una extensión de Chrome que permite a cualquier herramienta de codificación IA controlar tu navegador. Instala la extensión, copia un prompt, pégalo en tu IA — configuración automática en 10 segundos. Sin navegadores headless. Sin re-login. Tus cookies y sesiones reales.

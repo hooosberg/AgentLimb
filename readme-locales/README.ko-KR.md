@@ -5,6 +5,10 @@
 
 ---
 
+<p align="center">
+  <img src="../assets/demo.gif" alt="AgentLimb Demo — AI agent controlling the browser" width="720">
+</p>
+
 ## 소개
 
 **AgentLimb**는 모든 AI 코딩 도구(Claude Code, Cursor, Codex, Trae, Windsurf)로 브라우저를 제어할 수 있는 Chrome 확장 프로그램입니다. 확장 프로그램 설치, 프롬프트 복사, AI에 붙여넣기 — 10초 만에 자동 구성.

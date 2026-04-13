@@ -5,6 +5,10 @@
 
 ---
 
+<p align="center">
+  <img src="../assets/demo.gif" alt="AgentLimb Demo — AI agent controlling the browser" width="720">
+</p>
+
 ## حول
 
 **AgentLimb** هو إضافة Chrome تتيح لأي أداة برمجة بالذكاء الاصطناعي التحكم في متصفحك. ثبّت الإضافة، انسخ موجهًا، الصقه في أداة الذكاء الاصطناعي — إعداد تلقائي في 10 ثوانٍ.
