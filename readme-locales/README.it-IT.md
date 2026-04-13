@@ -15,7 +15,7 @@
 
 ## Avvio Rapido
 
-1. **Installa** — [Scarica lo zip](https://github.com/hooosberg/AgentLimb/releases/latest/download/agentlimb-chrome-v0.0.1.zip), decomprimilo, apri `chrome://extensions`, abilita la **Modalità sviluppatore**, clicca su **Carica estensione non pacchettizzata** e seleziona la cartella
+1. **Installa** — [Scarica lo zip](https://github.com/hooosberg/AgentLimb/releases/latest/download/agentlimb-chrome-v0.0.3.zip), decomprimilo, apri `chrome://extensions`, abilita la **Modalità sviluppatore**, clicca su **Carica estensione non pacchettizzata** e seleziona la cartella
 2. **Copia** — Apri il pannello laterale, clicca "Copia Prompt"
 3. **Incolla** — Incolla in qualsiasi strumento IA → configurazione automatica
 

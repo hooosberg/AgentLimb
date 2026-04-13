@@ -99,7 +99,7 @@ Your Browser  (logged in, with cookies, your real sessions)
 
 ## Quick Start
 
-1. **Install** — [Download the zip](https://github.com/hooosberg/AgentLimb/releases/latest/download/agentlimb-chrome-v0.0.1.zip), unzip it, open `chrome://extensions`, enable **Developer Mode**, click **Load unpacked** and select the unzipped folder
+1. **Install** — [Download the zip](https://github.com/hooosberg/AgentLimb/releases/latest/download/agentlimb-chrome-v0.0.3.zip), unzip it, open `chrome://extensions`, enable **Developer Mode**, click **Load unpacked** and select the unzipped folder
 2. **Copy** — Open the side panel, click "Copy Onboard Prompt"
 3. **Paste** — Paste the prompt to any AI tool — it auto-configures and starts working
 

@@ -27,7 +27,7 @@
 
 ## 빠른 시작
 
-1. **설치** — [zip 다운로드](https://github.com/hooosberg/AgentLimb/releases/latest/download/agentlimb-chrome-v0.0.1.zip) 후 압축 해제, `chrome://extensions` 열기, **개발자 모드** 활성화, **압축해제된 항목 로드** 클릭 후 폴더 선택
+1. **설치** — [zip 다운로드](https://github.com/hooosberg/AgentLimb/releases/latest/download/agentlimb-chrome-v0.0.3.zip) 후 압축 해제, `chrome://extensions` 열기, **개발자 모드** 활성화, **압축해제된 항목 로드** 클릭 후 폴더 선택
 2. **복사** — 사이드 패널에서 "온보드 프롬프트 복사" 클릭
 3. **붙여넣기** — AI 도구에 붙여넣기 → 자동 구성 후 즉시 작동
 

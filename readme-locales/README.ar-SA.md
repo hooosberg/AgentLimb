@@ -15,7 +15,7 @@
 
 ## البداية السريعة
 
-1. **التثبيت** — [حمّل ملف zip](https://github.com/hooosberg/AgentLimb/releases/latest/download/agentlimb-chrome-v0.0.1.zip)، افك ضغطه، افتح `chrome://extensions`، فعّل **وضع المطور**، اضغط **تحميل غير مضغوط** واختر المجلد
+1. **التثبيت** — [حمّل ملف zip](https://github.com/hooosberg/AgentLimb/releases/latest/download/agentlimb-chrome-v0.0.3.zip)، افك ضغطه، افتح `chrome://extensions`، فعّل **وضع المطور**، اضغط **تحميل غير مضغوط** واختر المجلد
 2. **النسخ** — افتح اللوحة الجانبية، انقر "نسخ الموجه"
 3. **اللصق** — الصقه في أي أداة ذكاء اصطناعي → إعداد تلقائي
 

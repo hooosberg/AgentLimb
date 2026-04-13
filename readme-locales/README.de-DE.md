@@ -24,7 +24,7 @@
 
 ## Schnellstart
 
-1. **Installieren** — [zip herunterladen](https://github.com/hooosberg/AgentLimb/releases/latest/download/agentlimb-chrome-v0.0.1.zip), entpacken, `chrome://extensions` öffnen, **Entwicklermodus** aktivieren, **Entpackte Extension laden** klicken und Ordner auswählen
+1. **Installieren** — [zip herunterladen](https://github.com/hooosberg/AgentLimb/releases/latest/download/agentlimb-chrome-v0.0.3.zip), entpacken, `chrome://extensions` öffnen, **Entwicklermodus** aktivieren, **Entpackte Extension laden** klicken und Ordner auswählen
 2. **Kopieren** — Seitenpanel öffnen, "Prompt kopieren" klicken
 3. **Einfügen** — In beliebiges KI-Tool einfügen → automatische Konfiguration
 

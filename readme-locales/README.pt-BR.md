@@ -15,7 +15,7 @@
 
 ## Início Rápido
 
-1. **Instalar** — [Baixe o zip](https://github.com/hooosberg/AgentLimb/releases/latest/download/agentlimb-chrome-v0.0.1.zip), descompacte, abra `chrome://extensions`, ative o **Modo desenvolvedor**, clique em **Carregar sem compactação** e selecione a pasta
+1. **Instalar** — [Baixe o zip](https://github.com/hooosberg/AgentLimb/releases/latest/download/agentlimb-chrome-v0.0.3.zip), descompacte, abra `chrome://extensions`, ative o **Modo desenvolvedor**, clique em **Carregar sem compactação** e selecione a pasta
 2. **Copiar** — Abra o painel lateral, clique em "Copiar Prompt"
 3. **Colar** — Cole em qualquer ferramenta IA → configuração automática
 
