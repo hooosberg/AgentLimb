@@ -1,2 +1,12 @@
 .DS_Store
+
+# Local release assets: prepare here, upload manually to GitHub Releases.
 Releases/
+*.zip
+
+# Local/private helper files should never land in the public branch.
+.claude/
+CLAUDE.md
+docs/
+scripts/
+*.log
