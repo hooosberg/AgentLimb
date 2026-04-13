@@ -1,6 +1,6 @@
 <p align="center"><img src="../site/icons/icon.svg" alt="AgentLimb Logo" width="64" height="64"></p>
 <h1 align="center">AgentLimb</h1>
-<p align="center"><strong>AI에게 브라우저 팔을</strong><br>프롬프트 하나. 모든 AI 도구. 기존 Chrome 세션. 100% 로컬 & 비공개.</p>
+<p align="center"><strong>AI가 같은 작업을 다시 배우는 것을 지켜보는 것을 멈추세요.</strong><br>CoWork의 오픈소스 대안 — 반복 브라우저 작업에서 90% 더 적은 토큰.</p>
 <p align="center"><a href="https://agentlimb.com"><img src="https://img.shields.io/badge/Website-agentlimb.com-F5A623?style=for-the-badge" alt="Website"></a> <a href="https://github.com/hooosberg/AgentLimb"><img src="https://img.shields.io/badge/Source-GitHub-24292f?style=for-the-badge&logo=github&logoColor=white" alt="GitHub"></a></p>
 
 ---
@@ -23,7 +23,7 @@
 
 ## 빠른 시작
 
-1. **설치** — Chrome 웹 스토어에서 AgentLimb 추가
+1. **설치** — [zip 다운로드](https://github.com/hooosberg/AgentLimb/releases/latest/download/agentlimb-chrome-v0.0.1.zip) 후 압축 해제, `chrome://extensions` 열기, **개발자 모드** 활성화, **압축해제된 항목 로드** 클릭 후 폴더 선택
 2. **복사** — 사이드 패널에서 "온보드 프롬프트 복사" 클릭
 3. **붙여넣기** — AI 도구에 붙여넣기 → 자동 구성 후 즉시 작동
 

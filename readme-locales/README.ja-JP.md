@@ -5,8 +5,8 @@
 <h1 align="center">AgentLimb</h1>
 
 <p align="center">
-  <strong>AIにブラウザアームを</strong><br>
-  1つのプロンプト。あらゆるAIツール。既存のChromeセッション。100%ローカル＆プライベート。
+  <strong>AIが同じタスクを繰り返し学習するのを見るのをやめましょう。</strong><br>
+  CoWorkのオープンソース代替 — 繰り返しブラウザタスクを90%少ないトークンで。
 </p>
 
 <p align="center">
@@ -35,7 +35,7 @@
 
 ## クイックスタート
 
-1. **インストール** — Chrome Web StoreからAgentLimbを追加
+1. **インストール** — [zipをダウンロード](https://github.com/hooosberg/AgentLimb/releases/latest/download/agentlimb-chrome-v0.0.1.zip)して解凍、`chrome://extensions`を開き、**デベロッパーモード**を有効にし、**パッケージ化されていない拡張機能を読み込む**をクリックして解凍したフォルダを選択
 2. **コピー** — サイドパネルを開き「接続プロンプトをコピー」をクリック
 3. **貼り付け** — AIツールに貼り付け → 自動設定で即座に動作開始
 

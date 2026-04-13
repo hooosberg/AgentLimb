@@ -86,7 +86,7 @@ AgentLimb 扩展  (Chrome MV3 · 侧边栏 UI)
 
 ## 快速开始
 
-1. **安装** — 从 Chrome 应用商店添加 AgentLimb
+1. **安装** — [下载压缩包](https://github.com/hooosberg/AgentLimb/releases/latest/download/agentlimb-chrome-v0.0.1.zip)，解压后打开 `chrome://extensions`，开启**开发者模式**，点击**加载已解压的扩展程序**并选择解压后的文件夹
 2. **复制** — 打开侧边栏，点击"复制接入提示词"
 3. **粘贴** — 将提示词粘贴给任何 AI 工具 — 自动配置，立即开始工作
 

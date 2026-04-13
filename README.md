@@ -5,8 +5,8 @@
 <h1 align="center">AgentLimb</h1>
 
 <p align="center">
-  <strong>Give Your AI a Browser Arm</strong><br>
-  One prompt. Any AI tool. Your existing Chrome sessions. 100% local and private.
+  <strong>Stop watching your AI relearn the same task.</strong><br>
+  The open-source alternative to CoWork — 90% fewer tokens on repeat browser tasks.
 </p>
 
 <p align="center">
@@ -95,7 +95,7 @@ Your Browser  (logged in, with cookies, your real sessions)
 
 ## Quick Start
 
-1. **Install** — Add AgentLimb from the Chrome Web Store
+1. **Install** — [Download the zip](https://github.com/hooosberg/AgentLimb/releases/latest/download/agentlimb-chrome-v0.0.1.zip), unzip it, open `chrome://extensions`, enable **Developer Mode**, click **Load unpacked** and select the unzipped folder
 2. **Copy** — Open the side panel, click "Copy Onboard Prompt"
 3. **Paste** — Paste the prompt to any AI tool — it auto-configures and starts working
 

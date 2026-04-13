@@ -1,6 +1,6 @@
 <p align="center"><img src="../site/icons/icon.svg" alt="AgentLimb Logo" width="64" height="64"></p>
 <h1 align="center">AgentLimb</h1>
-<p align="center"><strong>Gib deiner KI einen Browser-Arm</strong><br>Ein Prompt. Jedes KI-Tool. Deine bestehenden Chrome-Sitzungen. 100% lokal und privat.</p>
+<p align="center"><strong>Hör auf zuzusehen, wie deine KI dieselbe Aufgabe neu lernt.</strong><br>Die Open-Source-Alternative zu CoWork — 90% weniger Tokens bei wiederholten Browser-Aufgaben.</p>
 <p align="center"><a href="https://agentlimb.com"><img src="https://img.shields.io/badge/Website-agentlimb.com-F5A623?style=for-the-badge" alt="Website"></a> <a href="https://github.com/hooosberg/AgentLimb"><img src="https://img.shields.io/badge/Source-GitHub-24292f?style=for-the-badge&logo=github&logoColor=white" alt="GitHub"></a></p>
 
 ---
@@ -20,7 +20,7 @@
 
 ## Schnellstart
 
-1. **Installieren** — AgentLimb aus dem Chrome Web Store hinzufügen
+1. **Installieren** — [zip herunterladen](https://github.com/hooosberg/AgentLimb/releases/latest/download/agentlimb-chrome-v0.0.1.zip), entpacken, `chrome://extensions` öffnen, **Entwicklermodus** aktivieren, **Entpackte Extension laden** klicken und Ordner auswählen
 2. **Kopieren** — Seitenpanel öffnen, "Prompt kopieren" klicken
 3. **Einfügen** — In beliebiges KI-Tool einfügen → automatische Konfiguration
 

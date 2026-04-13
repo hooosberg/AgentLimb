@@ -1,6 +1,6 @@
 <p align="center"><img src="../site/icons/icon.svg" alt="AgentLimb Logo" width="64" height="64"></p>
 <h1 align="center">AgentLimb</h1>
-<p align="center"><strong>Donnez à votre IA un Bras de Navigateur</strong><br>Un prompt. N'importe quel outil IA. Vos sessions Chrome existantes. 100% local et privé.</p>
+<p align="center"><strong>Arrêtez de regarder votre IA réapprendre la même tâche.</strong><br>L'alternative open-source à CoWork — 90% moins de tokens sur les tâches répétitives du navigateur.</p>
 <p align="center"><a href="https://agentlimb.com"><img src="https://img.shields.io/badge/Website-agentlimb.com-F5A623?style=for-the-badge" alt="Website"></a> <a href="https://github.com/hooosberg/AgentLimb"><img src="https://img.shields.io/badge/Source-GitHub-24292f?style=for-the-badge&logo=github&logoColor=white" alt="GitHub"></a></p>
 
 ---
@@ -20,7 +20,7 @@
 
 ## Démarrage Rapide
 
-1. **Installer** — Ajoutez AgentLimb depuis le Chrome Web Store
+1. **Installer** — [Téléchargez le zip](https://github.com/hooosberg/AgentLimb/releases/latest/download/agentlimb-chrome-v0.0.1.zip), décompressez-le, ouvrez `chrome://extensions`, activez le **Mode développeur**, cliquez sur **Charger l'extension non empaquetée** et sélectionnez le dossier
 2. **Copier** — Ouvrez le panneau latéral, cliquez sur "Copier le Prompt"
 3. **Coller** — Collez dans n'importe quel outil IA → configuration automatique
 
