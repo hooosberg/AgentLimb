@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "agentlimb": {
+      "command": "node",
+      "args": ["<extension-dir>/bridge/mcp-server.js"],
+      "env": {
+        "BRIDGE_PORT": "7789"
+      }
+    }
+  }
+}

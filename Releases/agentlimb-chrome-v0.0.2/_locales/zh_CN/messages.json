@@ -1,0 +1,952 @@
+{
+  "extName": {
+    "message": "AgentLimb"
+  },
+  "extDesc": {
+    "message": "通用浏览器机械臂 — 让 Claude Code / Codex / Cursor 等终端 AI 直接驾驶当前浏览器"
+  },
+  "headerTitle": {
+    "message": "AgentLimb"
+  },
+  "bridgeNotConnected": {
+    "message": "Bridge 未连接"
+  },
+  "bridgeConnected": {
+    "message": "Bridge 已连接"
+  },
+  "settings": {
+    "message": "设置"
+  },
+  "copyPrompt": {
+    "message": "复制接入提示词"
+  },
+  "viewPrompt": {
+    "message": "查看提示词"
+  },
+  "about": {
+    "message": "关于"
+  },
+  "tabMonitor": {
+    "message": "监控"
+  },
+  "tabSkills": {
+    "message": "本地肌肉库"
+  },
+  "tabLogs": {
+    "message": "日志"
+  },
+  "idleTitle": {
+    "message": "AgentLimb 已就绪"
+  },
+  "idleDesc": {
+    "message": "将接入提示词复制给任意终端 AI，即可驱动浏览器"
+  },
+  "copyPromptBtn": {
+    "message": "📋 复制接入提示词"
+  },
+  "promptCopied": {
+    "message": "✓ 已复制！粘贴给 AI 即可开始"
+  },
+  "viewPromptContent": {
+    "message": "查看提示词内容 ▾"
+  },
+  "connectedTerminals": {
+    "message": "已接入终端"
+  },
+  "debugInfo": {
+    "message": "⚠ 调试信息"
+  },
+  "clear": {
+    "message": "清空"
+  },
+  "currentTask": {
+    "message": "当前任务"
+  },
+  "statusRunning": {
+    "message": "执行中"
+  },
+  "statusDone": {
+    "message": "已完成"
+  },
+  "statusError": {
+    "message": "出错"
+  },
+  "statusIdle": {
+    "message": "待机"
+  },
+  "closeTask": {
+    "message": "关闭任务"
+  },
+  "progress": {
+    "message": "进度"
+  },
+  "workProject": {
+    "message": "工作项目"
+  },
+  "notSet": {
+    "message": "未设置"
+  },
+  "projectNoneDesc": {
+    "message": "选择本地文件夹作为工作项目，AI 可读写其中的文档、计划和记录，支持长期多任务协作。"
+  },
+  "pickProjectFolder": {
+    "message": "📁 选择项目文件夹"
+  },
+  "pastePath": {
+    "message": "粘贴完整路径（可选，供 AI 终端直接访问）"
+  },
+  "pastePathHint": {
+    "message": "填写后 AI 可按需 cd 到项目目录"
+  },
+  "needReauth": {
+    "message": "⚠ 需要重新授权才能访问文件"
+  },
+  "authAccess": {
+    "message": "🔓 授权访问文件夹"
+  },
+  "changeProject": {
+    "message": "📁 更换"
+  },
+  "removeProject": {
+    "message": "✕ 移除"
+  },
+  "projectReady": {
+    "message": "✓ 已就绪"
+  },
+  "projectNeedAuth": {
+    "message": "待授权"
+  },
+  "createdAt": {
+    "message": "建立于 $date$",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
+  },
+  "globalSkillLib": {
+    "message": "本地肌肉库"
+  },
+  "skillCount": {
+    "message": "$count$ 个技能",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "skillAutoSave": {
+    "message": "AI 探索成功后自动沉淀。⚡ 技能无需 AI 参与，零 token 复用。"
+  },
+  "loading": {
+    "message": "加载中…"
+  },
+  "exportSkills": {
+    "message": "📤 导出"
+  },
+  "importSkills": {
+    "message": "📥 导入"
+  },
+  "noSkills": {
+    "message": "暂无技能"
+  },
+  "noSkillsHint": {
+    "message": "AI 探索成功后调用 muscle(action:\"save\") 自动沉淀"
+  },
+  "deleteSkillConfirm": {
+    "message": "删除技能 \"$name$\"？",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "confidenceHigh": {
+    "message": "✓ 高置信"
+  },
+  "confidenceMedium": {
+    "message": "◑ 中置信"
+  },
+  "confidenceLow": {
+    "message": "○ 初次"
+  },
+  "successRuns": {
+    "message": "成功 $count$ 次",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "activityLog": {
+    "message": "活动日志"
+  },
+  "logEmpty": {
+    "message": "活动将在此处实时显示…"
+  },
+  "ready": {
+    "message": "就绪"
+  },
+  "copied": {
+    "message": "✓ 已复制！"
+  },
+  "copyFailed": {
+    "message": "复制失败: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "promptToast": {
+    "message": "接入提示词"
+  },
+  "bridgeConnectedWaiting": {
+    "message": "Bridge 已连接，等待 AI 指令…"
+  },
+  "bridgeConnectedLog": {
+    "message": "Bridge 已连接 · 等待终端 AI 接入"
+  },
+  "bridgeDisconnected": {
+    "message": "Bridge 断开，30 秒后重连…"
+  },
+  "connectionLost": {
+    "message": "连接断开"
+  },
+  "terminalsConnected": {
+    "message": "⚡ $count$ 个终端已接入",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "bridgeConnectedTerminals": {
+    "message": "Bridge 已连接 — $count$ 个终端",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "readPageState": {
+    "message": "读取页面状态"
+  },
+  "readPageStateScreenshot": {
+    "message": "读取页面状态 + 截图"
+  },
+  "navigateTo": {
+    "message": "导航到 $url$",
+    "placeholders": {
+      "url": {
+        "content": "$1"
+      }
+    }
+  },
+  "arrivedAt": {
+    "message": "已到达 $url$",
+    "placeholders": {
+      "url": {
+        "content": "$1"
+      }
+    }
+  },
+  "actionFailed": {
+    "message": "操作失败: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "waiting": {
+    "message": "等待: $condition$",
+    "placeholders": {
+      "condition": {
+        "content": "$1"
+      }
+    }
+  },
+  "executeJS": {
+    "message": "执行 JS: $code$",
+    "placeholders": {
+      "code": {
+        "content": "$1"
+      }
+    }
+  },
+  "exception": {
+    "message": "异常: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "task": {
+    "message": "任务: $title$",
+    "placeholders": {
+      "title": {
+        "content": "$1"
+      }
+    }
+  },
+  "executing": {
+    "message": "执行中…"
+  },
+  "muscleReplay": {
+    "message": "肌肉回放: $name$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "muscleReplayDesc": {
+    "message": "肌肉回放 · $count$ 步",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "muscleComplete": {
+    "message": "肌肉完成: $name$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "muscleInvalid": {
+    "message": "肌肉格式无效"
+  },
+  "missingFields": {
+    "message": "缺少字段: $fields$",
+    "placeholders": {
+      "fields": {
+        "content": "$1"
+      }
+    }
+  },
+  "stepOf": {
+    "message": "步骤 $current$/$total$: $desc$",
+    "placeholders": {
+      "current": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      },
+      "desc": {
+        "content": "$3"
+      }
+    }
+  },
+  "stepFailed": {
+    "message": "步骤 $step$ 失败: $error$",
+    "placeholders": {
+      "step": {
+        "content": "$1"
+      },
+      "error": {
+        "content": "$2"
+      }
+    }
+  },
+  "stepsComplete": {
+    "message": "$count$ 步全部完成",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "detectedReusable": {
+    "message": "检测到可复用操作序列（$count$ 步）",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "importComplete": {
+    "message": "导入完成"
+  },
+  "importFailed": {
+    "message": "导入失败: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "loadFailed": {
+    "message": "加载失败: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "manualClose": {
+    "message": "手动关闭"
+  },
+  "closeTaskConfirm": {
+    "message": "确认关闭任务「$title$」？",
+    "placeholders": {
+      "title": {
+        "content": "$1"
+      }
+    }
+  },
+  "projectSelected": {
+    "message": "项目: $name$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "listFiles": {
+    "message": "列出文件: $dir$",
+    "placeholders": {
+      "dir": {
+        "content": "$1"
+      }
+    }
+  },
+  "readFile": {
+    "message": "读取: $path$",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      }
+    }
+  },
+  "writeFile": {
+    "message": "写入: $path$",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      }
+    }
+  },
+  "written": {
+    "message": "已写入: $path$",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      }
+    }
+  },
+  "projectAccessRestored": {
+    "message": "项目访问已恢复"
+  },
+  "authFailed": {
+    "message": "授权失败: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "pickFolderFailed": {
+    "message": "选择文件夹失败: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "noProjectFolder": {
+    "message": "未选择项目文件夹"
+  },
+  "noFolderPermission": {
+    "message": "无文件夹访问权限，请点击侧边栏授权"
+  },
+  "pathTraversal": {
+    "message": "路径越界: \"$path$\"",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      }
+    }
+  },
+  "fileNotFound": {
+    "message": "文件不存在: \"$path$\"",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      }
+    }
+  },
+  "readFailed": {
+    "message": "读取失败: \"$path$\" — $error$",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      },
+      "error": {
+        "content": "$2"
+      }
+    }
+  },
+  "writeFailed": {
+    "message": "写入失败: \"$path$\" — $error$",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      },
+      "error": {
+        "content": "$2"
+      }
+    }
+  },
+  "clickAction": {
+    "message": "点击 $target$",
+    "placeholders": {
+      "target": {
+        "content": "$1"
+      }
+    }
+  },
+  "typeAction": {
+    "message": "输入 \"$value$\" → $target$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      },
+      "target": {
+        "content": "$2"
+      }
+    }
+  },
+  "selectAction": {
+    "message": "选择 \"$value$\" @ $target$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      },
+      "target": {
+        "content": "$2"
+      }
+    }
+  },
+  "pressKeyAction": {
+    "message": "按键 $key$",
+    "placeholders": {
+      "key": {
+        "content": "$1"
+      }
+    }
+  },
+  "stepDefault": {
+    "message": "第 $num$ 步",
+    "placeholders": {
+      "num": {
+        "content": "$1"
+      }
+    }
+  },
+  "navFailed": {
+    "message": "导航失败: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "inputFailed": {
+    "message": "输入失败: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "clickFailed": {
+    "message": "点击失败: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "selectFailed": {
+    "message": "选择失败: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "keyFailed": {
+    "message": "按键失败: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "waitUrlTimeout": {
+    "message": "等待 URL 超时: $pattern$",
+    "placeholders": {
+      "pattern": {
+        "content": "$1"
+      }
+    }
+  },
+  "jsFailed": {
+    "message": "JS 失败: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "assertFailed": {
+    "message": "断言失败: 未找到 \"$text$\"",
+    "placeholders": {
+      "text": {
+        "content": "$1"
+      }
+    }
+  },
+  "assertUrlFailed": {
+    "message": "断言失败: URL 不匹配 \"$pattern$\"",
+    "placeholders": {
+      "pattern": {
+        "content": "$1"
+      }
+    }
+  },
+  "assertSelectorFailed": {
+    "message": "断言失败: $selector$ = $actual$, 期望 $expected$",
+    "placeholders": {
+      "selector": {
+        "content": "$1"
+      },
+      "actual": {
+        "content": "$2"
+      },
+      "expected": {
+        "content": "$3"
+      }
+    }
+  },
+  "textTimeout": {
+    "message": "超时: 未出现 \"$text$\"",
+    "placeholders": {
+      "text": {
+        "content": "$1"
+      }
+    }
+  },
+  "aboutTitle": {
+    "message": "AgentLimb - 关于"
+  },
+  "aboutDesc": {
+    "message": "AgentLimb 是一款通用浏览器自动化扩展，让终端 AI（Claude Code、Cursor、Codex 等）通过 MCP 工具直接操控 Chrome 浏览器，将 AI 变成你的「机械臂」。"
+  },
+  "featureAI": {
+    "message": "AI 探索页面结构，自动识别交互元素"
+  },
+  "featureSkills": {
+    "message": "肌肉记忆沉淀：探索成功后保存，下次零 token 复用"
+  },
+  "featureSchedule": {
+    "message": "定时任务：AI 离线后浏览器仍可按计划自动执行"
+  },
+  "featureMCP": {
+    "message": "任何支持 MCP 或 HTTP 的 AI 工具均可接入"
+  },
+  "versionInfo": {
+    "message": "版本信息"
+  },
+  "extensionVersion": {
+    "message": "扩展版本"
+  },
+  "architecture": {
+    "message": "架构"
+  },
+  "architectureValue": {
+    "message": "MCP-first v6（通用机械臂）"
+  },
+  "bridgePort": {
+    "message": "Bridge 端口"
+  },
+  "skillStorage": {
+    "message": "技能存储"
+  },
+  "skillStorageValue": {
+    "message": "chrome.storage.local（跨项目持久化）"
+  },
+  "settingsTitle": {
+    "message": "设置"
+  },
+  "settingsBack": {
+    "message": "返回"
+  },
+  "menuPrompt": {
+    "message": "📋 接入提示词"
+  },
+  "menuPromptDesc": {
+    "message": "复制提示词给终端 AI 开始协作"
+  },
+  "menuLanguage": {
+    "message": "语言 / Language"
+  },
+  "menuLanguageDesc": {
+    "message": "切换界面显示语言"
+  },
+  "menuGuide": {
+    "message": "📖 使用指南"
+  },
+  "menuGuideDesc": {
+    "message": "肌肉记忆、省 Token 技巧、最佳实践"
+  },
+  "menuAbout": {
+    "message": "ℹ️ 关于 AgentLimb"
+  },
+  "menuAboutDesc": {
+    "message": "版本 · 架构 · 开源信息"
+  },
+  "communityTitle": {
+    "message": "到社区寻找更多肌肉"
+  },
+  "communityDesc": {
+    "message": "浏览社区肌肉库，下载后导入即可零 Token 使用"
+  },
+  "starTitle": {
+    "message": "给我们加星鼓励"
+  },
+  "starDesc": {
+    "message": "AgentLimb 开源免费，如果对你有帮助，请在 GitHub 给我们一颗星"
+  },
+  "langCurrent": {
+    "message": "当前语言"
+  },
+  "langZhCN": {
+    "message": "简体中文"
+  },
+  "langEn": {
+    "message": "English"
+  },
+  "langRestart": {
+    "message": "切换语言后需重新打开侧边栏生效"
+  },
+  "guideTitle": {
+    "message": "使用指南"
+  },
+  "guideWhatIsMuscle": {
+    "message": "什么是肌肉记忆？"
+  },
+  "guideWhatIsMuscleBody": {
+    "message": "肌肉记忆是 AgentLimb 的核心省 Token 机制。当 AI 第一次在某个平台上完成一套操作（比如发帖），AgentLimb 会自动将这套操作保存为「肌肉」。下次再做同样的事，直接回放肌肉即可，无需 AI 重新探索。"
+  },
+  "guideSaveToken": {
+    "message": "省 Token 实测数据"
+  },
+  "guideSaveTokenBody": {
+    "message": "实测两次对比，结论清晰："
+  },
+  "guideExploreLabel": {
+    "message": "首次探索"
+  },
+  "guideExploreValue": {
+    "message": "~30 次 API 调用，~5000 Token"
+  },
+  "guideMuscleLabel": {
+    "message": "肌肉回放"
+  },
+  "guideMuscleValue": {
+    "message": "1 次调用，~300 Token，0 出错"
+  },
+  "guideSavings": {
+    "message": "效率提升约 16 倍"
+  },
+  "guideSaveTokenTip": {
+    "message": "每个平台只需探索一次、沉淀一次，之后永久复用。操作越多的平台，节省越明显。"
+  },
+  "guideWorkflow": {
+    "message": "推荐工作流"
+  },
+  "guideWorkflowBody": {
+    "message": "1. 先和 AI 做规划 — 在项目目录中整理目标、平台列表、内容模板\n2. 设置工作项目 — 选择本地文件夹，AI 可以长期读写规划文档\n3. AI 首次探索 — 到目标平台用 observe + act 完成一次操作\n4. 沉淀为肌肉 — AI 自动调用 muscle(action:\"save\") 保存操作序列\n5. 后续一键复用 — muscle(action:\"run\") 回放，零 Token 消耗\n6. 定时/批量执行 — 肌肉可以被定时任务调度，全自动运行"
+  },
+  "guideConnect": {
+    "message": "如何对接 AI"
+  },
+  "guideConnectBody": {
+    "message": "1. 点击首页「复制接入提示词」按钮\n2. 粘贴给你的终端 AI（Claude Code / Cursor / Codex 等）\n3. AI 会自动识别工具并开始操作浏览器\n\n建议同时设置「工作项目」文件夹，AI 可以长期读写你的规划文档，实现跨会话协作。"
+  },
+  "promptPageTitle": {
+    "message": "接入提示词"
+  },
+  "promptPageDesc": {
+    "message": "复制以下提示词，粘贴给任意终端 AI 即可开始协作"
+  },
+  "checkUpdate": {
+    "message": "检查更新"
+  },
+  "checking": {
+    "message": "检查中…"
+  },
+  "upToDate": {
+    "message": "已是最新版本"
+  },
+  "newVersion": {
+    "message": "发现新版本 v$version$",
+    "placeholders": {
+      "version": {
+        "content": "$1"
+      }
+    }
+  },
+  "downloadUpdate": {
+    "message": "前往下载"
+  },
+  "checkFailed": {
+    "message": "检查失败，请稍后重试"
+  },
+  "updateNote": {
+    "message": "更新不会影响你的肌肉记忆和项目设置"
+  },
+  "linkWebsite": {
+    "message": "官网 agentlimb.com"
+  },
+  "linkGitHub": {
+    "message": "GitHub 仓库"
+  },
+  "linkPrivacy": {
+    "message": "隐私政策"
+  },
+  "linkLicense": {
+    "message": "许可协议 (BSL 1.1)"
+  },
+  "linkTerms": {
+    "message": "服务条款"
+  },
+  "linkChromeStore": {
+    "message": "Chrome 应用商店"
+  },
+  "goToUpdate": {
+    "message": "前往更新"
+  },
+  "menuInterface": {
+    "message": "🎨 界面"
+  },
+  "menuInterfaceDesc": {
+    "message": "主题、语言、外观设置"
+  },
+  "themeLabel": {
+    "message": "主题"
+  },
+  "themeAuto": {
+    "message": "跟随系统"
+  },
+  "themeDark": {
+    "message": "深色"
+  },
+  "themeLight": {
+    "message": "浅色"
+  },
+  "langJa": {
+    "message": "日本語"
+  },
+  "langKo": {
+    "message": "한국어"
+  },
+  "langEs": {
+    "message": "Español"
+  },
+  "langFr": {
+    "message": "Français"
+  },
+  "langDe": {
+    "message": "Deutsch"
+  },
+  "langPtBR": {
+    "message": "Português"
+  },
+  "langRu": {
+    "message": "Русский"
+  },
+  "langAr": {
+    "message": "العربية"
+  },
+  "langIt": {
+    "message": "Italiano"
+  },
+  "langHi": {
+    "message": "हिन्दी"
+  },
+  "aiOperating": {
+    "message": "AI 操作中"
+  },
+  "confirmNeeded": {
+    "message": "需要确认"
+  },
+  "confirmApprove": {
+    "message": "✓ 批准"
+  },
+  "confirmDeny": {
+    "message": "✗ 拒绝"
+  },
+  "userApproved": {
+    "message": "用户已批准"
+  },
+  "userDenied": {
+    "message": "用户已拒绝"
+  },
+  "saveAsMuscle": {
+    "message": "💪 沉淀为肌肉记忆？"
+  },
+  "saveAsMuscleDesc": {
+    "message": "把这次操作保存下来，以后可以一键重放，零 Token 消耗"
+  },
+  "muscleNamePlaceholder": {
+    "message": "起个名字，如“发推文”"
+  },
+  "saveMuscleBtn": {
+    "message": "💪 保存"
+  },
+  "muscleSaved": {
+    "message": "肌肉已保存"
+  },
+  "noActionsToSave": {
+    "message": "没有可保存的操作步骤"
+  },
+  "dismiss": {
+    "message": "跳过"
+  },
+  "phaseNavigate": {
+    "message": "打开 $host$",
+    "placeholders": { "host": { "content": "$1" } }
+  },
+  "phaseInput": {
+    "message": "编辑内容"
+  },
+  "phaseAction": {
+    "message": "执行操作"
+  },
+  "phaseConfirm": {
+    "message": "确认操作"
+  },
+  "phaseVerify": {
+    "message": "验证结果"
+  },
+  "phaseReview": {
+    "message": "审查完成"
+  },
+  "taskReviewDesc": {
+    "message": "任务执行完毕，等待审查确认"
+  },
+  "reviewConfirm": {
+    "message": "确认完成"
+  },
+  "reviewReject": {
+    "message": "未完成"
+  }
+}

@@ -1,0 +1,952 @@
+{
+  "extName": {
+    "message": "AgentLimb"
+  },
+  "extDesc": {
+    "message": "汎用ブラウザアーム — Claude Code / Codex / Cursor などのターミナルAIでChromeブラウザを操作"
+  },
+  "headerTitle": {
+    "message": "AgentLimb"
+  },
+  "bridgeNotConnected": {
+    "message": "Bridge 未接続"
+  },
+  "bridgeConnected": {
+    "message": "Bridge 接続済み"
+  },
+  "settings": {
+    "message": "設定"
+  },
+  "copyPrompt": {
+    "message": "オンボードプロンプトをコピー"
+  },
+  "viewPrompt": {
+    "message": "プロンプトを表示"
+  },
+  "about": {
+    "message": "概要"
+  },
+  "tabMonitor": {
+    "message": "モニター"
+  },
+  "tabSkills": {
+    "message": "ローカルマッスル"
+  },
+  "tabLogs": {
+    "message": "ログ"
+  },
+  "idleTitle": {
+    "message": "AgentLimb 準備完了"
+  },
+  "idleDesc": {
+    "message": "オンボードプロンプトをターミナルAIにコピーしてブラウザの操作を開始"
+  },
+  "copyPromptBtn": {
+    "message": "📋 オンボードプロンプトをコピー"
+  },
+  "promptCopied": {
+    "message": "✓ コピー完了！AIに貼り付けて開始"
+  },
+  "viewPromptContent": {
+    "message": "プロンプト内容を表示 ▾"
+  },
+  "connectedTerminals": {
+    "message": "接続中のターミナル"
+  },
+  "debugInfo": {
+    "message": "⚠ デバッグ情報"
+  },
+  "clear": {
+    "message": "クリア"
+  },
+  "currentTask": {
+    "message": "現在のタスク"
+  },
+  "statusRunning": {
+    "message": "実行中"
+  },
+  "statusDone": {
+    "message": "完了"
+  },
+  "statusError": {
+    "message": "エラー"
+  },
+  "statusIdle": {
+    "message": "待機中"
+  },
+  "closeTask": {
+    "message": "タスクを閉じる"
+  },
+  "progress": {
+    "message": "進捗"
+  },
+  "workProject": {
+    "message": "作業プロジェクト"
+  },
+  "notSet": {
+    "message": "未設定"
+  },
+  "projectNoneDesc": {
+    "message": "ローカルフォルダを作業プロジェクトとして選択。AIがドキュメント、計画、記録を読み書きし、長期的なコラボレーションが可能です。"
+  },
+  "pickProjectFolder": {
+    "message": "📁 プロジェクトフォルダを選択"
+  },
+  "pastePath": {
+    "message": "フルパスを貼り付け（任意、AIターミナルから直接アクセス用）"
+  },
+  "pastePathHint": {
+    "message": "パス設定後、AIがプロジェクトディレクトリにcdできます"
+  },
+  "needReauth": {
+    "message": "⚠ ファイルへのアクセスに再認証が必要です"
+  },
+  "authAccess": {
+    "message": "🔓 フォルダアクセスを認証"
+  },
+  "changeProject": {
+    "message": "📁 変更"
+  },
+  "removeProject": {
+    "message": "✕ 削除"
+  },
+  "projectReady": {
+    "message": "✓ 準備完了"
+  },
+  "projectNeedAuth": {
+    "message": "認証が必要"
+  },
+  "createdAt": {
+    "message": "$date$ に作成",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
+  },
+  "globalSkillLib": {
+    "message": "ローカルマッスルライブラリ"
+  },
+  "skillCount": {
+    "message": "$count$ 個のマッスル",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "skillAutoSave": {
+    "message": "AI探索後に自動保存。⚡ マッスルはAI不要で再生 — トークンゼロ。"
+  },
+  "loading": {
+    "message": "読み込み中…"
+  },
+  "exportSkills": {
+    "message": "📤 エクスポート"
+  },
+  "importSkills": {
+    "message": "📥 インポート"
+  },
+  "noSkills": {
+    "message": "マッスルはまだありません"
+  },
+  "noSkillsHint": {
+    "message": "AI探索成功後に muscle(action:\"save\") を呼び出してください"
+  },
+  "deleteSkillConfirm": {
+    "message": "マッスル \"$name$\" を削除しますか？",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "confidenceHigh": {
+    "message": "✓ 高"
+  },
+  "confidenceMedium": {
+    "message": "◑ 中"
+  },
+  "confidenceLow": {
+    "message": "○ 新規"
+  },
+  "successRuns": {
+    "message": "$count$ 回実行",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "activityLog": {
+    "message": "アクティビティログ"
+  },
+  "logEmpty": {
+    "message": "アクティビティがリアルタイムで表示されます…"
+  },
+  "ready": {
+    "message": "準備完了"
+  },
+  "copied": {
+    "message": "✓ コピー完了！"
+  },
+  "copyFailed": {
+    "message": "コピー失敗: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "promptToast": {
+    "message": "オンボードプロンプト"
+  },
+  "bridgeConnectedWaiting": {
+    "message": "Bridge 接続済み、AIを待機中…"
+  },
+  "bridgeConnectedLog": {
+    "message": "Bridge 接続済み · ターミナルAIを待機中"
+  },
+  "bridgeDisconnected": {
+    "message": "Bridge 切断、30秒後に再接続…"
+  },
+  "connectionLost": {
+    "message": "切断されました"
+  },
+  "terminalsConnected": {
+    "message": "⚡ $count$ 個のターミナルが接続中",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "bridgeConnectedTerminals": {
+    "message": "Bridge 接続済み — $count$ 個のターミナル",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "readPageState": {
+    "message": "ページ状態を読み取り中"
+  },
+  "readPageStateScreenshot": {
+    "message": "ページ状態 + スクリーンショットを読み取り中"
+  },
+  "navigateTo": {
+    "message": "$url$ に移動",
+    "placeholders": {
+      "url": {
+        "content": "$1"
+      }
+    }
+  },
+  "arrivedAt": {
+    "message": "$url$ に到着",
+    "placeholders": {
+      "url": {
+        "content": "$1"
+      }
+    }
+  },
+  "actionFailed": {
+    "message": "操作失敗: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "waiting": {
+    "message": "待機中: $condition$",
+    "placeholders": {
+      "condition": {
+        "content": "$1"
+      }
+    }
+  },
+  "executeJS": {
+    "message": "JS実行: $code$",
+    "placeholders": {
+      "code": {
+        "content": "$1"
+      }
+    }
+  },
+  "exception": {
+    "message": "エラー: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "task": {
+    "message": "タスク: $title$",
+    "placeholders": {
+      "title": {
+        "content": "$1"
+      }
+    }
+  },
+  "executing": {
+    "message": "実行中…"
+  },
+  "muscleReplay": {
+    "message": "マッスル再生: $name$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "muscleReplayDesc": {
+    "message": "マッスル再生 · $count$ ステップ",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "muscleComplete": {
+    "message": "マッスル完了: $name$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "muscleInvalid": {
+    "message": "マッスル形式が無効です"
+  },
+  "missingFields": {
+    "message": "不足フィールド: $fields$",
+    "placeholders": {
+      "fields": {
+        "content": "$1"
+      }
+    }
+  },
+  "stepOf": {
+    "message": "ステップ $current$/$total$: $desc$",
+    "placeholders": {
+      "current": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      },
+      "desc": {
+        "content": "$3"
+      }
+    }
+  },
+  "stepFailed": {
+    "message": "ステップ $step$ 失敗: $error$",
+    "placeholders": {
+      "step": {
+        "content": "$1"
+      },
+      "error": {
+        "content": "$2"
+      }
+    }
+  },
+  "stepsComplete": {
+    "message": "$count$ ステップ完了",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "detectedReusable": {
+    "message": "再利用可能なシーケンスを検出（$count$ ステップ）",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "importComplete": {
+    "message": "インポート完了"
+  },
+  "importFailed": {
+    "message": "インポート失敗: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "loadFailed": {
+    "message": "読み込み失敗: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "manualClose": {
+    "message": "手動で閉じました"
+  },
+  "closeTaskConfirm": {
+    "message": "タスク \"$title$\" を閉じますか？",
+    "placeholders": {
+      "title": {
+        "content": "$1"
+      }
+    }
+  },
+  "projectSelected": {
+    "message": "プロジェクト: $name$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "listFiles": {
+    "message": "ファイル一覧: $dir$",
+    "placeholders": {
+      "dir": {
+        "content": "$1"
+      }
+    }
+  },
+  "readFile": {
+    "message": "読み取り: $path$",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      }
+    }
+  },
+  "writeFile": {
+    "message": "書き込み: $path$",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      }
+    }
+  },
+  "written": {
+    "message": "書き込み完了: $path$",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      }
+    }
+  },
+  "projectAccessRestored": {
+    "message": "プロジェクトアクセスが復元されました"
+  },
+  "authFailed": {
+    "message": "認証失敗: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "pickFolderFailed": {
+    "message": "フォルダ選択失敗: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "noProjectFolder": {
+    "message": "プロジェクトフォルダが選択されていません"
+  },
+  "noFolderPermission": {
+    "message": "フォルダ権限がありません。サイドパネルで認証してください"
+  },
+  "pathTraversal": {
+    "message": "パストラバーサル: \"$path$\"",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      }
+    }
+  },
+  "fileNotFound": {
+    "message": "ファイルが見つかりません: \"$path$\"",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      }
+    }
+  },
+  "readFailed": {
+    "message": "読み取り失敗: \"$path$\" — $error$",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      },
+      "error": {
+        "content": "$2"
+      }
+    }
+  },
+  "writeFailed": {
+    "message": "書き込み失敗: \"$path$\" — $error$",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      },
+      "error": {
+        "content": "$2"
+      }
+    }
+  },
+  "clickAction": {
+    "message": "$target$ をクリック",
+    "placeholders": {
+      "target": {
+        "content": "$1"
+      }
+    }
+  },
+  "typeAction": {
+    "message": "\"$value$\" を入力 → $target$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      },
+      "target": {
+        "content": "$2"
+      }
+    }
+  },
+  "selectAction": {
+    "message": "\"$value$\" を選択 @ $target$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      },
+      "target": {
+        "content": "$2"
+      }
+    }
+  },
+  "pressKeyAction": {
+    "message": "$key$ を押下",
+    "placeholders": {
+      "key": {
+        "content": "$1"
+      }
+    }
+  },
+  "stepDefault": {
+    "message": "ステップ $num$",
+    "placeholders": {
+      "num": {
+        "content": "$1"
+      }
+    }
+  },
+  "navFailed": {
+    "message": "ナビゲーション失敗: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "inputFailed": {
+    "message": "入力失敗: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "clickFailed": {
+    "message": "クリック失敗: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "selectFailed": {
+    "message": "選択失敗: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "keyFailed": {
+    "message": "キー入力失敗: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "waitUrlTimeout": {
+    "message": "URL待機タイムアウト: $pattern$",
+    "placeholders": {
+      "pattern": {
+        "content": "$1"
+      }
+    }
+  },
+  "jsFailed": {
+    "message": "JS失敗: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "assertFailed": {
+    "message": "アサーション失敗: \"$text$\" が見つかりません",
+    "placeholders": {
+      "text": {
+        "content": "$1"
+      }
+    }
+  },
+  "assertUrlFailed": {
+    "message": "アサーション失敗: URLが \"$pattern$\" と一致しません",
+    "placeholders": {
+      "pattern": {
+        "content": "$1"
+      }
+    }
+  },
+  "assertSelectorFailed": {
+    "message": "アサーション失敗: $selector$ = $actual$、期待値 $expected$",
+    "placeholders": {
+      "selector": {
+        "content": "$1"
+      },
+      "actual": {
+        "content": "$2"
+      },
+      "expected": {
+        "content": "$3"
+      }
+    }
+  },
+  "textTimeout": {
+    "message": "タイムアウト: \"$text$\" が見つかりません",
+    "placeholders": {
+      "text": {
+        "content": "$1"
+      }
+    }
+  },
+  "aboutTitle": {
+    "message": "AgentLimb - 概要"
+  },
+  "aboutDesc": {
+    "message": "AgentLimb は汎用ブラウザ自動化拡張機能です。ターミナルAI（Claude Code、Cursor、Codex等）がMCPツールでChromeを操作し、AIを「機械アーム」に変えます。"
+  },
+  "featureAI": {
+    "message": "AIがページ構造を探索し、インタラクティブ要素を自動識別"
+  },
+  "featureSkills": {
+    "message": "マッスルメモリ：探索後に保存、次回はゼロトークンで再生"
+  },
+  "featureSchedule": {
+    "message": "スケジュールタスク：AIオフラインでもブラウザが自動実行"
+  },
+  "featureMCP": {
+    "message": "MCPまたはHTTPをサポートするすべてのAIツールが接続可能"
+  },
+  "versionInfo": {
+    "message": "バージョン情報"
+  },
+  "extensionVersion": {
+    "message": "拡張機能バージョン"
+  },
+  "architecture": {
+    "message": "アーキテクチャ"
+  },
+  "architectureValue": {
+    "message": "MCP-first v6（ユニバーサルアーム）"
+  },
+  "bridgePort": {
+    "message": "Bridge ポート"
+  },
+  "skillStorage": {
+    "message": "スキルストレージ"
+  },
+  "skillStorageValue": {
+    "message": "chrome.storage.local（プロジェクト横断永続化）"
+  },
+  "settingsTitle": {
+    "message": "設定"
+  },
+  "settingsBack": {
+    "message": "戻る"
+  },
+  "menuPrompt": {
+    "message": "📋 オンボードプロンプト"
+  },
+  "menuPromptDesc": {
+    "message": "ターミナルAIにプロンプトをコピーして開始"
+  },
+  "menuLanguage": {
+    "message": "🌐 言語"
+  },
+  "menuLanguageDesc": {
+    "message": "表示言語を切り替え"
+  },
+  "menuGuide": {
+    "message": "📖 ユーザーガイド"
+  },
+  "menuGuideDesc": {
+    "message": "マッスルメモリ、トークン節約、ベストプラクティス"
+  },
+  "menuAbout": {
+    "message": "ℹ️ AgentLimb について"
+  },
+  "menuAboutDesc": {
+    "message": "バージョン · アーキテクチャ · オープンソース"
+  },
+  "communityTitle": {
+    "message": "もっとマッスルを見つける"
+  },
+  "communityDesc": {
+    "message": "コミュニティマッスルライブラリを閲覧 — ダウンロードしてインポートでゼロトークン再生"
+  },
+  "starTitle": {
+    "message": "⭐ GitHubでスターをお願いします"
+  },
+  "starDesc": {
+    "message": "AgentLimb はオープンソース＆無料です。役に立ったらスターをお願いします！"
+  },
+  "langCurrent": {
+    "message": "現在の言語"
+  },
+  "langZhCN": {
+    "message": "简体中文"
+  },
+  "langEn": {
+    "message": "English"
+  },
+  "langRestart": {
+    "message": "言語切り替え後、サイドパネルを再度開いてください"
+  },
+  "guideTitle": {
+    "message": "ユーザーガイド"
+  },
+  "guideWhatIsMuscle": {
+    "message": "マッスルメモリとは？"
+  },
+  "guideWhatIsMuscleBody": {
+    "message": "マッスルメモリはAgentLimbの中核的なトークン節約メカニズムです。AIがプラットフォームで初めて操作（例：投稿）を完了すると、AgentLimbが操作シーケンスを「マッスル」として自動保存します。次回は同じマッスルを再生するだけで、AIの再探索は不要です。"
+  },
+  "guideSaveToken": {
+    "message": "トークン節約 — 実測データ"
+  },
+  "guideSaveTokenBody": {
+    "message": "実環境での比較テスト、結論は明確："
+  },
+  "guideExploreLabel": {
+    "message": "初回探索"
+  },
+  "guideExploreValue": {
+    "message": "約30回のAPI呼び出し、約5000トークン"
+  },
+  "guideMuscleLabel": {
+    "message": "マッスル再生"
+  },
+  "guideMuscleValue": {
+    "message": "1回の呼び出し、約300トークン、エラー0"
+  },
+  "guideSavings": {
+    "message": "約16倍の効率向上"
+  },
+  "guideSaveTokenTip": {
+    "message": "各プラットフォームは1回の探索と保存だけで永久に再利用可能。操作が多いプラットフォームほど節約効果が高まります。"
+  },
+  "guideWorkflow": {
+    "message": "推奨ワークフロー"
+  },
+  "guideWorkflowBody": {
+    "message": "1. AIと計画を立てる — プロジェクトフォルダで目標、プラットフォーム一覧、コンテンツテンプレートを整理\n2. 作業プロジェクトを設定 — ローカルフォルダを選択、AIが長期的に計画文書を読み書き\n3. AIが初回探索 — 対象プラットフォームでobserve + actを使用\n4. マッスルとして保存 — AIがmuscle(action:\"save\")を呼び出して操作シーケンスを永続化\n5. ワンクリック再利用 — muscle(action:\"run\")でゼロトークンコストで再生\n6. スケジュール/バッチ — マッスルはスケジュールタスクで完全自動実行可能"
+  },
+  "guideConnect": {
+    "message": "AIの接続方法"
+  },
+  "guideConnectBody": {
+    "message": "1. ホームページの「オンボードプロンプトをコピー」ボタンをクリック\n2. ターミナルAI（Claude Code / Cursor / Codex等）に貼り付け\n3. AIが自動的にツールを検出してブラウザの操作を開始\n\nヒント：「作業プロジェクト」フォルダを設定すると、AIが計画文書を読み書きし、セッション間での長期コラボレーションが可能です。"
+  },
+  "promptPageTitle": {
+    "message": "オンボードプロンプト"
+  },
+  "promptPageDesc": {
+    "message": "以下のプロンプトをコピーしてターミナルAIに貼り付けて開始"
+  },
+  "checkUpdate": {
+    "message": "更新を確認"
+  },
+  "checking": {
+    "message": "確認中…"
+  },
+  "upToDate": {
+    "message": "最新バージョンです"
+  },
+  "newVersion": {
+    "message": "新バージョン v$version$ が利用可能",
+    "placeholders": {
+      "version": {
+        "content": "$1"
+      }
+    }
+  },
+  "downloadUpdate": {
+    "message": "ダウンロード"
+  },
+  "checkFailed": {
+    "message": "確認に失敗しました。後でもう一度お試しください"
+  },
+  "updateNote": {
+    "message": "更新はマッスルメモリやプロジェクト設定に影響しません"
+  },
+  "linkWebsite": {
+    "message": "ウェブサイト agentlimb.com"
+  },
+  "linkGitHub": {
+    "message": "GitHub リポジトリ"
+  },
+  "linkPrivacy": {
+    "message": "プライバシーポリシー"
+  },
+  "linkLicense": {
+    "message": "ライセンス (BSL 1.1)"
+  },
+  "linkTerms": {
+    "message": "利用規約"
+  },
+  "linkChromeStore": {
+    "message": "Chrome ウェブストア"
+  },
+  "goToUpdate": {
+    "message": "更新へ移動"
+  },
+  "menuInterface": {
+    "message": "🎨 インターフェース"
+  },
+  "menuInterfaceDesc": {
+    "message": "テーマ、言語、外観設定"
+  },
+  "themeLabel": {
+    "message": "テーマ"
+  },
+  "themeAuto": {
+    "message": "システム"
+  },
+  "themeDark": {
+    "message": "ダーク"
+  },
+  "themeLight": {
+    "message": "ライト"
+  },
+  "langJa": {
+    "message": "日本語"
+  },
+  "langKo": {
+    "message": "한국어"
+  },
+  "langEs": {
+    "message": "Español"
+  },
+  "langFr": {
+    "message": "Français"
+  },
+  "langDe": {
+    "message": "Deutsch"
+  },
+  "langPtBR": {
+    "message": "Português"
+  },
+  "langRu": {
+    "message": "Русский"
+  },
+  "langAr": {
+    "message": "العربية"
+  },
+  "langIt": {
+    "message": "Italiano"
+  },
+  "langHi": {
+    "message": "हिन्दी"
+  },
+  "aiOperating": {
+    "message": "AI 操作中"
+  },
+  "confirmNeeded": {
+    "message": "確認が必要です"
+  },
+  "confirmApprove": {
+    "message": "✓ 承認"
+  },
+  "confirmDeny": {
+    "message": "✗ 拒否"
+  },
+  "userApproved": {
+    "message": "ユーザーが承認しました"
+  },
+  "userDenied": {
+    "message": "ユーザーが拒否しました"
+  },
+  "saveAsMuscle": {
+    "message": "💪 マッスルメモリーとして保存？"
+  },
+  "saveAsMuscleDesc": {
+    "message": "この操作を保存して、次回はワンクリックで再生できます"
+  },
+  "muscleNamePlaceholder": {
+    "message": "名前を付ける（例：ツイート投稿）"
+  },
+  "saveMuscleBtn": {
+    "message": "💪 保存"
+  },
+  "muscleSaved": {
+    "message": "マッスルを保存しました"
+  },
+  "noActionsToSave": {
+    "message": "保存する操作がありません"
+  },
+  "dismiss": {
+    "message": "スキップ"
+  },
+  "phaseNavigate": {
+    "message": "ページを開く $host$",
+    "placeholders": { "host": { "content": "$1" } }
+  },
+  "phaseInput": {
+    "message": "コンテンツを編集"
+  },
+  "phaseAction": {
+    "message": "操作を実行"
+  },
+  "phaseConfirm": {
+    "message": "操作を確認"
+  },
+  "phaseVerify": {
+    "message": "結果を検証"
+  },
+  "phaseReview": {
+    "message": "完了を確認"
+  },
+  "taskReviewDesc": {
+    "message": "タスク完了、確認待ち"
+  },
+  "reviewConfirm": {
+    "message": "完了確認"
+  },
+  "reviewReject": {
+    "message": "未完了"
+  }
+}

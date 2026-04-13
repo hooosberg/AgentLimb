@@ -1,0 +1,952 @@
+{
+  "extName": {
+    "message": "AgentLimb"
+  },
+  "extDesc": {
+    "message": "범용 브라우저 팔 — Claude Code / Codex / Cursor 등 터미널 AI로 Chrome 브라우저 제어"
+  },
+  "headerTitle": {
+    "message": "AgentLimb"
+  },
+  "bridgeNotConnected": {
+    "message": "Bridge 미연결"
+  },
+  "bridgeConnected": {
+    "message": "Bridge 연결됨"
+  },
+  "settings": {
+    "message": "설정"
+  },
+  "copyPrompt": {
+    "message": "온보드 프롬프트 복사"
+  },
+  "viewPrompt": {
+    "message": "프롬프트 보기"
+  },
+  "about": {
+    "message": "정보"
+  },
+  "tabMonitor": {
+    "message": "모니터"
+  },
+  "tabSkills": {
+    "message": "로컬 머슬"
+  },
+  "tabLogs": {
+    "message": "로그"
+  },
+  "idleTitle": {
+    "message": "AgentLimb 준비 완료"
+  },
+  "idleDesc": {
+    "message": "온보드 프롬프트를 터미널 AI에 복사하여 브라우저 제어 시작"
+  },
+  "copyPromptBtn": {
+    "message": "📋 온보드 프롬프트 복사"
+  },
+  "promptCopied": {
+    "message": "✓ 복사 완료! AI에 붙여넣어 시작하세요"
+  },
+  "viewPromptContent": {
+    "message": "프롬프트 내용 보기 ▾"
+  },
+  "connectedTerminals": {
+    "message": "연결된 터미널"
+  },
+  "debugInfo": {
+    "message": "⚠ 디버그 정보"
+  },
+  "clear": {
+    "message": "지우기"
+  },
+  "currentTask": {
+    "message": "현재 작업"
+  },
+  "statusRunning": {
+    "message": "실행 중"
+  },
+  "statusDone": {
+    "message": "완료"
+  },
+  "statusError": {
+    "message": "오류"
+  },
+  "statusIdle": {
+    "message": "대기 중"
+  },
+  "closeTask": {
+    "message": "작업 닫기"
+  },
+  "progress": {
+    "message": "진행률"
+  },
+  "workProject": {
+    "message": "작업 프로젝트"
+  },
+  "notSet": {
+    "message": "미설정"
+  },
+  "projectNoneDesc": {
+    "message": "로컬 폴더를 작업 프로젝트로 선택하세요. AI가 문서, 계획, 기록을 읽고 쓸 수 있어 장기적인 협업이 가능합니다."
+  },
+  "pickProjectFolder": {
+    "message": "📁 프로젝트 폴더 선택"
+  },
+  "pastePath": {
+    "message": "전체 경로 붙여넣기 (선택사항, AI 터미널 직접 접근용)"
+  },
+  "pastePathHint": {
+    "message": "경로 설정 시 AI가 프로젝트 디렉토리로 cd 가능"
+  },
+  "needReauth": {
+    "message": "⚠ 파일 접근을 위해 재인증이 필요합니다"
+  },
+  "authAccess": {
+    "message": "🔓 폴더 접근 인증"
+  },
+  "changeProject": {
+    "message": "📁 변경"
+  },
+  "removeProject": {
+    "message": "✕ 제거"
+  },
+  "projectReady": {
+    "message": "✓ 준비 완료"
+  },
+  "projectNeedAuth": {
+    "message": "인증 필요"
+  },
+  "createdAt": {
+    "message": "$date$에 생성됨",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
+  },
+  "globalSkillLib": {
+    "message": "로컬 머슬 라이브러리"
+  },
+  "skillCount": {
+    "message": "$count$개 머슬",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "skillAutoSave": {
+    "message": "AI 탐색 후 자동 저장. ⚡ 머슬은 AI 없이 재생 — 토큰 제로."
+  },
+  "loading": {
+    "message": "로딩 중…"
+  },
+  "exportSkills": {
+    "message": "📤 내보내기"
+  },
+  "importSkills": {
+    "message": "📥 가져오기"
+  },
+  "noSkills": {
+    "message": "아직 머슬이 없습니다"
+  },
+  "noSkillsHint": {
+    "message": "AI 탐색 성공 후 muscle(action:\"save\")를 호출하세요"
+  },
+  "deleteSkillConfirm": {
+    "message": "머슬 \"$name$\"을(를) 삭제하시겠습니까?",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "confidenceHigh": {
+    "message": "✓ 높음"
+  },
+  "confidenceMedium": {
+    "message": "◑ 보통"
+  },
+  "confidenceLow": {
+    "message": "○ 신규"
+  },
+  "successRuns": {
+    "message": "$count$회 실행",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "activityLog": {
+    "message": "활동 로그"
+  },
+  "logEmpty": {
+    "message": "활동이 실시간으로 여기에 표시됩니다…"
+  },
+  "ready": {
+    "message": "준비 완료"
+  },
+  "copied": {
+    "message": "✓ 복사됨!"
+  },
+  "copyFailed": {
+    "message": "복사 실패: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "promptToast": {
+    "message": "온보드 프롬프트"
+  },
+  "bridgeConnectedWaiting": {
+    "message": "Bridge 연결됨, AI 대기 중…"
+  },
+  "bridgeConnectedLog": {
+    "message": "Bridge 연결됨 · 터미널 AI 대기 중"
+  },
+  "bridgeDisconnected": {
+    "message": "Bridge 연결 끊김, 30초 후 재연결…"
+  },
+  "connectionLost": {
+    "message": "연결 끊김"
+  },
+  "terminalsConnected": {
+    "message": "⚡ $count$개 터미널 연결됨",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "bridgeConnectedTerminals": {
+    "message": "Bridge 연결됨 — $count$개 터미널",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "readPageState": {
+    "message": "페이지 상태 읽는 중"
+  },
+  "readPageStateScreenshot": {
+    "message": "페이지 상태 + 스크린샷 읽는 중"
+  },
+  "navigateTo": {
+    "message": "$url$(으)로 이동",
+    "placeholders": {
+      "url": {
+        "content": "$1"
+      }
+    }
+  },
+  "arrivedAt": {
+    "message": "$url$에 도착",
+    "placeholders": {
+      "url": {
+        "content": "$1"
+      }
+    }
+  },
+  "actionFailed": {
+    "message": "작업 실패: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "waiting": {
+    "message": "대기 중: $condition$",
+    "placeholders": {
+      "condition": {
+        "content": "$1"
+      }
+    }
+  },
+  "executeJS": {
+    "message": "JS 실행: $code$",
+    "placeholders": {
+      "code": {
+        "content": "$1"
+      }
+    }
+  },
+  "exception": {
+    "message": "오류: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "task": {
+    "message": "작업: $title$",
+    "placeholders": {
+      "title": {
+        "content": "$1"
+      }
+    }
+  },
+  "executing": {
+    "message": "실행 중…"
+  },
+  "muscleReplay": {
+    "message": "머슬 재생: $name$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "muscleReplayDesc": {
+    "message": "머슬 재생 · $count$단계",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "muscleComplete": {
+    "message": "머슬 완료: $name$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "muscleInvalid": {
+    "message": "잘못된 머슬 형식"
+  },
+  "missingFields": {
+    "message": "누락된 필드: $fields$",
+    "placeholders": {
+      "fields": {
+        "content": "$1"
+      }
+    }
+  },
+  "stepOf": {
+    "message": "단계 $current$/$total$: $desc$",
+    "placeholders": {
+      "current": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      },
+      "desc": {
+        "content": "$3"
+      }
+    }
+  },
+  "stepFailed": {
+    "message": "단계 $step$ 실패: $error$",
+    "placeholders": {
+      "step": {
+        "content": "$1"
+      },
+      "error": {
+        "content": "$2"
+      }
+    }
+  },
+  "stepsComplete": {
+    "message": "$count$단계 완료",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "detectedReusable": {
+    "message": "재사용 가능한 시퀀스 감지 ($count$단계)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "importComplete": {
+    "message": "가져오기 완료"
+  },
+  "importFailed": {
+    "message": "가져오기 실패: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "loadFailed": {
+    "message": "로딩 실패: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "manualClose": {
+    "message": "수동으로 닫음"
+  },
+  "closeTaskConfirm": {
+    "message": "작업 \"$title$\"을(를) 닫으시겠습니까?",
+    "placeholders": {
+      "title": {
+        "content": "$1"
+      }
+    }
+  },
+  "projectSelected": {
+    "message": "프로젝트: $name$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "listFiles": {
+    "message": "파일 목록: $dir$",
+    "placeholders": {
+      "dir": {
+        "content": "$1"
+      }
+    }
+  },
+  "readFile": {
+    "message": "읽기: $path$",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      }
+    }
+  },
+  "writeFile": {
+    "message": "쓰기: $path$",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      }
+    }
+  },
+  "written": {
+    "message": "작성 완료: $path$",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      }
+    }
+  },
+  "projectAccessRestored": {
+    "message": "프로젝트 접근이 복원되었습니다"
+  },
+  "authFailed": {
+    "message": "인증 실패: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "pickFolderFailed": {
+    "message": "폴더 선택 실패: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "noProjectFolder": {
+    "message": "프로젝트 폴더가 선택되지 않았습니다"
+  },
+  "noFolderPermission": {
+    "message": "폴더 권한이 없습니다. 사이드 패널에서 인증하세요"
+  },
+  "pathTraversal": {
+    "message": "경로 이탈: \"$path$\"",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      }
+    }
+  },
+  "fileNotFound": {
+    "message": "파일을 찾을 수 없음: \"$path$\"",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      }
+    }
+  },
+  "readFailed": {
+    "message": "읽기 실패: \"$path$\" — $error$",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      },
+      "error": {
+        "content": "$2"
+      }
+    }
+  },
+  "writeFailed": {
+    "message": "쓰기 실패: \"$path$\" — $error$",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      },
+      "error": {
+        "content": "$2"
+      }
+    }
+  },
+  "clickAction": {
+    "message": "$target$ 클릭",
+    "placeholders": {
+      "target": {
+        "content": "$1"
+      }
+    }
+  },
+  "typeAction": {
+    "message": "\"$value$\" 입력 → $target$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      },
+      "target": {
+        "content": "$2"
+      }
+    }
+  },
+  "selectAction": {
+    "message": "\"$value$\" 선택 @ $target$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      },
+      "target": {
+        "content": "$2"
+      }
+    }
+  },
+  "pressKeyAction": {
+    "message": "$key$ 키 누름",
+    "placeholders": {
+      "key": {
+        "content": "$1"
+      }
+    }
+  },
+  "stepDefault": {
+    "message": "$num$단계",
+    "placeholders": {
+      "num": {
+        "content": "$1"
+      }
+    }
+  },
+  "navFailed": {
+    "message": "탐색 실패: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "inputFailed": {
+    "message": "입력 실패: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "clickFailed": {
+    "message": "클릭 실패: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "selectFailed": {
+    "message": "선택 실패: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "keyFailed": {
+    "message": "키 입력 실패: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "waitUrlTimeout": {
+    "message": "URL 대기 시간 초과: $pattern$",
+    "placeholders": {
+      "pattern": {
+        "content": "$1"
+      }
+    }
+  },
+  "jsFailed": {
+    "message": "JS 실패: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "assertFailed": {
+    "message": "어설션 실패: \"$text$\"을(를) 찾을 수 없음",
+    "placeholders": {
+      "text": {
+        "content": "$1"
+      }
+    }
+  },
+  "assertUrlFailed": {
+    "message": "어설션 실패: URL이 \"$pattern$\"과(와) 일치하지 않음",
+    "placeholders": {
+      "pattern": {
+        "content": "$1"
+      }
+    }
+  },
+  "assertSelectorFailed": {
+    "message": "어설션 실패: $selector$ = $actual$, 예상값 $expected$",
+    "placeholders": {
+      "selector": {
+        "content": "$1"
+      },
+      "actual": {
+        "content": "$2"
+      },
+      "expected": {
+        "content": "$3"
+      }
+    }
+  },
+  "textTimeout": {
+    "message": "시간 초과: \"$text$\"을(를) 찾을 수 없음",
+    "placeholders": {
+      "text": {
+        "content": "$1"
+      }
+    }
+  },
+  "aboutTitle": {
+    "message": "AgentLimb - 정보"
+  },
+  "aboutDesc": {
+    "message": "AgentLimb는 범용 브라우저 자동화 확장 프로그램입니다. 터미널 AI(Claude Code, Cursor, Codex 등)가 MCP 도구로 Chrome을 제어하여 AI를 '기계 팔'로 전환합니다."
+  },
+  "featureAI": {
+    "message": "AI가 페이지 구조를 탐색하고 인터랙티브 요소를 자동 식별"
+  },
+  "featureSkills": {
+    "message": "머슬 메모리: 탐색 후 저장, 다음에는 제로 토큰으로 재생"
+  },
+  "featureSchedule": {
+    "message": "예약 작업: AI가 오프라인이어도 브라우저가 자동 실행"
+  },
+  "featureMCP": {
+    "message": "MCP 또는 HTTP를 지원하는 모든 AI 도구 연결 가능"
+  },
+  "versionInfo": {
+    "message": "버전 정보"
+  },
+  "extensionVersion": {
+    "message": "확장 프로그램 버전"
+  },
+  "architecture": {
+    "message": "아키텍처"
+  },
+  "architectureValue": {
+    "message": "MCP-first v6 (유니버설 암)"
+  },
+  "bridgePort": {
+    "message": "Bridge 포트"
+  },
+  "skillStorage": {
+    "message": "스킬 저장소"
+  },
+  "skillStorageValue": {
+    "message": "chrome.storage.local (프로젝트 간 영구 저장)"
+  },
+  "settingsTitle": {
+    "message": "설정"
+  },
+  "settingsBack": {
+    "message": "뒤로"
+  },
+  "menuPrompt": {
+    "message": "📋 온보드 프롬프트"
+  },
+  "menuPromptDesc": {
+    "message": "터미널 AI에 프롬프트를 복사하여 시작"
+  },
+  "menuLanguage": {
+    "message": "🌐 언어"
+  },
+  "menuLanguageDesc": {
+    "message": "표시 언어 전환"
+  },
+  "menuGuide": {
+    "message": "📖 사용 가이드"
+  },
+  "menuGuideDesc": {
+    "message": "머슬 메모리, 토큰 절약, 모범 사례"
+  },
+  "menuAbout": {
+    "message": "ℹ️ AgentLimb 정보"
+  },
+  "menuAboutDesc": {
+    "message": "버전 · 아키텍처 · 오픈소스"
+  },
+  "communityTitle": {
+    "message": "더 많은 머슬 찾기"
+  },
+  "communityDesc": {
+    "message": "커뮤니티 머슬 라이브러리 탐색 — 다운로드 후 가져오기로 제로 토큰 재생"
+  },
+  "starTitle": {
+    "message": "⭐ GitHub에서 스타를 눌러주세요"
+  },
+  "starDesc": {
+    "message": "AgentLimb는 오픈소스이며 무료입니다. 도움이 되었다면 스타를 눌러주세요!"
+  },
+  "langCurrent": {
+    "message": "현재 언어"
+  },
+  "langZhCN": {
+    "message": "简体中文"
+  },
+  "langEn": {
+    "message": "English"
+  },
+  "langRestart": {
+    "message": "언어 전환 후 사이드 패널을 다시 여세요"
+  },
+  "guideTitle": {
+    "message": "사용 가이드"
+  },
+  "guideWhatIsMuscle": {
+    "message": "머슬 메모리란?"
+  },
+  "guideWhatIsMuscleBody": {
+    "message": "머슬 메모리는 AgentLimb의 핵심 토큰 절약 메커니즘입니다. AI가 플랫폼에서 처음으로 작업(예: 게시)을 완료하면 AgentLimb가 작업 시퀀스를 '머슬'로 자동 저장합니다. 다음에는 머슬을 재생하기만 하면 되며, AI 재탐색이 필요 없습니다."
+  },
+  "guideSaveToken": {
+    "message": "토큰 절약 — 실측 데이터"
+  },
+  "guideSaveTokenBody": {
+    "message": "실제 환경에서의 비교 테스트, 결론은 명확합니다:"
+  },
+  "guideExploreLabel": {
+    "message": "첫 탐색"
+  },
+  "guideExploreValue": {
+    "message": "약 30회 API 호출, 약 5000 토큰"
+  },
+  "guideMuscleLabel": {
+    "message": "머슬 재생"
+  },
+  "guideMuscleValue": {
+    "message": "1회 호출, 약 300 토큰, 오류 0"
+  },
+  "guideSavings": {
+    "message": "약 16배 효율 향상"
+  },
+  "guideSaveTokenTip": {
+    "message": "각 플랫폼은 한 번의 탐색과 저장만으로 영구 재사용 가능. 작업이 많은 플랫폼일수록 절약 효과가 큽니다."
+  },
+  "guideWorkflow": {
+    "message": "권장 워크플로"
+  },
+  "guideWorkflowBody": {
+    "message": "1. AI와 먼저 계획 수립 — 프로젝트 폴더에서 목표, 플랫폼 목록, 콘텐츠 템플릿 정리\n2. 작업 프로젝트 설정 — 로컬 폴더 선택, AI가 장기적으로 계획 문서 읽기/쓰기\n3. AI 첫 탐색 — 대상 플랫폼에서 observe + act 사용\n4. 머슬로 저장 — AI가 muscle(action:\"save\")를 호출하여 작업 시퀀스 영속화\n5. 원클릭 재사용 — muscle(action:\"run\")로 제로 토큰 비용으로 재생\n6. 예약/배치 — 머슬을 예약 작업으로 완전 자동 실행 가능"
+  },
+  "guideConnect": {
+    "message": "AI 연결 방법"
+  },
+  "guideConnectBody": {
+    "message": "1. 홈페이지에서 '온보드 프롬프트 복사' 버튼 클릭\n2. 터미널 AI(Claude Code / Cursor / Codex 등)에 붙여넣기\n3. AI가 자동으로 도구를 감지하고 브라우저 제어 시작\n\n팁: '작업 프로젝트' 폴더를 설정하면 AI가 계획 문서를 읽고 쓰며, 세션 간 장기 협업이 가능합니다."
+  },
+  "promptPageTitle": {
+    "message": "온보드 프롬프트"
+  },
+  "promptPageDesc": {
+    "message": "아래 프롬프트를 복사하여 터미널 AI에 붙여넣어 시작하세요"
+  },
+  "checkUpdate": {
+    "message": "업데이트 확인"
+  },
+  "checking": {
+    "message": "확인 중…"
+  },
+  "upToDate": {
+    "message": "최신 버전입니다"
+  },
+  "newVersion": {
+    "message": "새 버전 v$version$ 사용 가능",
+    "placeholders": {
+      "version": {
+        "content": "$1"
+      }
+    }
+  },
+  "downloadUpdate": {
+    "message": "다운로드"
+  },
+  "checkFailed": {
+    "message": "확인 실패, 나중에 다시 시도해 주세요"
+  },
+  "updateNote": {
+    "message": "업데이트는 머슬 메모리나 프로젝트 설정에 영향을 주지 않습니다"
+  },
+  "linkWebsite": {
+    "message": "웹사이트 agentlimb.com"
+  },
+  "linkGitHub": {
+    "message": "GitHub 저장소"
+  },
+  "linkPrivacy": {
+    "message": "개인정보 처리방침"
+  },
+  "linkLicense": {
+    "message": "라이선스 (BSL 1.1)"
+  },
+  "linkTerms": {
+    "message": "서비스 약관"
+  },
+  "linkChromeStore": {
+    "message": "Chrome 웹 스토어"
+  },
+  "goToUpdate": {
+    "message": "업데이트로 이동"
+  },
+  "menuInterface": {
+    "message": "🎨 인터페이스"
+  },
+  "menuInterfaceDesc": {
+    "message": "테마, 언어, 외관 설정"
+  },
+  "themeLabel": {
+    "message": "테마"
+  },
+  "themeAuto": {
+    "message": "시스템"
+  },
+  "themeDark": {
+    "message": "다크"
+  },
+  "themeLight": {
+    "message": "라이트"
+  },
+  "langJa": {
+    "message": "日本語"
+  },
+  "langKo": {
+    "message": "한국어"
+  },
+  "langEs": {
+    "message": "Español"
+  },
+  "langFr": {
+    "message": "Français"
+  },
+  "langDe": {
+    "message": "Deutsch"
+  },
+  "langPtBR": {
+    "message": "Português"
+  },
+  "langRu": {
+    "message": "Русский"
+  },
+  "langAr": {
+    "message": "العربية"
+  },
+  "langIt": {
+    "message": "Italiano"
+  },
+  "langHi": {
+    "message": "हिन्दी"
+  },
+  "aiOperating": {
+    "message": "AI 작동 중"
+  },
+  "confirmNeeded": {
+    "message": "확인 필요"
+  },
+  "confirmApprove": {
+    "message": "✓ 승인"
+  },
+  "confirmDeny": {
+    "message": "✗ 거부"
+  },
+  "userApproved": {
+    "message": "사용자가 승인했습니다"
+  },
+  "userDenied": {
+    "message": "사용자가 거부했습니다"
+  },
+  "saveAsMuscle": {
+    "message": "💪 머슬 메모리로 저장?"
+  },
+  "saveAsMuscleDesc": {
+    "message": "이 작업을 저장하면 나중에 원클릭으로 재생할 수 있습니다"
+  },
+  "muscleNamePlaceholder": {
+    "message": "이름을 지정하세요 (예: 트윗 게시)"
+  },
+  "saveMuscleBtn": {
+    "message": "💪 저장"
+  },
+  "muscleSaved": {
+    "message": "머슬이 저장되었습니다"
+  },
+  "noActionsToSave": {
+    "message": "저장할 작업이 없습니다"
+  },
+  "dismiss": {
+    "message": "건너뛰기"
+  },
+  "phaseNavigate": {
+    "message": "$host$ 열기",
+    "placeholders": { "host": { "content": "$1" } }
+  },
+  "phaseInput": {
+    "message": "내용 편집"
+  },
+  "phaseAction": {
+    "message": "작업 실행"
+  },
+  "phaseConfirm": {
+    "message": "작업 확인"
+  },
+  "phaseVerify": {
+    "message": "결과 확인"
+  },
+  "phaseReview": {
+    "message": "완료 검토"
+  },
+  "taskReviewDesc": {
+    "message": "작업 완료, 검토 대기 중"
+  },
+  "reviewConfirm": {
+    "message": "완료 확인"
+  },
+  "reviewReject": {
+    "message": "미완료"
+  }
+}
