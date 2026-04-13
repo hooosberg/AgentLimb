@@ -219,6 +219,16 @@ a:hover { color: var(--accent2); }
 
 .hero-buttons { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
 
+.hero-install-hint {
+  margin-top: 28px;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--muted);
+  opacity: 0.5;
+  letter-spacing: 0.04em;
+  line-height: 1.6;
+}
+
 .btn {
   display: inline-flex; align-items: center; gap: 8px;
   padding: 14px 28px; border-radius: 980px;
