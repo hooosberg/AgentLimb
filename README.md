@@ -115,23 +115,12 @@ Your Browser  (logged in, with cookies, your real sessions)
 1. **Install** — Two options:
    - **Chrome Web Store** (recommended): [Install AgentLimb](https://chromewebstore.google.com/detail/agentlimb/hldldfepjhljhbcneojddjkkodkjglof) — one click, auto-updates
    - **Manual (latest build)**: [Download the latest zip](https://github.com/hooosberg/AgentLimb/releases/latest), unzip, open `chrome://extensions`, enable **Developer Mode**, click **Load unpacked**
-2. **Start the Bridge** — `npm start` in the extension folder (or run `scripts/install.sh` once to register a LaunchAgent on macOS so the bridge auto-starts on login)
-3. **Copy** — Open the side panel, click "Copy Onboard Prompt"
-4. **Paste** — Paste to any AI terminal. It auto-connects, fetches the tool schema on demand, and starts working
+2. **Copy** — Open the side panel, click "Copy Onboard Prompt"
+3. **Paste** — Paste to any AI terminal. It auto-connects, fetches the tool schema on demand, and starts working
 
 ## Toolset — 16 Tools
 
-Minimal surface, maximum composability. Organized into five categories:
-
-| Category | Tools |
-|---|---|
-| Observe | `browser_session` · `tabs_context` · `page_snapshot` |
-| Navigate / execute | `navigate` · `computer` (9 actions) · `form_input` · `wait` · `javascript_eval` |
-| Muscle | `muscle_recall` · `muscle_remember` · `muscle_commit` (success / partial / failed / manual) |
-| Connectivity | `ping` |
-| Task lifecycle | `task_plan` · `task_step_done` · `task_complete` · `task_fail` |
-
-Documentation is served on demand from the bridge — the AI can `curl /api/mvp/docs/tools` or `/docs/tools/<name>` whenever it needs a schema.
+16 standardized tools spanning five categories: observing browser state, navigating and interacting with page elements, reading and writing muscle memory, declaring task lifecycle events, and maintaining bridge connectivity. Full documentation is served on demand — the AI fetches schemas only when it needs them.
 
 ## Why Not Just Use X?
 

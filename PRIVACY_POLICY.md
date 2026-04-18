@@ -1,55 +1,78 @@
 # Privacy Policy
 
 **AgentLimb**
-Last updated: 2026-04-12
+Last updated: 2026-04-18
 
 ## Overview
 
-AgentLimb is a Chrome extension that enables terminal AI tools to interact with your browser. This policy explains what data AgentLimb accesses and how it is handled.
+AgentLimb is a Chrome extension that lets a terminal-based AI coding assistant (such as Claude Code, Cursor, Codex, or any tool that can send HTTP) observe and control the user's active Chrome tab. Every piece of the system — the extension, the Node.js bridge, the AI agent, and the stored "muscle" files — runs on the user's own machine. AgentLimb operates no servers and communicates only over the loopback address `127.0.0.1`.
 
-## Data Collection
+## Data Handling — What AgentLimb Does Not Do
 
-AgentLimb does **not** collect, transmit, or store any personal data on external servers.
+- **No telemetry.** AgentLimb does not send any analytics, crash reports, usage metrics, or diagnostics anywhere.
+- **No accounts, no login.** There is no sign-up flow and no remote user identifier.
+- **No third-party servers.** The extension never contacts a cloud backend, CDN, or analytics provider at runtime. All communication is confined to loopback.
+- **No sale or sharing of user data.** We do not sell, transfer, or share any user data with third parties.
+- **No use of data for unrelated purposes.** User data is used only to fulfill the automation request the user issued.
+- **No use of data for creditworthiness or lending decisions.**
 
-All data stays on your local machine:
+## Data Handling — What AgentLimb Reads and Where It Goes
 
-- **Muscle data** (saved action sequences) is stored locally in `chrome.storage` and `~/.agentlimb/muscles.json`
-- **Project data** is stored locally in `chrome.storage` and IndexedDB
-- **Bridge communication** occurs only between the Chrome extension and a local Node.js process on `127.0.0.1:7789` via WebSocket — no data leaves your machine
+To let the AI reason about the current page, AgentLimb reads the following when — and only when — the AI requests it:
+
+| Read | Purpose | Where it goes |
+|---|---|---|
+| Active tab URL and title | So the AI knows which page it is on | Sent to the local bridge on `127.0.0.1:7791` |
+| DOM tree / element attributes of the active tab | So the AI can identify clickable and fillable elements | Sent to the local bridge |
+| Screenshots of the active tab (`Page.captureScreenshot` via CDP, with `chrome.tabs.captureVisibleTab` as fallback) | So the AI can see page state when DOM is ambiguous | Sent to the local bridge |
+| Short JavaScript expressions supplied by the AI | Evaluated in the target page's MAIN world via `chrome.scripting.executeScript` so the AI can probe page state | Executes in-page; result returned to the local bridge |
+
+These values are transmitted **only** to the local bridge on `127.0.0.1:7791` over loopback HTTP and WebSocket. The bridge does not forward them anywhere outside the user's machine.
+
+## Data Handling — What AgentLimb Stores Locally
+
+| Storage | Contents | Location |
+|---|---|---|
+| `chrome.storage.local` | User preferences (language, theme), the local bridge connection token, cached muscle pointers, and the configured project directory path | Inside the extension's Chrome profile |
+| Desktop folder | "Muscle" files — the AI's learned workflows and selectors — written as plain JSON by the bridge, one file per domain | `~/Desktop/AgentLimb-muscle/<domain>.json` |
+| `IndexedDB` | Persistent `FileSystemDirectoryHandle` reference (from the File System Access API) so the extension can reopen the user's chosen project folder across sessions | Inside the extension's Chrome profile |
+
+All of these are on-device only. The user may inspect, edit, back up, move, or delete any of them at any time.
+
+## Remote Code Disclosure
+
+AgentLimb does not fetch JavaScript or WebAssembly from any remote server. The only code executed at runtime that is not bundled in the extension package is short expressions supplied by the user's own local AI agent over the loopback bridge. These are passed to `chrome.scripting.executeScript` with `world: 'MAIN'` and evaluated inside the target page's context — similar in spirit to a DevTools console command, except the command is issued by the AI the user is collaborating with. These strings never originate from, and never travel to, an external server.
 
 ## Permissions
 
-AgentLimb requests the following Chrome permissions:
-
-| Permission | Why |
+| Permission | Why AgentLimb requests it |
 |---|---|
-| `tabs` | To read current tab URL and title for the `observe` tool |
-| `scripting` | To execute JavaScript on pages via the `eval` and `act` tools |
-| `activeTab` | To interact with the currently active tab |
-| `storage` | To persist muscle and project data locally |
-| `sidePanel` | To display the monitoring UI in Chrome's side panel |
-| `host_permissions: <all_urls>` | To operate on any webpage the user navigates to |
+| `tabs` | Read the id, URL, and title of the user's active tab so the extension can report current page context to the local AI agent, and navigate that tab to URLs the AI requests. |
+| `activeTab` | Act only on the tab the user currently has focused — the minimum surface needed for every browser-control operation. |
+| `scripting` | Inject a content script to read the DOM, dispatch click / type / select interactions the AI requested, and evaluate AI-supplied expressions in the page's MAIN world. |
+| `storage` | Persist user preferences, the local bridge connection token, and cached muscle pointers via `chrome.storage.local`. Nothing is transmitted off-device. |
+| `sidePanel` | Display the AgentLimb control panel: bridge connection status, approve/deny UI for AI actions, muscle list, and activity logs. |
+| `debugger` | Attach to the user's active tab briefly to simulate realistic keyboard input via the Chrome DevTools Protocol (`Input.dispatchKeyEvent`, `Input.insertText`) for rich-text editors (Google Docs, Notion, Slack, etc.) that ignore synthetic DOM events. Detaches immediately after the typing operation. |
+| `nativeMessaging` | Read a single configuration value — the absolute filesystem path of the user's project directory — from the companion native host `com.agentlimb.bridge` that the user installs during setup. No other messages are exchanged. |
+| `alarms` | Create a periodic wake-up alarm so Chrome's MV3 service worker remains resident while a local bridge session is active; otherwise the WebSocket would drop mid-operation. The alarm is cleared when the bridge disconnects. |
+| `clipboardWrite` | Let the user click "Copy" in the side panel to copy setup commands or paths. Writes happen only on explicit user click; AgentLimb never reads the clipboard. |
+| `host_permissions: <all_urls>` | AgentLimb is a general-purpose browser automation bridge; it cannot predict which sites the user will ask the AI to operate on. The extension activates only on the user's active tab, and only in response to a request that came from the local bridge on `127.0.0.1`. |
 
-## Third-Party Services
+## Compliance Disclosures
 
-AgentLimb does not integrate with any third-party analytics, tracking, or advertising services.
+In accordance with the Chrome Web Store Developer Program Policies:
 
-The extension communicates only with:
-- A **local bridge process** (`127.0.0.1:7789`) that you run on your own machine
-- Your **terminal AI tool** (e.g., Claude Code, Cursor) which connects to the bridge
-
-## Data Sharing
-
-AgentLimb does not share any data with third parties. All operations are local.
+- AgentLimb does **not** sell or transfer user data to third parties.
+- AgentLimb does **not** use or transfer user data for purposes unrelated to its single purpose (local browser automation for the user's own AI agent).
+- AgentLimb does **not** use or transfer user data to determine creditworthiness or for lending purposes.
 
 ## Changes to This Policy
 
 If we update this policy, the new version will be posted at:
-- https://github.com/hooosberg/AgentLimb (repository)
-- https://agentlimb.com/privacy (website, when available)
+- https://github.com/hooosberg/AgentLimb (repository — this file)
+- https://agentlimb.com/privacy (website mirror)
 
 ## Contact
 
-For questions about this privacy policy:
 - Email: zikedece@proton.me
-- GitHub: https://github.com/hooosberg/AgentLimb/issues
+- GitHub issues: https://github.com/hooosberg/AgentLimb/issues

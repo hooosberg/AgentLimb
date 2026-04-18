@@ -106,23 +106,30 @@ AgentLimb 扩展  (Chrome MV3 · 侧边栏 UI · 任务/肌肉/日志三 Tab)
 1. **安装** — 两种方式：
    - **Chrome 应用商店**（推荐）：[安装 AgentLimb](https://chromewebstore.google.com/detail/agentlimb/hldldfepjhljhbcneojddjkkodkjglof) — 一键安装，自动更新
    - **手动安装（最新构建）**：[下载最新 zip](https://github.com/hooosberg/AgentLimb/releases/latest)，解压后打开 `chrome://extensions`，开启**开发者模式**，点击**加载已解压的扩展程序**
-2. **启动 Bridge** — 在扩展目录执行 `npm start`（或运行 `scripts/install.sh` 一次，在 macOS 上注册 LaunchAgent，开机自动启动）
-3. **复制** — 打开侧边栏，点击"复制接入提示词"
-4. **粘贴** — 将提示词粘贴给任何 AI 终端，自动连接、按需获取工具 Schema，立即开始工作
+2. **复制** — 打开侧边栏，点击"复制接入提示词"
+3. **粘贴** — 将提示词粘贴给任何 AI 终端，自动连接、按需获取工具 Schema，立即开始工作
 
 ## 工具集 — 16 个工具
 
-最小接口，最大可组合性。分为五类：
+16 个标准化工具，覆盖五大类：观察浏览器状态、导航与页面交互、读写肌肉记忆、声明任务生命周期、维持 Bridge 连通。工具文档按需从 Bridge 获取，AI 只在需要时拉取对应 Schema。
 
-| 类别 | 工具 |
-|---|---|
-| 观察 | `browser_session` · `tabs_context` · `page_snapshot` |
-| 导航 / 执行 | `navigate` · `computer`（9 种动作）· `form_input` · `wait` · `javascript_eval` |
-| 肌肉 | `muscle_recall` · `muscle_remember` · `muscle_commit`（success / partial / failed / manual）|
-| 连通 | `ping` |
-| 任务生命周期 | `task_plan` · `task_step_done` · `task_complete` · `task_fail` |
+## 为什么不直接用 X？
 
-Bridge 按需提供文档 — AI 可随时 `curl /api/mvp/docs/tools` 或 `/docs/tools/<name>` 获取 Schema。
+每一种现有的浏览器自动化方案都有真实的代价。这是诚实的对比：
+
+| | Browser Use / Playwright | BrowseAI / Browserbase | Codex / Claude Computer Use | **AgentLimb** |
+|---|---|---|---|---|
+| **配置** | 编写脚本、管理依赖、处理无头模式 | SaaS 配置，按工作流单独设置 | 仅支持 Mac（需桌面环境），需要沙盒 | 复制一个提示词，搞定 |
+| **元素定位** | CSS/XPath——由你编写和维护 | 视觉 AI 识别——网站更新时不稳定 | 截图坐标——偏差 ±1 像素就可能点错 | CDP 直读实时 DOM——语义化，精准 |
+| **每次动作 Token 成本** | 零（纯脚本） | 云服务费 + AI token | 1,000–3,000 token/截图 × 每一步 | 约 300 token/步，热启动再省 **85.7%** |
+| **重复任务成本** | 固定（脚本重跑） | 线性增长——按次计费 | 线性增长——每次都重新探索，无记忆 | **递减**——肌肉记忆越用越省 |
+| **登录会话** | 额外配置 Cookie/会话 | 云端——无法使用你本地的登录态 | 操作系统级别，感知不到浏览器状态 | 你的真实 Chrome——已经登录 |
+| **网站更新时** | 选择器失效——重写脚本 | 视觉模型可能悄无声息地退化 | 截图推理能调整，但开销很大 | AI 检测到不匹配，找新选择器，自动修复肌肉 |
+| **数据隐私** | 本地 ✅ | 经过第三方服务器 ❌ | 本地 ✅ | 100% 本地——仅 127.0.0.1 ✅ |
+| **AI 终端选择** | 任意（纯脚本） | 因平台而异 | 与 Codex / Claude 捆绑 | 任何会说 HTTP 的 AI |
+| **知识共享** | 脚本 = 绑死一个 AI | 工作流 = 绑死平台 | 无持久记忆 | 肌肉文件 = 跨 AI、可迁移、永久 |
+
+**独特之处**：AgentLimb 的肌肉文件以纯 JSON 形式存放在 `~/Desktop/AgentLimb-muscle/`。今天用 Claude Code 探索出来的知识，明天 Codex 直接拿来用——同一组 JSON 文件，同一个桌面文件夹。换 AI 工具，不丢任何已学会的工作流。
 
 ## 使用场景
 
