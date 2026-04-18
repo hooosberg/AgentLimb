@@ -1,6 +1,6 @@
 import { t, applyAll } from '/components/i18n.js';
 
-const CHROME_STORE_URL = '#'; // TODO: replace with real Chrome Web Store URL
+const CHROME_STORE_URL = 'https://chromewebstore.google.com/detail/agentlimb/hldldfepjhljhbcneojddjkkodkjglof';
 
 export function renderFooter(style = 'full') {
   const footer = document.createElement('footer');

@@ -18,13 +18,13 @@
 | Funktion | Beschreibung |
 |---|---|
 | Ein-Prompt-Setup | Einen Prompt kopieren und einfügen. Keine Config-Dateien |
-| Muskelgedächtnis | KI erkundet einmal → speichert → Replay ohne Tokens. ~16x Einsparung |
+| Muskelgedächtnis | KI erkundet einmal → speichert → Replay ohne Tokens. 85,7 % Token-Ersparnis · 80–95 % weniger Wartezeit |
 | Null Eingriff | Funktioniert in deinem bestehenden Chrome. Cookies und Extensions bleiben |
 | 100% Lokal | Bridge auf localhost. Keine Analytik, keine Cloud |
 
 ## Schnellstart
 
-1. **Installieren** — [zip herunterladen](https://github.com/hooosberg/AgentLimb/releases/latest/download/agentlimb-chrome-v0.0.3.zip), entpacken, `chrome://extensions` öffnen, **Entwicklermodus** aktivieren, **Entpackte Extension laden** klicken und Ordner auswählen
+1. **Installieren** — [zip herunterladen](https://github.com/hooosberg/AgentLimb/releases/latest), entpacken, `chrome://extensions` öffnen, **Entwicklermodus** aktivieren, **Entpackte Extension laden** klicken und Ordner auswählen
 2. **Kopieren** — Seitenpanel öffnen, "Prompt kopieren" klicken
 3. **Einfügen** — In beliebiges KI-Tool einfügen → automatische Konfiguration
 

@@ -15,7 +15,7 @@
 
 ## क्विक स्टार्ट
 
-1. **इंस्टॉल** — [zip डाउनलोड करें](https://github.com/hooosberg/AgentLimb/releases/latest/download/agentlimb-chrome-v0.0.3.zip), अनज़िप करें, `chrome://extensions` खोलें, **Developer Mode** सक्षम करें, **Load unpacked** क्लिक करें और अनज़िप फ़ोल्डर चुनें
+1. **इंस्टॉल** — [zip डाउनलोड करें](https://github.com/hooosberg/AgentLimb/releases/latest), अनज़िप करें, `chrome://extensions` खोलें, **Developer Mode** सक्षम करें, **Load unpacked** क्लिक करें और अनज़िप फ़ोल्डर चुनें
 2. **कॉपी** — साइड पैनल खोलें, "प्रॉम्प्ट कॉपी करें" क्लिक करें
 3. **पेस्ट** — किसी भी AI टूल में पेस्ट करें → ऑटो-कॉन्फ़िगर
 

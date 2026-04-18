@@ -5,11 +5,14 @@
 <h1 align="center">AgentLimb</h1>
 
 <p align="center">
-  <strong>赋予你的 AI 一条浏览器机械臂</strong><br>
-  一个提示词。任何 AI 工具。你现有的 Chrome 登录态。100% 本地运行，完全隐私。
+  <strong>停止让你的 AI 重复学习同一个任务。</strong><br>
+  CoWork 的开源替代方案 — 重复浏览器任务减少 85% Token 消耗。
 </p>
 
 <p align="center">
+  <a href="https://chromewebstore.google.com/detail/agentlimb/hldldfepjhljhbcneojddjkkodkjglof">
+    <img src="https://img.shields.io/badge/Chrome_应用商店-免费安装-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white" alt="从 Chrome 应用商店安装">
+  </a>
   <a href="https://agentlimb.com">
     <img src="https://img.shields.io/badge/官网-agentlimb.com-F5A623?style=for-the-badge" alt="官网">
   </a>
@@ -47,76 +50,100 @@
 
 ## 关于
 
-**AgentLimb** 是一款 Chrome 扩展，让任何 AI 编程工具 — Claude Code、Cursor、Codex、Trae、Windsurf，以及任何能执行命令的工具 — 都能驱动你的浏览器。安装扩展、复制一个提示词、粘贴给 AI，10 秒内自动配置完成。
+**AgentLimb** 是一款[已上架 Chrome 应用商店](https://chromewebstore.google.com/detail/agentlimb/hldldfepjhljhbcneojddjkkodkjglof)的 Chrome 扩展，让任何 AI 终端 — Claude Code、Cursor、Codex、Trae、Windsurf，以及任何能执行命令的工具 — 都能精准控制你的浏览器。安装扩展、复制一个提示词、粘贴给 AI，10 秒内自动配置完成。
 
-无需无头浏览器。无需重新登录。无侵入式代理。你的真实 Chrome、真实 Cookie、真实登录会话。
+无需无头浏览器。无需重新登录。无侵入式代理。你的真实 Chrome、真实 Cookie、真实登录会话 — 加上肌肉记忆，让重复任务的成本越来越低。
 
 ## 核心亮点
 
 ### 1. 一键提示词配置
 
-复制一个提示词，粘贴给任何 AI 工具。无需配置文件，无需终端命令，无需 API 密钥。只要你的 AI 能操作电脑，就能使用 AgentLimb。
+复制一个提示词，粘贴给任何 AI 工具。无需配置文件，无需终端命令，无需 API 密钥。只要你的 AI 能执行命令，就能使用 AgentLimb。
 
-### 2. 肌肉记忆 — 16 倍 Token 节省
+### 2. 肌肉记忆 — 85% 减少 Token，80–95% 减少等待时间
 
-AI 首次探索平台后，将操作序列保存为"肌肉"。下次回放，零 Token 消耗。
+AI 首次访问网站时，探索 DOM 并记录选择器、工作流、备注。AgentLimb 将这些知识写入 `~/Desktop/AgentLimb-muscle/<domain>.json`。后续每次访问同一网站，直接复用记忆，跳过探索。
 
-| | 首次探索 | 肌肉回放 |
-|---|---|---|
-| API 调用 | ~30 次 | 1 次 |
-| Token 消耗 | ~5,000 | ~300 |
-| 错误率 | 可能出错 | 0 |
-| | | **~16 倍效率提升** |
+真实回归数据（低参数 Codex，Reddit 发帖任务，2026-04-18）：
 
-### 3. 零侵入
+| | 冷启动（首次探索） | 热启动（肌肉复用） | 节省 |
+|---|---|---|---|
+| `page_snapshot` 次数 | 3 | **0** | 100% |
+| 工具调用总次数 | 23 | 10 | 56.5% |
+| 估算 Token | ~12,250 | **~1,750** | **↓ 85.7%** |
+| 任务完成时间 | 8–20 分钟 | 30 秒–2 分钟 | **↓ ~80–95%** |
 
-在你现有的 Chrome 内运行。无无头浏览器、无独立会话。你的 Cookie、登录态和扩展 — 完整保留。
+复用次数越多，成本越低。
 
-### 4. 100% 本地 & 隐私
+### 3. CDP 直连，非截图猜坐标
 
-Bridge 运行在 `127.0.0.1:7789`。无分析、无追踪、无云端服务器。隐私由架构保障，而非承诺。
+AgentLimb 通过 Chrome Debugger Protocol 直接读取 DOM。AI 拿到的是结构化语义列表，不是图片。点击精准到元素，表单填写通过原生 API，导航后立即返回新页 URL。
+
+### 4. 显式任务生命周期
+
+沉默不再等于成功。AI 显式声明 `task_plan` → `task_step_done` → `task_complete` / `task_fail`。超时和 Bridge 掉线都被捕获为真实失败，侧边栏实时渲染步骤列表。
+
+### 5. 100% 本地 & 隐私
+
+Bridge 运行在 `127.0.0.1:7791`。无分析、无追踪、无云服务器。肌肉知识是桌面上的纯文本 JSON — 你可以随时读取、对比、分享或删除。
 
 ## 工作原理
 
 ```
-你的 AI 工具  (Claude Code / Cursor / Codex / Trae / Windsurf)
-    ↕  MCP 工具 / HTTP API  (8 个标准化工具)
-AgentLimb Bridge  (本地 Node.js · 127.0.0.1:7789)
-    ↕  WebSocket
-AgentLimb 扩展  (Chrome MV3 · 侧边栏 UI)
-    ↕  DOM 操作
+你的 AI 终端  (Claude Code / Cursor / Codex / Trae / Windsurf / 本地模型)
+    ↕  HTTP + 16 个标准化工具（通过 /docs 端点自动发现）
+AgentLimb Bridge  (本地 Node.js · 127.0.0.1:7791)
+    ↕  chrome.runtime 消息传递
+AgentLimb 扩展  (Chrome MV3 · 侧边栏 UI · 任务/肌肉/日志三 Tab)
+    ↕  Chrome Debugger Protocol
 你的浏览器  (已登录，带 Cookie，真实会话)
+    ↓  知识持久化
+~/Desktop/AgentLimb-muscle/<domain>.json  (永久，人类可读)
 ```
 
 ## 快速开始
 
-1. **安装** — [下载压缩包](https://github.com/hooosberg/AgentLimb/releases/latest/download/agentlimb-chrome-v0.0.3.zip)，解压后打开 `chrome://extensions`，开启**开发者模式**，点击**加载已解压的扩展程序**并选择解压后的文件夹
-2. **复制** — 打开侧边栏，点击"复制接入提示词"
-3. **粘贴** — 将提示词粘贴给任何 AI 工具 — 自动配置，立即开始工作
+1. **安装** — 两种方式：
+   - **Chrome 应用商店**（推荐）：[安装 AgentLimb](https://chromewebstore.google.com/detail/agentlimb/hldldfepjhljhbcneojddjkkodkjglof) — 一键安装，自动更新
+   - **手动安装（最新构建）**：[下载最新 zip](https://github.com/hooosberg/AgentLimb/releases/latest)，解压后打开 `chrome://extensions`，开启**开发者模式**，点击**加载已解压的扩展程序**
+2. **启动 Bridge** — 在扩展目录执行 `npm start`（或运行 `scripts/install.sh` 一次，在 macOS 上注册 LaunchAgent，开机自动启动）
+3. **复制** — 打开侧边栏，点击"复制接入提示词"
+4. **粘贴** — 将提示词粘贴给任何 AI 终端，自动连接、按需获取工具 Schema，立即开始工作
 
-## 工具集
+## 工具集 — 16 个工具
 
-8 个标准化工具 — 遵循 Unix 哲学，每个只做一件事。最小接口，最大可组合性。AI 决定如何组合它们；AgentLimb 只提供原语。
+最小接口，最大可组合性。分为五类：
+
+| 类别 | 工具 |
+|---|---|
+| 观察 | `browser_session` · `tabs_context` · `page_snapshot` |
+| 导航 / 执行 | `navigate` · `computer`（9 种动作）· `form_input` · `wait` · `javascript_eval` |
+| 肌肉 | `muscle_recall` · `muscle_remember` · `muscle_commit`（success / partial / failed / manual）|
+| 连通 | `ping` |
+| 任务生命周期 | `task_plan` · `task_step_done` · `task_complete` · `task_fail` |
+
+Bridge 按需提供文档 — AI 可随时 `curl /api/mvp/docs/tools` 或 `/docs/tools/<name>` 获取 Schema。
 
 ## 使用场景
 
-- **市场营销** — 多平台发帖、管理营销活动、社区互动
-- **研究与数据** — 采集数据、对比产品、收集竞品情报
-- **表单自动化** — 填写申请、提交表单、更新多平台资料
-- **测试与质检** — 在真实浏览器和真实会话中测试网页应用
+- **营销** — 多平台发帖、管理营销活动、社区互动
+- **研究** — 采集数据、对比产品、收集竞品情报
+- **自动化** — 填写申请、提交表单、更新多平台资料
+- **测试** — 在真实浏览器和真实会话中 QA 测试
 
 ## 设计哲学
 
-- **Unix 哲学** — 8 个精简工具，每个只做一件事
+- **最小接口** — 16 个工具，每个只做一件事，可自由组合
 - **非侵入** — 在你的真实浏览器内运行，而非沙盒
 - **本地优先** — 架构级隐私，而非策略级承诺
-- **AI 无关** — 任何支持 MCP 或 HTTP 的工具都能接入
+- **AI 无关** — 任何能发送 HTTP 的工具都能接入，无厂商绑定
 
 ## 资源
 
 - **官网**: [agentlimb.com](https://agentlimb.com)
 - **教程**: [agentlimb.com/tutorials.html](https://agentlimb.com/tutorials.html)
 - **AI 工具导航**: [agentlimb.com/tools.html](https://agentlimb.com/tools.html)
+- **新闻**: [agentlimb.com/news.html](https://agentlimb.com/news.html)
 - **隐私政策**: [agentlimb.com/privacy.html](https://agentlimb.com/privacy.html)
 - **服务条款**: [agentlimb.com/terms.html](https://agentlimb.com/terms.html)
 

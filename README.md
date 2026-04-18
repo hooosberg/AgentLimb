@@ -10,6 +10,9 @@
 </p>
 
 <p align="center">
+  <a href="https://chromewebstore.google.com/detail/agentlimb/hldldfepjhljhbcneojddjkkodkjglof">
+    <img src="https://img.shields.io/badge/Chrome_Web_Store-Install_Free-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Install from Chrome Web Store">
+  </a>
   <a href="https://agentlimb.com">
     <img src="https://img.shields.io/badge/Website-agentlimb.com-F5A623?style=for-the-badge" alt="Website">
   </a>
@@ -56,56 +59,79 @@
 
 ## About
 
-**AgentLimb** is a Chrome extension that lets any AI coding tool — Claude Code, Cursor, Codex, Trae, Windsurf, or anything that can run commands — drive your browser. Install the extension, copy one prompt, paste it to your AI, and it auto-configures in 10 seconds.
+**AgentLimb** is a Chrome extension — [now live on the Chrome Web Store](https://chromewebstore.google.com/detail/agentlimb/hldldfepjhljhbcneojddjkkodkjglof) — that lets any AI terminal — Claude Code, Cursor, Codex, Trae, Windsurf, or any local model — drive your browser with precision. Install the extension, copy one prompt, paste it to your AI, and it auto-configures in 10 seconds.
 
-No headless browsers. No re-login. No invasive agents. Your real Chrome, your real cookies, your real sessions.
+No headless browsers. No re-login. No invasive agents. Your real Chrome, your real cookies, your real sessions — plus muscle memory that makes repeat tasks dramatically cheaper every time you run them.
 
 ## Highlights
 
 ### 1. One-Prompt Setup
 
-Copy a single prompt, paste it to any AI tool. No config files, no terminal commands, no API keys. If your AI can operate your computer, it can use AgentLimb.
+Copy a single prompt, paste it to any AI tool. No config files, no terminal commands, no API keys. If your AI can run commands, it can use AgentLimb.
 
-### 2. Muscle Memory — 16x Token Savings
+### 2. Muscle Memory — 85% Fewer Tokens, 80–95% Less Waiting
 
-AI explores a platform once, saves the action sequence as a "muscle". Next time, replay with zero tokens.
+The first time your AI hits a site, it explores the DOM and learns selectors / workflow. AgentLimb writes that knowledge to `~/Desktop/AgentLimb-muscle/<domain>.json`. Every future run on the same site skips the exploration and reuses what was learned.
 
-| | First Exploration | Muscle Replay |
-|---|---|---|
-| API Calls | ~30 | 1 |
-| Tokens | ~5,000 | ~300 |
-| Errors | Possible | 0 |
-| | | **~16x efficiency** |
+Real regression data from a Reddit posting task (low-parameter Codex, 2026-04-18):
 
-### 3. Zero Intrusion
+| | Cold start (first explore) | Hot start (muscle recall) | Savings |
+|---|---|---|---|
+| `page_snapshot` calls | 3 | **0** | 100% |
+| Total tool calls | 23 | 10 | 56.5% |
+| Estimated tokens | ~12,250 | **~1,750** | **↓ 85.7%** |
+| Wall-clock time | 8–20 min | 30 s–2 min | **↓ ~80–95%** |
 
-Works inside your existing Chrome. No headless browsers, no separate sessions. Your cookies, logins, and extensions — all intact.
+The more you reuse a site, the cheaper and faster it gets.
 
-### 4. 100% Local & Private
+### 3. CDP-Native, Not Screenshot Guessing
 
-Bridge runs on `127.0.0.1:7789`. No analytics, no tracking, no cloud servers. Privacy guaranteed by architecture, not by policy.
+AgentLimb drives the browser through Chrome Debugger Protocol. The AI receives a structured semantic list of interactive elements — not screenshots. Clicks hit the right node, form fills use native APIs, navigations return the new URL immediately.
+
+### 4. Explicit Task Lifecycle
+
+Silence no longer equals success. The AI explicitly declares `task_plan` → `task_step_done` → `task_complete` / `task_fail`. Timeouts and bridge drops are captured as real failures, not false positives. The side panel renders the live step list in real time.
+
+### 5. 100% Local & Private
+
+Bridge runs on `127.0.0.1:7791`. No analytics, no tracking, no cloud. Muscle knowledge is plain JSON on your desktop — you can read, diff, share, or delete it at any time.
 
 ## How It Works
 
 ```
-Your AI Tool  (Claude Code / Cursor / Codex / Trae / Windsurf)
-    ↕  MCP Tools / HTTP API  (8 standardized tools)
-AgentLimb Bridge  (local Node.js · 127.0.0.1:7789)
-    ↕  WebSocket
-AgentLimb Extension  (Chrome MV3 · side panel UI)
-    ↕  DOM operations
+Your AI Terminal  (Claude Code / Cursor / Codex / Trae / Windsurf / local model)
+    ↕  HTTP + SSE  (16 standardized tools, auto-discoverable via /docs endpoints)
+AgentLimb Bridge  (local Node.js · 127.0.0.1:7791)
+    ↕  chrome.runtime message passing
+AgentLimb Extension  (Chrome MV3 · side panel UI · task/muscle/log tabs)
+    ↕  Chrome Debugger Protocol
 Your Browser  (logged in, with cookies, your real sessions)
+    ↓  knowledge persisted
+~/Desktop/AgentLimb-muscle/<domain>.json  (durable, human-readable)
 ```
 
 ## Quick Start
 
-1. **Install** — [Download the zip](https://github.com/hooosberg/AgentLimb/releases/latest/download/agentlimb-chrome-v0.0.3.zip), unzip it, open `chrome://extensions`, enable **Developer Mode**, click **Load unpacked** and select the unzipped folder
-2. **Copy** — Open the side panel, click "Copy Onboard Prompt"
-3. **Paste** — Paste the prompt to any AI tool — it auto-configures and starts working
+1. **Install** — Two options:
+   - **Chrome Web Store** (recommended): [Install AgentLimb](https://chromewebstore.google.com/detail/agentlimb/hldldfepjhljhbcneojddjkkodkjglof) — one click, auto-updates
+   - **Manual (latest build)**: [Download the latest zip](https://github.com/hooosberg/AgentLimb/releases/latest), unzip, open `chrome://extensions`, enable **Developer Mode**, click **Load unpacked**
+2. **Start the Bridge** — `npm start` in the extension folder (or run `scripts/install.sh` once to register a LaunchAgent on macOS so the bridge auto-starts on login)
+3. **Copy** — Open the side panel, click "Copy Onboard Prompt"
+4. **Paste** — Paste to any AI terminal. It auto-connects, fetches the tool schema on demand, and starts working
 
-## Toolset
+## Toolset — 16 Tools
 
-8 standardized tools — following Unix philosophy, each does one thing well. Minimal surface, maximum composability. The AI decides how to combine them; AgentLimb just provides the primitives.
+Minimal surface, maximum composability. Organized into five categories:
+
+| Category | Tools |
+|---|---|
+| Observe | `browser_session` · `tabs_context` · `page_snapshot` |
+| Navigate / execute | `navigate` · `computer` (9 actions) · `form_input` · `wait` · `javascript_eval` |
+| Muscle | `muscle_recall` · `muscle_remember` · `muscle_commit` (success / partial / failed / manual) |
+| Connectivity | `ping` |
+| Task lifecycle | `task_plan` · `task_step_done` · `task_complete` · `task_fail` |
+
+Documentation is served on demand from the bridge — the AI can `curl /api/mvp/docs/tools` or `/docs/tools/<name>` whenever it needs a schema.
 
 ## Use Cases
 
@@ -116,10 +142,10 @@ Your Browser  (logged in, with cookies, your real sessions)
 
 ## Design Philosophy
 
-- **Unix philosophy** — 8 minimal tools, each does one thing well
+- **Minimal surface** — 16 tools, each does one thing well, composable across any workflow
 - **Non-invasive** — works inside your real browser, not a sandbox
 - **Local-first** — privacy by architecture, not by promise
-- **AI-agnostic** — any tool that speaks MCP or HTTP can connect
+- **AI-agnostic** — any tool that can send HTTP can connect; no vendor lock-in
 
 ## Resources
 

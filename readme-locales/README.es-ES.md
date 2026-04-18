@@ -18,14 +18,14 @@
 | Característica | Descripción |
 |---|---|
 | Configuración con Un Prompt | Copia y pega un prompt. Sin archivos de configuración |
-| Memoria Muscular | IA explora una vez → guarda → reproduce sin tokens. ~16x ahorro |
+| Memoria Muscular | IA explora una vez → guarda → reproduce sin tokens. 85,7% ahorro de tokens · 80-95% menos espera |
 | Cero Intrusión | Funciona en tu Chrome existente. Cookies y extensiones intactas |
 | 100% Local | Bridge en localhost. Sin analytics, sin nube |
-| Herramientas | 8 herramientas estandarizadas — filosofía Unix, interfaz mínima, máxima composabilidad |
+| Herramientas | 16 herramientas estandarizadas — filosofía Unix, interfaz mínima, máxima composabilidad |
 
 ## Inicio Rápido
 
-1. **Instalar** — [Descarga el zip](https://github.com/hooosberg/AgentLimb/releases/latest/download/agentlimb-chrome-v0.0.3.zip), descomprímelo, abre `chrome://extensions`, activa el **Modo desarrollador**, haz clic en **Cargar descomprimida** y selecciona la carpeta
+1. **Instalar** — [Descarga el zip](https://github.com/hooosberg/AgentLimb/releases/latest), descomprímelo, abre `chrome://extensions`, activa el **Modo desarrollador**, haz clic en **Cargar descomprimida** y selecciona la carpeta
 2. **Copiar** — Abre el panel lateral, haz clic en "Copiar Prompt"
 3. **Pegar** — Pégalo en cualquier herramienta IA → configuración automática
 
