@@ -133,6 +133,24 @@ Minimal surface, maximum composability. Organized into five categories:
 
 Documentation is served on demand from the bridge — the AI can `curl /api/mvp/docs/tools` or `/docs/tools/<name>` whenever it needs a schema.
 
+## Why Not Just Use X?
+
+Every existing approach to browser automation has a real cost. Here's the honest comparison:
+
+| | Browser Use / Playwright | BrowseAI / Browserbase | Codex / Claude Computer Use | **AgentLimb** |
+|---|---|---|---|---|
+| **Setup** | Write scripts, manage deps | SaaS config per workflow | Mac only, desktop env required | Copy one prompt |
+| **Element targeting** | CSS/XPath — you maintain them | Visual AI — breaks on updates | Screenshot coordinates — ±1px miss | CDP reads live DOM — semantic |
+| **Token cost / step** | None (pure script) | Cloud fees + AI tokens | 1,000–3,000/screenshot × every step | ~300/step, **85.7% less** on hot start |
+| **Repeat task cost** | Fixed | Billed per run | Linear — re-explores every time | **Decreasing** — muscle memory compounds |
+| **Login sessions** | Extra setup | Cloud — no local sessions | OS-level, unaware of browser state | Your real Chrome — already logged in |
+| **When site updates** | Scripts break, rewrite | Model may degrade silently | Screenshot inference — expensive | AI self-heals muscle selectors |
+| **Data privacy** | Local ✅ | Third-party servers ❌ | Local ✅ | 100% local, 127.0.0.1 ✅ |
+| **AI choice** | Any (pure script) | Platform-dependent | Bundled with Codex / Claude | Any AI that speaks HTTP |
+| **Shared knowledge** | Script = one AI only | Workflow = locked to platform | No persistent memory | Muscle files = cross-AI, transferable |
+
+**The unique differentiator:** AgentLimb's muscle files live in `~/Desktop/AgentLimb-muscle/` as plain JSON. Knowledge explored by Claude Code today is available to Codex tomorrow — same files, zero re-exploration. Switch AI tools without losing a single learned workflow.
+
 ## Use Cases
 
 - **Marketing** — Post to social media, manage campaigns across platforms

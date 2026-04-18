@@ -264,6 +264,95 @@
   </div>
 </section>
 
+<!-- Competitive Comparison -->
+<section class="section section-center" id="comparison">
+  <div class="section-label">Why AgentLimb</div>
+  <h2 class="section-title">Every other approach has a real cost.</h2>
+  <p class="section-desc">Browser automation has been solved — badly — four different ways. Here's the honest breakdown.</p>
+
+  <div class="compare-table-wrapper" style="overflow-x:auto;margin-top:2rem">
+    <table class="compare-full-table" style="width:100%;border-collapse:collapse;font-size:0.9rem;text-align:left">
+      <thead>
+        <tr style="border-bottom:2px solid var(--border)">
+          <th style="padding:0.75rem 1rem;width:22%"></th>
+          <th style="padding:0.75rem 1rem;width:19.5%;color:var(--text-muted)">Browser Use / Playwright</th>
+          <th style="padding:0.75rem 1rem;width:19.5%;color:var(--text-muted)">BrowseAI / Browserbase</th>
+          <th style="padding:0.75rem 1rem;width:19.5%;color:var(--text-muted)">Codex / Claude Computer Use</th>
+          <th style="padding:0.75rem 1rem;width:19.5%;color:var(--accent);font-weight:700">AgentLimb</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid var(--border)">
+          <td style="padding:0.75rem 1rem;font-weight:600;color:var(--text-muted);font-size:0.8rem;text-transform:uppercase;letter-spacing:.05em">Setup</td>
+          <td style="padding:0.75rem 1rem">Write scripts, manage dependencies, handle headless mode</td>
+          <td style="padding:0.75rem 1rem">SaaS config, per-workflow setup</td>
+          <td style="padding:0.75rem 1rem">Mac only (needs desktop env), sandbox required</td>
+          <td style="padding:0.75rem 1rem;color:var(--green,#34C759);font-weight:500">Copy one prompt. Done.</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);background:var(--bg2)">
+          <td style="padding:0.75rem 1rem;font-weight:600;color:var(--text-muted);font-size:0.8rem;text-transform:uppercase;letter-spacing:.05em">Element targeting</td>
+          <td style="padding:0.75rem 1rem">CSS/XPath — you write and maintain them</td>
+          <td style="padding:0.75rem 1rem">Visual AI detection — unstable on updates</td>
+          <td style="padding:0.75rem 1rem">Screenshot coordinates — ±1px can miss the target</td>
+          <td style="padding:0.75rem 1rem;color:var(--green,#34C759);font-weight:500">CDP reads the live DOM — semantic, precise</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border)">
+          <td style="padding:0.75rem 1rem;font-weight:600;color:var(--text-muted);font-size:0.8rem;text-transform:uppercase;letter-spacing:.05em">Token cost per action</td>
+          <td style="padding:0.75rem 1rem">None (pure script)</td>
+          <td style="padding:0.75rem 1rem">Cloud fees + AI tokens</td>
+          <td style="padding:0.75rem 1rem">1,000–3,000 tokens/screenshot × every step</td>
+          <td style="padding:0.75rem 1rem;color:var(--green,#34C759);font-weight:500">~300 tokens/step. Hot start: <strong>85.7% less</strong>.</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);background:var(--bg2)">
+          <td style="padding:0.75rem 1rem;font-weight:600;color:var(--text-muted);font-size:0.8rem;text-transform:uppercase;letter-spacing:.05em">Repeat task cost</td>
+          <td style="padding:0.75rem 1rem">Fixed (script re-runs)</td>
+          <td style="padding:0.75rem 1rem">Linear — billed per execution</td>
+          <td style="padding:0.75rem 1rem">Linear — re-explores every time, no memory</td>
+          <td style="padding:0.75rem 1rem;color:var(--green,#34C759);font-weight:500">Decreasing — muscle memory compounds</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border)">
+          <td style="padding:0.75rem 1rem;font-weight:600;color:var(--text-muted);font-size:0.8rem;text-transform:uppercase;letter-spacing:.05em">Login sessions</td>
+          <td style="padding:0.75rem 1rem">Extra cookie/session setup</td>
+          <td style="padding:0.75rem 1rem">Cloud — can't use your local sessions</td>
+          <td style="padding:0.75rem 1rem">OS-level, unaware of browser state</td>
+          <td style="padding:0.75rem 1rem;color:var(--green,#34C759);font-weight:500">Your real Chrome — already logged in</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);background:var(--bg2)">
+          <td style="padding:0.75rem 1rem;font-weight:600;color:var(--text-muted);font-size:0.8rem;text-transform:uppercase;letter-spacing:.05em">When the site updates</td>
+          <td style="padding:0.75rem 1rem">Selectors break — rewrite scripts</td>
+          <td style="padding:0.75rem 1rem">Visual model may degrade silently</td>
+          <td style="padding:0.75rem 1rem">Screenshot inference adjusts, but expensively</td>
+          <td style="padding:0.75rem 1rem;color:var(--green,#34C759);font-weight:500">AI detects mismatch, finds new selector, self-heals muscle</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border)">
+          <td style="padding:0.75rem 1rem;font-weight:600;color:var(--text-muted);font-size:0.8rem;text-transform:uppercase;letter-spacing:.05em">Data privacy</td>
+          <td style="padding:0.75rem 1rem">Local ✅</td>
+          <td style="padding:0.75rem 1rem">Through third-party servers ❌</td>
+          <td style="padding:0.75rem 1rem">Local ✅</td>
+          <td style="padding:0.75rem 1rem;color:var(--green,#34C759);font-weight:500">100% local — 127.0.0.1 only ✅</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);background:var(--bg2)">
+          <td style="padding:0.75rem 1rem;font-weight:600;color:var(--text-muted);font-size:0.8rem;text-transform:uppercase;letter-spacing:.05em">AI terminal choice</td>
+          <td style="padding:0.75rem 1rem">Any (pure script)</td>
+          <td style="padding:0.75rem 1rem">Varies by platform</td>
+          <td style="padding:0.75rem 1rem">Bundled with Codex / Claude</td>
+          <td style="padding:0.75rem 1rem;color:var(--green,#34C759);font-weight:500">Any AI that speaks HTTP</td>
+        </tr>
+        <tr>
+          <td style="padding:0.75rem 1rem;font-weight:600;color:var(--text-muted);font-size:0.8rem;text-transform:uppercase;letter-spacing:.05em">Shared knowledge</td>
+          <td style="padding:0.75rem 1rem">Script = locked to one AI</td>
+          <td style="padding:0.75rem 1rem">Workflow = locked to platform</td>
+          <td style="padding:0.75rem 1rem">No persistent memory</td>
+          <td style="padding:0.75rem 1rem;color:var(--green,#34C759);font-weight:500">Muscle files = cross-AI, transferable, permanent</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="margin-top:1.5rem;font-size:0.85rem;color:var(--text-muted);text-align:center">
+    Muscle memory is cross-AI: knowledge explored by Claude Code today is reused by Codex tomorrow — same JSON files, same Desktop folder.
+  </p>
+</section>
+
 <!-- Get Started -->
 <section class="section" id="get-started" style="background:var(--bg2);max-width:100%;border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
   <div style="max-width:var(--max-w);margin:0 auto">

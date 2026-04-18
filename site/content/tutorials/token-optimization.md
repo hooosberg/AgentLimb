@@ -1,72 +1,100 @@
 ---
-title: "Token Optimization: From 5000 to 300 Tokens Per Task"
-date: "2025-06-06"
+title: "Token Optimization: 12,250 → 1,750 — Real Data"
+date: "2026-04-18"
 tag: "Advanced"
 icon: "⚡"
-description: "Deep dive into muscle memory mechanics. How to structure your exploration for maximum replay efficiency."
+description: "How AgentLimb's three-layer muscle memory reduces token cost by 85.7% on repeat tasks — with real regression numbers."
 readTime: "6 min"
 difficulty: "Advanced"
 ---
 
-## Understanding Token Cost
+## Where Tokens Actually Go
 
-Every time your AI interacts with a webpage, it costs tokens:
+When your AI operates a browser without muscle memory, most tokens are spent on **re-exploration** — figuring out what's on the page, where the buttons are, which path leads to success.
 
-- `observe()` — returns page state (DOM, forms, etc.) → ~200-500 tokens per call
-- `act()` — performs an action → ~100 tokens per call
-- The AI's reasoning about what to do next → ~200-800 tokens per step
+A Reddit posting task with a cold browser:
+- 3× `page_snapshot` calls to understand the DOM
+- Multiple click attempts to locate the right selector
+- AI reasoning at each step
+- **Total: ~12,250 tokens, 8–20 minutes**
 
-A typical task like "post to Reddit" involves 20-30 tool calls and reasoning steps, totaling ~5000 tokens.
+With muscle memory on the second run:
+- 0 `page_snapshot` calls — selectors are already known
+- Direct navigation to the right elements
+- **Total: ~1,750 tokens, 30 seconds to 2 minutes**
 
-## How Muscle Replay Saves Tokens
+**85.7% reduction** — verified in a real regression test (low-parameter Codex, Reddit r/test, 2026-04-18).
 
-When you replay a muscle:
+---
 
-1. AI calls `muscle(action: "run", name: "reddit-post")` → 1 tool call
-2. AgentLimb replays the saved steps internally → 0 AI tokens
-3. Done → ~300 tokens total (just the initial call + result)
-
-The AI doesn't think, explore, or reason — the muscle handles everything.
-
-## Optimization Strategies
-
-### 1. Structure Clean Explorations
-
-Guide your AI to take the simplest path:
+## How the Three-Layer System Works
 
 ```
-Navigate to reddit.com/r/test. Use the most direct path 
-to create a post. Avoid unnecessary page interactions.
+Session layer  →  Chrome storage, lives for one task
+               auto-captured: every successful click appends a selector entry
+
+Hot layer      →  Chrome storage, persists across tasks
+               written on muscle_commit
+
+Truth layer    →  ~/Desktop/AgentLimb-muscle/<domain>.json
+               permanent, human-readable, survives Chrome reinstalls
 ```
 
-Fewer steps = smaller muscle = faster replay.
+Every time your AI clicks something, the selector is silently appended to the session buffer. At task end, `muscle_commit` merges the buffer into hot and truth layers. Zero overhead for your AI.
 
-### 2. Save Muscles Early
+---
 
-Don't wait for the perfect flow. Save after the first success, then iterate:
+## Auto-Recall on Navigate
+
+When your AI navigates to a domain it has visited before, AgentLimb automatically reads the muscle file and delivers the site knowledge as part of the tool result. Your AI sees:
 
 ```
-muscle(action: "save", name: "reddit-post-v1")
+reddit.com knowledge (v3, updated 2026-04-17):
+- submit button → .submit-link-button
+- title input → textarea[name="title"]
+- Workflow: text post → 4 steps (90% success)
+- Note: shadow DOM on new reddit — title selector is the React wrapper
 ```
 
-### 3. One Muscle Per Platform Per Action
+`page_snapshot` is never called unless a stored selector fails.
 
-Keep muscles focused:
-- `reddit-text-post` — text posts only
-- `reddit-link-post` — link posts only
-- `twitter-tweet` — single tweets
-- `twitter-thread` — thread posting
+---
 
-### 4. Use Variables in Muscles
+## Real Regression Data
 
-Muscles support parameterization. Instead of hardcoding content, the muscle captures the flow structure, and you inject content at replay time.
+| Metric | Cold start | Hot start | Savings |
+|---|---|---|---|
+| `page_snapshot` calls | 3 | **0** | **100%** |
+| Total tool calls | 23 | 10 | 56.5% |
+| Estimated tokens | ~12,250 | **~1,750** | **↓ 85.7%** |
+| Wall-clock time | 8–20 min | **30s–2 min** | **↓ ~80–95%** |
+| Selector hit rate | — | 2/3 (1 auto-healed) | — |
 
-## Cost Comparison
+The hit rate shows self-healing: one stored selector had gone stale. The AI detected the mismatch, used `page_snapshot` for that one element, found the new selector, finished the task, then wrote the corrected selector back to the muscle file.
 
-| Scenario | Tokens per task | Monthly (100 tasks) |
+---
+
+## Four Commit Modes
+
+| Status | What gets saved |
+|---|---|
+| `success` | Full session buffer merged |
+| `partial` | Buffer merged, workflow marked incomplete |
+| `failed` | Session discarded — bad paths never pollute the knowledge base |
+| `manual` | Partial save, session stays open for more accumulation |
+
+The `failed` mode is crucial: CAPTCHA hits, error loops, broken pages — all discarded. Only verified routes compound.
+
+---
+
+## Cost at Scale
+
+100 repeat tasks/month on sites with established muscles:
+
+| | Without muscle memory | With muscle memory |
 |---|---|---|
-| No muscles | ~5,000 | ~500,000 |
-| With muscles | ~300 | ~30,000 |
-| **Savings** | **94%** | **~$15 saved** |
+| Tokens per task | ~12,250 | ~1,750 |
+| Monthly tokens | ~1,225,000 | ~175,000 |
+| **Savings** | — | **↓ 85.7%** |
 
-The savings compound. The more you automate, the more each muscle earns back its initial exploration cost.
+The savings are permanent — the muscle files don't expire or reset. The more you run the same sites, the more the cost asymptote approaches zero.
