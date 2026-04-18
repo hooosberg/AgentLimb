@@ -901,6 +901,33 @@ a:hover { color: var(--accent2); }
   padding: 100px 24px 80px;
 }
 
+.muscle-how {
+  display: flex; align-items: center; gap: 12px;
+  flex-wrap: wrap;
+  margin: 32px 0 0;
+  padding: 20px 24px;
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.muscle-how-step {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px; color: var(--text2); line-height: 1.4;
+  flex: 1; min-width: 180px;
+}
+.muscle-how-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--accent); color: #fff;
+  font-size: 11px; font-weight: 700; flex-shrink: 0;
+}
+.muscle-how-arrow {
+  color: var(--muted); font-size: 16px; flex-shrink: 0;
+}
+@media (max-width: 600px) {
+  .muscle-how { flex-direction: column; }
+  .muscle-how-arrow { transform: rotate(90deg); }
+}
+
 .muscle-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));

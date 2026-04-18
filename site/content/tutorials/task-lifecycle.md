@@ -1,134 +1,82 @@
 ---
-title: "Explicit Task Lifecycle: plan → step → complete"
+title: "Watch Your AI Work in Real Time"
 date: "2026-04-18"
-tag: "Protocol"
+tag: "How It Works"
 icon: "📋"
-description: "Silence no longer equals success. AgentLimb's task lifecycle protocol makes AI progress visible and failures explicit — in real time."
-readTime: "5 min"
-difficulty: "Intermediate"
+description: "AgentLimb shows you exactly what your AI is doing — every step, every result, in real time. No more guessing if it finished or got stuck."
+readTime: "4 min"
+difficulty: "Beginner"
 ---
 
-## The Problem with Silent AI
+## You Can Always See What's Happening
 
-Without a lifecycle protocol, you can't tell the difference between:
-- An AI that finished successfully
-- An AI that's stuck on step 3 for the past 10 minutes
-- An AI that crashed and doesn't know it
+With most AI tools, you send a task and wait. You don't know if it's working, stuck, or finished until it sends you a message.
 
-AgentLimb solves this with an explicit lifecycle that every task must follow. Every state is declared. Silence is treated as failure.
+AgentLimb is different. Every task your AI takes on is tracked in the side panel — live, as it happens. You see each step before it starts, watch steps get checked off one by one, and see a clear result when it's done.
 
 ---
 
-## The Four Tools
+## Before the AI Does Anything, It Shows You the Plan
 
-### `task_plan`
+When you give your AI a task, the first thing it does is describe what it's about to do — in plain steps.
 
-The AI declares its intent before touching the browser:
+The side panel shows you this plan immediately:
 
-```json
-task_plan({
-  "title": "Post to Reddit r/entrepreneur",
-  "steps": [
-    "Navigate to subreddit",
-    "Click 'New Post'",
-    "Fill in title and body",
-    "Submit and confirm"
-  ]
-})
-```
+- Navigate to the subreddit
+- Click the New Post button
+- Fill in the title and body
+- Submit and confirm
 
-The side panel immediately renders a live checklist with a **running** badge. You see the plan before the AI takes a single action.
-
-### `task_step_done`
-
-As each step completes, the AI marks it:
-
-```json
-task_step_done({ "index": 0, "ok": true })
-task_step_done({ "index": 1, "ok": true })
-task_step_done({ "index": 2, "ok": false, "note": "Submit button not found — retrying with alternate selector" })
-```
-
-Errors are immediately visible in the side panel. You can see exactly where the AI is in real time.
-
-### `task_complete`
-
-Explicit success:
-
-```json
-task_complete({ "summary": "Post published at reddit.com/r/entrepreneur/comments/xyz" })
-```
-
-Side panel enters **success** state (green). No ambiguity.
-
-### `task_fail`
-
-Explicit failure:
-
-```json
-task_fail({ "reason": "CAPTCHA appeared on step 3. Could not proceed." })
-```
-
-Side panel enters **failed** state (red). The reason is recorded.
+You see the plan before a single click happens. If the plan doesn't look right, you can stop it before it starts.
 
 ---
 
-## Automatic Failure Modes
+## Each Step Gets Checked Off as It Completes
 
-You don't have to manually call `task_fail` for every edge case. AgentLimb handles these automatically:
+As your AI works through the task, each step lights up and then gets marked done. You can watch this happen in real time.
 
-| Condition | Result |
+If a step runs into a problem — a button isn't where it was expected, or a page loaded differently — that step is flagged immediately. You see exactly where the issue is, not just a vague error message at the end.
+
+---
+
+## A Clear Result When It's Done
+
+When the task finishes, the side panel shows one of two things:
+
+- **Success** — the task completed. A green badge appears with a brief summary of what happened.
+- **Failed** — something prevented completion. A red badge appears with the specific reason.
+
+There's no ambiguity. You know exactly what happened and why.
+
+---
+
+## What Happens If the AI Gets Stuck?
+
+If your AI stops making progress for several minutes, AgentLimb automatically marks the task as timed out. You see it in the panel. The task doesn't silently spin forever consuming tokens — it stops, and you're notified.
+
+This also happens if the bridge goes offline mid-task. The task is marked failed with a clear reason, not silently abandoned.
+
+---
+
+## How This Connects to Muscle Memory
+
+When a task succeeds, AgentLimb saves what the AI learned about navigating that site. That knowledge goes into the Desktop folder automatically.
+
+If a task fails, the session is discarded — no bad routes get saved. This way, the Desktop folder only ever contains knowledge from tasks that actually worked.
+
+---
+
+## What the Side Panel Shows You
+
+During any task:
+
+| Status | What it means |
 |---|---|
-| No progress for 5 minutes | **timeout** state — task treated as failed |
-| Bridge goes offline + 15s wait | **failed** state with reason "bridge offline" |
+| Running | Task is in progress — steps are being worked through |
+| Success | Task completed successfully |
+| Failed | Task couldn't finish — reason is shown |
+| Timed out | AI stopped making progress — task automatically stopped |
 
-This means a stuck AI doesn't silently waste tokens forever. It times out, and you see it in the side panel.
+Each step in the checklist shows whether it's waiting, in progress, done, or hit an error.
 
----
-
-## How It Connects to Muscle Memory
-
-The lifecycle protocol and muscle memory are linked. The recommended pattern:
-
-```
-task_plan(...)
-[business tool calls]
-muscle_commit(status: "success", verification: "post appeared at URL")
-task_complete(summary: "...")
-```
-
-`muscle_commit` runs *before* `task_complete`. This ensures:
-1. Knowledge is saved while the AI still has the session context
-2. The verification string becomes a note in the muscle file
-3. If `muscle_commit(failed)` is called, the session is discarded *before* `task_fail` — no bad routes get saved
-
----
-
-## What You See in the Side Panel
-
-The side panel has three states for any task:
-
-| Badge | Meaning |
-|---|---|
-| 🟡 **running** | Task declared, steps in progress |
-| ✅ **success** | `task_complete` called |
-| ❌ **failed** | `task_fail` called, or timeout, or bridge offline |
-| ⏱ **timeout** | No progress for 5 minutes |
-
-Each step in the checklist shows:
-- ⬜ Pending
-- 🔄 Active (current step being worked)
-- ✅ Done
-- ❌ Error (with note)
-
----
-
-## Tips for Better Task Declarations
-
-**Be specific in step labels.** Instead of "Do the thing", use "Click the 'New Post' button in r/entrepreneur". When a step errors, you want to know exactly which action failed.
-
-**One logical action per step.** Don't bundle "fill form and submit" into one step. Keep them separate so the error granularity is useful.
-
-**Always pair muscle_commit with task_complete.** Your AI should commit knowledge before declaring success. This is enforced in the prompt's behavior rules.
-
-**Use `task_step_done` with `ok: false` for soft errors.** If the AI tried a path and it didn't work but recovery is possible, mark the step as error and continue. The partial failure is visible in the panel without aborting the whole task.
+You're never left wondering. The side panel tells you everything.

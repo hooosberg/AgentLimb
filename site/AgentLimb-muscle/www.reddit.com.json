@@ -1,0 +1,141 @@
+{
+  "domain": "www.reddit.com",
+  "lastUpdatedAt": "2026-04-18T09:10:07.057Z",
+  "version": 4,
+  "notes": [
+    {
+      "at": "2026-04-18T06:00:10+08:00",
+      "text": "Reddit 新版发帖页可正常发文到 r/test，但 interactive page_snapshot 在提交页只稳定暴露正文 contenteditable，不直接暴露标题输入和发帖按钮。"
+    },
+    {
+      "at": "2026-04-18T06:00:10+08:00",
+      "text": "标题组件是 shadow DOM 自定义元素 faceplate-textarea-input[name=title]；form_input 直接设置会报 Unsupported form element。可通过 computer.click(#post-composer__title) 后 computer.type 向焦点输入标题。"
+    },
+    {
+      "at": "2026-04-18T06:00:10+08:00",
+      "text": "提交按钮宿主为 r-post-form-submit-button#submit-post-button，shadow 内真实按钮文案为 发帖；computer.click(selector=#submit-post-button) 可成功提交。提交后通常回到 /r/test/?created=t3_xxx 社区页，而不是直接跳到 /comments/。"
+    },
+    {
+      "at": "2026-04-17T22:02:10.280Z",
+      "text": "[成功验证] 第一轮帖子标题 AgentLimb 探索模式测试 2026-04-18 06:00 CST 出现在 feed 且 selector 为 #post-title-t3_1sof0b4；第二轮帖子标题 AgentLimb 肌肉模式测试 2026-04-18 06:01 CST 出现在 feed 且 selector 为 #post-title-t3_1sof1so"
+    },
+    {
+      "at": "2026-04-18T09:08:53.618Z",
+      "text": "[manual commit] Saved revalidated Reddit r/test posting workflow and selectors after the first successful post so the second run can rely on muscle memory."
+    },
+    {
+      "at": "2026-04-18T09:10:07.056Z",
+      "text": "[success verification] Verified two successful Reddit r/test posts. First title AgentLimb 探索模式测试 2026-04-18 17:08 UTC+8 appeared in the feed as #post-title-t3_1sosmf7, then second title AgentLimb 肌肉模式测试 2026-04-18 17:09 UTC+8 appeared in the feed as #post-title-t3_1sosn92 after using recalled selectors [data-testid=\"create-post\"], #post-composer__title, [aria-label=\"帖子正文字段\"], and #submit-post-button."
+    }
+  ],
+  "selectors": {
+    "r-post-form-submit-button": [
+      {
+        "lastTestedAt": "2026-04-18T09:08:11.439Z",
+        "reliability": 0.8,
+        "type": "css",
+        "value": "#submit-post-button"
+      }
+    ],
+    "reddit_create_post_link": [
+      {
+        "lastTestedAt": "2026-04-18",
+        "reliability": 0.92,
+        "type": "css",
+        "value": "[data-testid=\"create-post\"]"
+      }
+    ],
+    "reddit_post_body": [
+      {
+        "lastTestedAt": "2026-04-18",
+        "reliability": 0.95,
+        "type": "css",
+        "value": "[aria-label=\"帖子正文字段\"]"
+      }
+    ],
+    "reddit_post_title_component": [
+      {
+        "lastTestedAt": "2026-04-18",
+        "reliability": 0.72,
+        "type": "css",
+        "value": "faceplate-textarea-input[name=\"title\"]"
+      }
+    ],
+    "reddit_post_title_host": [
+      {
+        "lastTestedAt": "2026-04-18",
+        "reliability": 0.9,
+        "type": "css",
+        "value": "#post-composer__title"
+      }
+    ],
+    "reddit_submit_post_host": [
+      {
+        "lastTestedAt": "2026-04-18",
+        "reliability": 0.91,
+        "type": "css",
+        "value": "#submit-post-button"
+      }
+    ],
+    "标题": [
+      {
+        "lastTestedAt": "2026-04-18T09:07:58.987Z",
+        "reliability": 0.8,
+        "type": "css",
+        "value": "#post-composer__title"
+      }
+    ],
+    "创建帖子": [
+      {
+        "value": "[data-testid=\"create-post\"]",
+        "type": "css",
+        "reliability": 0.8,
+        "lastTestedAt": "2026-04-18T09:09:09.800Z"
+      }
+    ]
+  },
+  "workflows": [
+    {
+      "description": "在 Reddit 新版提交页发布一篇文本帖子，优先使用可见 selector，标题输入走 shadow DOM 降级路径。",
+      "id": "reddit-r-test-text-post",
+      "name": "Reddit r/test 文本发帖",
+      "steps": [
+        "navigate 到 https://www.reddit.com/r/test/submit/?type=TEXT",
+        "page_snapshot / javascript_eval 确认已在提交页",
+        "form_input(selector=[aria-label=帖子正文字段]) 填正文",
+        "computer.click(selector=#post-composer__title) 聚焦标题容器",
+        "computer.type 输入标题",
+        "computer.click(selector=#submit-post-button) 提交",
+        "wait(page_contains, 标题文本) 或检查 URL 是否为 /r/test/?created=t3_xxx"
+      ],
+      "successCount": 1
+    },
+    {
+      "description": "第一轮帖子标题 AgentLimb 探索模式测试 2026-04-18 06:00 CST 出现在 feed 且 selector 为 #post-title-t3_1sof0b4；第二轮帖子标题 AgentLimb 肌肉模式测试 2026-04-18 06:01 CST 出现在 feed 且 selector 为 #post-title-t3_1sof1so",
+      "id": "reddit-r/test-双轮发帖回测",
+      "lastSucceededAt": "2026-04-17T22:02:10.281Z",
+      "name": "Reddit r/test 双轮发帖回测",
+      "partial": false,
+      "steps": [
+        "1. 点击「标题」（div，selector：#post-composer__title）",
+        "2. 点击（r-post-form-submit-button，selector：#submit-post-button）"
+      ],
+      "stepsCompleted": 2,
+      "successCount": 1
+    },
+    {
+      "id": "auto-1776503407056",
+      "name": "auto-captured workflow 2026-04-18",
+      "description": "Verified two successful Reddit r/test posts. First title AgentLimb 探索模式测试 2026-04-18 17:08 UTC+8 appeared in the feed as #post-title-t3_1sosmf7, then second title AgentLimb 肌肉模式测试 2026-04-18 17:09 UTC+8 appeared in the feed as #post-title-t3_1sosn92 after using recalled selectors [data-testid=\"create-post\"], #post-composer__title, [aria-label=\"帖子正文字段\"], and #submit-post-button.",
+      "steps": [
+        "1. click \"标题\" (div, selector: #post-composer__title)",
+        "2. click (r-post-form-submit-button, selector: #submit-post-button)",
+        "3. click \"创建帖子\" (link, selector: [data-testid=\"create-post\"])"
+      ],
+      "partial": false,
+      "stepsCompleted": 3,
+      "lastSucceededAt": "2026-04-18T09:10:07.056Z",
+      "successCount": 1
+    }
+  ]
+}

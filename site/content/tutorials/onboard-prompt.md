@@ -1,91 +1,66 @@
 ---
-title: "The Onboard Prompt: What It Is and How It Works"
+title: "The Onboard Prompt: One Copy, Any AI"
 date: "2026-04-18"
-tag: "Configuration"
+tag: "Getting Started"
 icon: "📋"
-description: "One copy, any AI terminal. The onboard prompt auto-configures your AI with 16 browser tools via HTTP — no MCP, no config files."
+description: "The prompt you copy from AgentLimb is the only setup step. Here's what it does and how to use it with different AI tools."
 readTime: "3 min"
 difficulty: "Beginner"
 ---
 
-## One Prompt. Any AI. Zero Config.
+## What Is the Onboard Prompt?
 
-The onboard prompt is the text you copy from AgentLimb's side panel and paste to your AI. That single paste is all the configuration needed. No YAML files, no API keys, no tool registration steps.
+The onboard prompt is a piece of text that tells your AI everything it needs to know about AgentLimb. You copy it once, paste it into your AI tool, and your AI is ready to control the browser.
 
----
-
-## What the Prompt Contains
-
-The prompt is dynamically generated each time you copy it. It includes:
-
-- **Environment block** — Bridge status, extension ID, platform, number of sites already learned
-- **Protocol** — How to start a task (`task_plan`), advance steps, and close with `task_complete` or `task_fail`
-- **Tool list** — Names and one-line descriptions of all 16 tools
-- **Docs pointer** — A `curl` command the AI can run to fetch the full schema for any tool on demand
-
-The prompt is designed to be short (~45 lines). Your AI doesn't need to read 7,000 tokens of documentation upfront — it fetches what it needs via:
-
-```
-GET 127.0.0.1:7791/api/mvp/docs/tools         # all 16 tool schemas
-GET 127.0.0.1:7791/api/mvp/docs/tools/:name   # one tool's full schema
-GET 127.0.0.1:7791/api/mvp/docs/rules         # behavior rules
-```
+That's the entire configuration process. No settings files, no API keys, no installation steps in your AI tool.
 
 ---
 
-## AgentLimb Uses HTTP, Not MCP
+## How to Get It
 
-AgentLimb's bridge is a plain HTTP server at `127.0.0.1:7791`. Your AI makes HTTP calls — no Model Context Protocol server setup, no `mcpServers` config block, no special client library.
+Open the AgentLimb side panel in Chrome. You'll see a button that says **"Copy Onboard Prompt"**. Click it. The prompt is now on your clipboard.
 
-This means it works with **any AI terminal that can run commands**: Claude Code, Codex, Cursor, Windsurf, Trae, local Ollama models, custom scripts. If your AI can call `curl`, it can use AgentLimb.
-
----
-
-## Paste and Go: The Full Flow
-
-```
-1. Bridge running at 127.0.0.1:7791
-2. You click "Copy Onboard Prompt" in the side panel
-3. Paste to your AI terminal
-4. AI reads the prompt (~2 seconds)
-5. AI auto-connects (POST /api/mvp/terminal/connect)
-6. AI fetches tool schemas it needs (GET /api/mvp/docs/tools/...)
-7. AI declares task_plan and starts working
-```
-
-You don't initiate the connection. The AI handles all of that when it reads the prompt.
+Every time you click this button, the prompt is freshly generated. It includes the current connection status, and information about any websites your AI has already learned.
 
 ---
 
-## Tips for Different AI Tools
+## How to Use It
 
-### Claude Code
+Paste the prompt into your AI tool at the beginning of a session. Your AI reads it, connects to the bridge running on your computer, and is immediately ready to take browser tasks.
 
-Paste the prompt in a new Claude Code session. Claude reads the environment block, confirms the bridge is online, and immediately knows which sites it has already learned. No extra config needed.
+That's all there is to it.
 
-Add context after pasting if you want:
+---
 
-```
-[paste onboard prompt]
+## Works with Any AI Tool
 
-Today's goal: post our product update to Reddit r/entrepreneur and Hacker News.
-The post content is in ~/Desktop/posts/update-april.md
-```
+The prompt works with any AI tool that can use tools or run commands. This includes:
 
-### Codex (OpenAI)
+- **Claude Code** — Paste at the start of a session. Claude reads the connection details and self-configures immediately.
+- **Codex** — Paste it in. Codex connects and starts working.
+- **Cursor, Windsurf, Trae** — Paste in the chat window. Works without any extra settings.
+- **Local AI models** — Works with any model that supports tool calling.
 
-Paste the prompt at the start of your Codex session. Codex works best with the minimal prompt format (Bridge online mode) — the tools are self-describing so it ramps up quickly.
+If your AI tool can follow instructions and use external tools, it works with AgentLimb.
 
-### Cursor, Windsurf, Trae
+---
 
-These tools support tool calling. Paste the prompt in chat, or include it in your system context. The AI fetches tool schemas on demand, so startup is fast.
+## You Can Add Context After Pasting
 
-### Local Models (Ollama, LM Studio)
+After pasting the prompt, you can add information about what you want done:
 
-Works with any model that supports tool/function calling. Smaller models may need the `full` prompt mode (7,000 tokens with all schemas embedded) — the side panel switches automatically if the bridge is offline.
+> *"I need to post today's product update to Reddit and Hacker News. The content is: [your content here]."*
+
+Your AI combines the AgentLimb connection information with your instructions and gets to work.
 
 ---
 
 ## If the Connection Drops
 
-If the bridge restarts mid-session, just copy and paste the prompt again. The AI will reconnect in one step and continue where it left off. Muscle knowledge is stored on disk and is never lost between connections.
+If your AI disconnects from the bridge (for example, if the bridge was restarted), just copy and paste the prompt again. Your AI reconnects instantly. All the muscle memory on your Desktop is preserved regardless of connection status.
+
+---
+
+## The Prompt Adapts Automatically
+
+When the bridge is running and connected, the prompt is short and efficient — your AI fetches extra details on demand as it works. If the bridge isn't running yet, the prompt automatically includes more information so your AI can still operate. You don't need to choose between modes — it just works.

@@ -1,100 +1,69 @@
 ---
-title: "Token Optimization: 12,250 → 1,750 — Real Data"
+title: "Why Repeat Tasks Get Cheaper Over Time"
 date: "2026-04-18"
-tag: "Advanced"
+tag: "Muscle Memory"
 icon: "⚡"
-description: "How AgentLimb's three-layer muscle memory reduces token cost by 85.7% on repeat tasks — with real regression numbers."
-readTime: "6 min"
-difficulty: "Advanced"
+description: "The first time costs the most. Every run after that costs less. Here's why — without the technical details."
+readTime: "4 min"
+difficulty: "Beginner"
 ---
 
-## Where Tokens Actually Go
+## The Basic Idea
 
-When your AI operates a browser without muscle memory, most tokens are spent on **re-exploration** — figuring out what's on the page, where the buttons are, which path leads to success.
+When you use an AI tool, you pay for the thinking it does — in tokens. The more thinking required, the more tokens used, the more it costs and the longer it takes.
 
-A Reddit posting task with a cold browser:
-- 3× `page_snapshot` calls to understand the DOM
-- Multiple click attempts to locate the right selector
-- AI reasoning at each step
-- **Total: ~12,250 tokens, 8–20 minutes**
+The biggest source of wasted thinking in browser automation is exploration: your AI re-reading the page, re-finding the buttons, re-figuring out how the form works — every single time.
 
-With muscle memory on the second run:
-- 0 `page_snapshot` calls — selectors are already known
-- Direct navigation to the right elements
-- **Total: ~1,750 tokens, 30 seconds to 2 minutes**
-
-**85.7% reduction** — verified in a real regression test (low-parameter Codex, Reddit r/test, 2026-04-18).
+AgentLimb eliminates that waste by remembering what was learned.
 
 ---
 
-## How the Three-Layer System Works
+## First Run vs. Every Run After
 
-```
-Session layer  →  Chrome storage, lives for one task
-               auto-captured: every successful click appends a selector entry
+**First run on a site:**
+Your AI reads the page structure, tries various elements, finds the right path, and completes the task. This is necessary — every site is different. But it takes time and uses tokens to do this discovery work.
 
-Hot layer      →  Chrome storage, persists across tasks
-               written on muscle_commit
+**Second run onward:**
+Your AI already knows the site. It skips the reading and discovery phases entirely. It knows exactly which button to click and in what order. The task gets done faster, with far less thinking required.
 
-Truth layer    →  ~/Desktop/AgentLimb-muscle/<domain>.json
-               permanent, human-readable, survives Chrome reinstalls
-```
+**Real example from Reddit posting:**
 
-Every time your AI clicks something, the selector is silently appended to the session buffer. At task end, `muscle_commit` merges the buffer into hot and truth layers. Zero overhead for your AI.
-
----
-
-## Auto-Recall on Navigate
-
-When your AI navigates to a domain it has visited before, AgentLimb automatically reads the muscle file and delivers the site knowledge as part of the tool result. Your AI sees:
-
-```
-reddit.com knowledge (v3, updated 2026-04-17):
-- submit button → .submit-link-button
-- title input → textarea[name="title"]
-- Workflow: text post → 4 steps (90% success)
-- Note: shadow DOM on new reddit — title selector is the React wrapper
-```
-
-`page_snapshot` is never called unless a stored selector fails.
-
----
-
-## Real Regression Data
-
-| Metric | Cold start | Hot start | Savings |
-|---|---|---|---|
-| `page_snapshot` calls | 3 | **0** | **100%** |
-| Total tool calls | 23 | 10 | 56.5% |
-| Estimated tokens | ~12,250 | **~1,750** | **↓ 85.7%** |
-| Wall-clock time | 8–20 min | **30s–2 min** | **↓ ~80–95%** |
-| Selector hit rate | — | 2/3 (1 auto-healed) | — |
-
-The hit rate shows self-healing: one stored selector had gone stale. The AI detected the mismatch, used `page_snapshot` for that one element, found the new selector, finished the task, then wrote the corrected selector back to the muscle file.
-
----
-
-## Four Commit Modes
-
-| Status | What gets saved |
-|---|---|
-| `success` | Full session buffer merged |
-| `partial` | Buffer merged, workflow marked incomplete |
-| `failed` | Session discarded — bad paths never pollute the knowledge base |
-| `manual` | Partial save, session stays open for more accumulation |
-
-The `failed` mode is crucial: CAPTCHA hits, error loops, broken pages — all discarded. Only verified routes compound.
-
----
-
-## Cost at Scale
-
-100 repeat tasks/month on sites with established muscles:
-
-| | Without muscle memory | With muscle memory |
+| | First visit | After learning |
 |---|---|---|
-| Tokens per task | ~12,250 | ~1,750 |
-| Monthly tokens | ~1,225,000 | ~175,000 |
-| **Savings** | — | **↓ 85.7%** |
+| Time to complete | 8–20 minutes | 30 seconds–2 minutes |
+| Token usage | ~12,250 | ~1,750 |
+| Savings | — | **85% less** |
 
-The savings are permanent — the muscle files don't expire or reset. The more you run the same sites, the more the cost asymptote approaches zero.
+---
+
+## It Gets Better the More You Use It
+
+The savings don't plateau after the second run. Each time your AI uses a site:
+
+- It confirms that the saved knowledge still works
+- It updates anything that has changed
+- It accumulates more knowledge about edge cases
+
+So the third, fourth, and fifth run on the same site are even more efficient. The cost curve trends toward near-zero for familiar sites.
+
+---
+
+## The Muscle File on Your Desktop
+
+All this accumulated knowledge lives in a folder on your Desktop called **AgentLimb-muscle**. One file per website. Plain text, readable by anyone.
+
+The most important rule: **don't delete this folder**. Every file in it represents exploration work your AI will never have to repeat. Deleting it resets all savings back to first-run costs.
+
+You don't need to manage this folder in any other way. AgentLimb reads from it and writes to it automatically. Just let it exist.
+
+---
+
+## When Knowledge Goes Stale
+
+If a website redesigns itself and old knowledge becomes outdated, your AI handles it gracefully. It notices when something doesn't work, finds the updated version on its own, and automatically updates the saved knowledge. You don't need to do anything.
+
+---
+
+## Across All Your AI Tools
+
+The muscle files are not tied to any specific AI tool. Knowledge learned while using Claude Code is available when you switch to Codex or Cursor. The savings you accumulate work for every AI tool you use now or in the future.

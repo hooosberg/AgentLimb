@@ -1,104 +1,67 @@
 ---
-title: "Connect Any AI Terminal: Claude Code, Codex, Cursor & More"
+title: "Use AgentLimb with Any AI Tool"
 date: "2026-04-18"
-tag: "Integration"
+tag: "Getting Started"
 icon: "🔌"
-description: "AgentLimb connects via HTTP — no MCP server, no config files. Copy one prompt and any AI terminal is ready to control your browser."
-readTime: "4 min"
+description: "Claude Code, Codex, Cursor, local models — one prompt connects them all. No special setup required."
+readTime: "3 min"
 difficulty: "Beginner"
 ---
 
-## How Connection Works
+## One Prompt, Any AI
 
-AgentLimb's bridge is a plain HTTP server at `127.0.0.1:7791`. Your AI connects by reading the onboard prompt you paste, which contains:
+AgentLimb doesn't need to be installed inside your AI tool. It doesn't require any configuration in Claude Code or Cursor or Codex. The connection is established entirely through the prompt you paste.
 
-1. A `POST /api/mvp/terminal/connect` call to register
-2. A list of 16 tools with names and one-line descriptions
-3. `curl` commands to fetch full schemas on demand
-
-The AI self-configures in a few seconds. You don't need to configure anything on either end.
-
-**There is no MCP server.** No `mcpServers` config block needed. Any AI that can call HTTP endpoints works.
+Copy the onboard prompt from the AgentLimb side panel. Paste it into your AI tool. Your AI reads it, connects to the bridge running on your computer, and is immediately ready to control the browser.
 
 ---
 
-## Supported AI Terminals
+## Supported AI Tools
 
-| Terminal | Connection method | Notes |
-|---|---|---|
-| **Claude Code** | Paste onboard prompt | Works perfectly; Claude reads the environment block and auto-detects the bridge |
-| **Codex** | Paste onboard prompt | Works with both `codex` CLI and OpenAI API direct |
-| **Cursor** | Paste in chat | Works in Agent mode; no MCP config needed |
-| **Windsurf** | Paste in chat | Same as Cursor |
-| **Trae** | Paste in chat | Confirmed working |
-| **Local models (Ollama, LM Studio)** | Paste onboard prompt | Needs a model with tool/function calling support |
-| **Custom scripts** | Direct HTTP calls | Use `terminal-client.mjs` as reference, or call the API directly |
+**Claude Code** — Paste the prompt at the start of a session. Claude reads the environment details and connects automatically.
 
----
+**Codex** — Paste the prompt. Codex connects and starts working.
 
-## Step by Step
+**Cursor** — Paste in the chat window. Works in Agent mode without extra configuration.
 
-### 1. Start the bridge
+**Windsurf, Trae** — Same as Cursor. Paste and go.
 
-```bash
-npm start
-# or, if you ran install.sh: bridge is already running
-```
+**Local AI models (Ollama, LM Studio, etc.)** — Works with any model that supports tool use. Smaller models work well for straightforward tasks.
 
-Check: the side panel shows a green **Connected** badge.
-
-### 2. Copy the prompt
-
-Open the AgentLimb side panel → click **"Copy Onboard Prompt"**.
-
-The prompt is generated fresh each time. It includes the current bridge status, your extension ID, and the list of sites already in your muscle library.
-
-### 3. Paste and go
-
-Paste the prompt into your AI terminal. That's the entire configuration step.
-
-Your AI will:
-- POST to `/api/mvp/terminal/connect` to register
-- Fetch schemas for any tools it plans to use via `GET /api/mvp/docs/tools/:name`
-- Call `task_plan` when it has a task to start
-- Drive the browser using the 16 tools
+**Any other AI tool** — If your AI can follow instructions and use external tools, it works with AgentLimb. The connection is standard HTTP, the most universal format possible.
 
 ---
 
-## The 16 Tools Your AI Gets
+## Switching Between AI Tools
 
-| Category | Tools |
-|---|---|
-| Observe | `browser_session`, `tabs_context`, `page_snapshot` |
-| Navigate/Execute | `navigate`, `computer` (9 actions), `form_input`, `wait`, `javascript_eval` |
-| Muscle | `muscle_recall`, `muscle_remember`, `muscle_commit` |
-| Connectivity | `ping` |
-| Task lifecycle | `task_plan`, `task_step_done`, `task_complete`, `task_fail` |
+You can use different AI tools for different tasks, or switch from one to another mid-project. The knowledge your AI has accumulated doesn't belong to any specific tool — it lives in the muscle files on your Desktop.
 
-Schemas are served on demand — your AI only fetches the ones it needs for the current task, keeping startup fast.
+If Claude Code explored Reddit yesterday, Codex can use that knowledge today. Switch AI tools whenever you like without losing any of the learned workflows.
 
 ---
 
-## Cross-AI Muscle Memory
+## The Prompt Updates Automatically
 
-One of AgentLimb's most useful properties: **muscle files are shared across all AI terminals**.
+Each time you click "Copy Onboard Prompt" in the side panel, the prompt reflects the current state: which sites your AI has learned, whether the bridge is connected, and the full list of available tools. Copy fresh each time you start a new session for the most accurate information.
 
-If Claude Code explored Reddit yesterday and saved a muscle, Codex can use that muscle today — same selectors, same workflow knowledge. The muscle files live in `~/Desktop/AgentLimb-muscle/` on your Desktop, not inside any specific AI's context. Any AI that connects to AgentLimb reads from the same knowledge base.
+---
 
-This means:
-- Switch from Claude Code to Codex mid-project — no knowledge lost
-- Let one AI do the exploration, another do the replay
-- Share your muscle files with a colleague and their AI skips the cold start entirely
+## What Your AI Can Do
+
+Once connected, your AI has access to 16 tools for controlling the browser:
+
+- **Reading** — See what's on the current page, what tabs are open, the current URL
+- **Navigating** — Go to any URL, go back, go forward
+- **Clicking and typing** — Click buttons, fill in forms, scroll, take screenshots
+- **Waiting** — Wait for a page to load, wait for an element to appear
+- **Memory** — Read and update the knowledge saved about any website
+
+Your AI combines these tools to complete whatever task you give it, in whatever order makes sense.
 
 ---
 
 ## Troubleshooting
 
-**"Bridge not found" or no green badge:**
-Make sure `npm start` is running in the extension folder. Check `127.0.0.1:7791/api/mvp/status` in your browser — it should return JSON.
+**AI says it can't connect:** Make sure the bridge is running. Open the AgentLimb side panel — if you see a green "Connected" badge, the bridge is active. If not, start it from the extension folder.
 
-**AI isn't calling the tools correctly:**
-The minimal prompt (~45 lines) works for most capable models. If your local model is struggling, try the full prompt (bridge offline mode automatically switches to the 7,000-token version with all schemas embedded).
-
-**Prompt is stale:**
-Copy a fresh prompt from the side panel. Each copy includes current bridge status and muscle library state.
+**AI seems confused about what tools are available:** Copy a fresh onboard prompt from the side panel and paste it again. The fresh prompt includes the latest tool list and connection details.

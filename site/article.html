@@ -58,11 +58,20 @@
   if (!slug) {
     document.getElementById('article-content').textContent = t('article.notfound');
   } else {
-    const path = `/content/${type}/${slug}.md`;
-    fetch(path).then(r => {
-      if (!r.ok) throw new Error('Not found');
-      return r.text();
-    }).then(raw => {
+    // Try localized version first, fall back to English
+    const lang = (localStorage.getItem('lang') || navigator.language || 'en').split('-')[0];
+    const langMap = { zh: 'zh-CN', ja: 'ja', ko: 'ko', es: 'es', fr: 'fr', de: 'de', pt: 'pt-BR', ru: 'ru', ar: 'ar', it: 'it', hi: 'hi' };
+    const locale = langMap[lang] || null;
+    const localePath = locale ? `/content/${type}/${locale}/${slug}.md` : null;
+    const defaultPath = `/content/${type}/${slug}.md`;
+
+    const loadPath = (path) => fetch(path).then(r => { if (!r.ok) throw new Error('Not found'); return r.text(); });
+
+    const fetchChain = localePath
+      ? loadPath(localePath).catch(() => loadPath(defaultPath))
+      : loadPath(defaultPath);
+
+    fetchChain.then(raw => {
       const { meta, body } = parseFrontmatter(raw);
       document.title = `${meta.title} — AgentLimb`;
 

@@ -1,0 +1,89 @@
+{
+  "domain": "tieba.baidu.com",
+  "lastUpdatedAt": "2026-04-18T10:52:57.100Z",
+  "version": 4,
+  "notes": [
+    {
+      "at": "2026-04-18T09:16:21Z",
+      "text": "世界语吧发帖回测：吧内列表和吧内搜索不会立即显示新帖，但在个人页的贴子列表可立即验证。第一轮标题 贴吧探索测试 2026-04-18 17:13 已出现在个人页，发表于世界语吧。"
+    },
+    {
+      "at": "2026-04-18T09:18:22Z",
+      "text": "[成功验证] 第二轮标题 贴吧肌肉测试 2026-04-18 17:17 已在个人页贴子列表顶部出现，正文为第二轮 AgentLimb 百度贴吧肌肉记忆复测。该轮完全沿用已保存的发贴、标题、正文、发布 selector 完成。"
+    },
+    {
+      "at": "2026-04-18T10:48:21.355Z",
+      "text": "[success verification] Verified on https://tieba.baidu.com/home/main under the 贴子 tab: the new thread title 答疑解惑｜新手一日林地BC装备怎么配 appears at the top and is marked 发表于：bushcraft 吧. The composer was inspected before publishing, including title/body/publish and media upload controls."
+    },
+    {
+      "at": "2026-04-18T10:52:57.099Z",
+      "text": "[success verification] Verified on https://tieba.baidu.com/home/main under the 贴子 tab: the new thread title BC装备｜新手一日BC火种包怎么精简 appears at the top and is marked 发表于：bushcraft 吧. Before publishing, the composer was set to BC装备, 全场景可见, and 贴子原创声明."
+    }
+  ],
+  "selectors": {
+    "tieba_body_editor": [
+      {
+        "lastTestedAt": "2026-04-18T09:16:21Z",
+        "reliability": 0.98,
+        "type": "css",
+        "value": "#tb-editor-content .ql-editor"
+      }
+    ],
+    "tieba_my_posts_tab": [
+      {
+        "lastTestedAt": "2026-04-18T09:16:21Z",
+        "reliability": 0.9,
+        "type": "css",
+        "value": "#tab-thread"
+      }
+    ],
+    "tieba_publish_submit": [
+      {
+        "lastTestedAt": "2026-04-18T09:16:21Z",
+        "reliability": 0.94,
+        "type": "css",
+        "value": ".issue-btn.button-wrapper.button-wrapper--primary"
+      }
+    ],
+    "tieba_title_editor": [
+      {
+        "lastTestedAt": "2026-04-18T09:16:21Z",
+        "reliability": 0.98,
+        "type": "css",
+        "value": "#tb-editor-title .ql-editor"
+      }
+    ],
+    "tieba_world_publish_trigger": [
+      {
+        "lastTestedAt": "2026-04-18T09:16:21Z",
+        "reliability": 0.9,
+        "type": "css",
+        "value": ".button-wrapper.button-wrapper--gray.operate-btn.publish"
+      }
+    ],
+    "答疑解惑": [
+      {
+        "lastTestedAt": "2026-04-18T10:49:57.356Z",
+        "reliability": 0.8,
+        "type": "css",
+        "value": "#tab-57306"
+      }
+    ]
+  },
+  "workflows": [
+    {
+      "description": "进入世界语吧，展开发贴编辑器，填写标题和正文，发布后到个人页贴子列表确认新帖出现。",
+      "id": "tieba-shijieyu-post-verify-v1",
+      "name": "Tieba 世界语吧 图文发帖并在个人页验证",
+      "steps": [
+        "Navigate to https://tieba.baidu.com/f?kw=%E4%B8%96%E7%95%8C%E8%AF%AD&fr=personalize_page.",
+        "Click .button-wrapper.button-wrapper--gray.operate-btn.publish to open the publisher.",
+        "Fill #tb-editor-title .ql-editor with a title of 31 characters or fewer.",
+        "Fill #tb-editor-content .ql-editor with the body text.",
+        "Click .issue-btn.button-wrapper.button-wrapper--primary to publish.",
+        "Open the My page and verify the new title appears under the 贴子 tab."
+      ],
+      "successCount": 1
+    }
+  ]
+}

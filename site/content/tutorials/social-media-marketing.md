@@ -1,131 +1,78 @@
 ---
-title: "Multi-Platform Social Media Marketing with AI"
+title: "Multi-Platform Social Media Marketing"
 date: "2026-04-18"
 tag: "Use Case"
 icon: "📣"
-description: "Post to Reddit, Twitter, Product Hunt, and more — with muscle memory, each platform gets cheaper and faster every time you run it."
-readTime: "8 min"
-difficulty: "Intermediate"
+description: "Post to Reddit, Twitter, Product Hunt, and more — without opening a tab. Muscle memory makes each platform cheaper every time."
+readTime: "6 min"
+difficulty: "Beginner"
 ---
 
-## The Problem
+## The Situation
 
-You have a product update to ship. You need to post to Reddit, Twitter, Product Hunt, V2EX, Hacker News. Each platform has different UI, different flows, different character limits, different submit buttons. Doing it manually takes hours. Doing it with headless automation breaks on every site update.
+You have something to share — a product launch, an update, an article. It needs to go to Reddit, Twitter, Product Hunt, Hacker News, maybe more. Each platform has a different layout, different rules, different quirks. Doing it manually takes an hour. Setting up automation tools requires writing code and maintaining scripts.
 
-AgentLimb takes a different approach: your real browser, your real logins, and knowledge that improves with every run.
-
----
-
-## How It Works with Muscle Memory
-
-**First campaign:**
-1. Give your AI the content and the platforms
-2. AI navigates to each site, explores the posting flow, submits the content
-3. AgentLimb silently captures selectors and workflow for each domain
-4. Task ends with `muscle_commit(success)` — knowledge saved to Desktop
-
-**Every campaign after that:**
-1. Give your AI the content and the platforms
-2. AI navigates, recalls saved muscle for each domain, skips exploration
-3. Goes straight to the input fields and submits
-4. Each platform: ~300 tokens instead of ~2,000+
-
-The cost asymptote: after a few runs, your entire multi-platform campaign fits in a fraction of what a single cold-start run costs.
+AgentLimb takes a different path: your real browser, your existing logins, and an AI that learns each platform over time.
 
 ---
 
-## Platform-by-Platform
+## Your First Campaign
 
-### Reddit
+Tell your AI what you want to share and where:
 
-Tell your AI:
+> *"Post our product update to Reddit r/entrepreneur and Hacker News. Title: 'We just launched AgentLimb'. Body: [your content]."*
 
-```
-Navigate to reddit.com/r/[subreddit]. Create a text post with:
-title: "[your title]"
-body: "[your content]"
-Submit it and confirm the post appeared.
-```
+Your AI will:
+- Open Reddit in your browser (you're already logged in)
+- Navigate to r/entrepreneur
+- Find the new post button, fill in the title and body, and submit
+- Move to Hacker News and do the same
+- Report back when both are done
 
-Considerations:
-- Different subreddits have different post requirements (text, link, image, flair)
-- Create separate task runs for different subreddit types — the muscle captures each variation
-
-### Twitter / X
-
-```
-Navigate to twitter.com. Click the compose button.
-Type: "[your tweet content]"
-Post it and confirm it appeared in the feed.
-```
-
-For threads, the AI walks through the "Add tweet" flow. The muscle captures the sequence.
-
-### Product Hunt
-
-```
-Navigate to producthunt.com/posts/new.
-Fill in: name, tagline, description, website URL.
-Submit and confirm the draft was created.
-```
-
-Product Hunt changes its form layout occasionally. When it does, the AI finds the new selectors and the muscle file self-heals.
-
-### Hacker News
-
-```
-Navigate to news.ycombinator.com/submit.
-Fill title: "[title]"
-Fill URL or text.
-Submit and note the post URL.
-```
-
-### V2EX
-
-```
-Navigate to v2ex.com/new.
-Select node: [node name].
-Fill title and body.
-Submit.
-```
+The first time your AI posts to each platform, it takes a few minutes per site while it learns the layout. But it only has to learn once.
 
 ---
 
-## Running a Campaign
+## What the Second Campaign Looks Like
 
-Once muscles exist for each platform, give your AI a campaign brief:
+The second time you run a social media campaign, your AI already knows each platform. It knows where the compose button is, what the submit flow looks like, and any quirks to watch out for.
 
-```
-Using the AgentLimb browser tools, post the following content to:
-1. reddit.com/r/entrepreneur
-2. twitter.com
-3. news.ycombinator.com
-
-Content:
-Title: "We just launched AgentLimb v0.1.0"
-Body: "..."
-
-Use muscle memory for each platform. Start each site with task_plan,
-confirm success before moving to the next, call task_complete when done.
-```
-
-Your AI handles the sequence, uses the stored muscle for each domain, and reports progress live in the side panel.
+What took 5–10 minutes per platform the first time now takes 30 seconds to 2 minutes per platform. A five-platform campaign goes from an hour-long task to something that finishes while you make coffee.
 
 ---
 
-## Why Not Just Use a Scheduling Tool?
+## Platform Notes
 
-Scheduling tools (Buffer, Hootsuite) post to APIs. Many platforms don't have public APIs, rate-limit them, or require paid access. AgentLimb operates through your browser — the same way you'd do it manually — which means it works on any platform you can log into, including ones with no API at all.
+**Reddit** — Works with any subreddit you're a member of. Different subreddits have different post types (text, link, image). Your AI learns each variation separately.
+
+**Twitter / X** — Posts single tweets or threads. Your AI handles the "add another tweet" flow for threads once it's learned it.
+
+**Product Hunt** — Great for launches. Your AI learns the launch form once and can help you rehearse the flow before launch day.
+
+**Hacker News** — Simple submission form. Usually learned in a single run.
+
+**V2EX, LinkedIn, any other platform** — If you can post to it manually while logged in, your AI can post to it with AgentLimb.
 
 ---
 
-## Results
+## One Rule: Don't Delete the Desktop Folder
 
-After muscle warm-up (3–5 runs per platform):
+All the platform knowledge your AI accumulates lives in the **AgentLimb-muscle** folder on your Desktop. Each platform gets its own file. Don't delete this folder — it's what makes the second and third campaigns cheap and fast.
 
-| | Manual | AI cold start | AI with muscles |
-|---|---|---|---|
-| Time per platform | 5–15 min | 8–20 min | 30s–2 min |
-| Tokens per platform | — | ~12,250 | ~1,750 |
-| 5-platform campaign | 1–2 hours | ~60,000 tokens | ~8,750 tokens |
-| Error rate | Human error possible | Occasional | Near-zero |
+---
+
+## Your Accounts Stay Yours
+
+AgentLimb uses your real browser, your real logins. No third-party service sees your credentials. No cloud system handles your posts. Everything happens locally, through your own Chrome, through your own accounts.
+
+---
+
+## Results After Warm-Up
+
+After a few campaigns per platform:
+
+| | First campaign | After learning |
+|---|---|---|
+| Time per platform | 5–10 minutes | 30 seconds–2 minutes |
+| Token cost per platform | High (exploration) | ~85% less |
+| Error rate | Occasional | Near zero |

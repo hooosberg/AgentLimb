@@ -1,102 +1,78 @@
 ---
-title: "Muscle Memory Is Automatic — Here's What That Means"
+title: "How Muscle Memory Works"
 date: "2026-04-18"
 tag: "Muscle Memory"
 icon: "💪"
-description: "You don't configure muscle memory. AgentLimb builds it silently while your AI works. This article explains what's happening and why the folder on your Desktop matters."
+description: "Your AI explores a site once. AgentLimb remembers everything. Every run after that is faster and cheaper — automatically."
 readTime: "4 min"
 difficulty: "Beginner"
 ---
 
+## The Problem It Solves
+
+Every time your AI visits a website, it has to figure out where everything is. Where's the post button? What's the input field called? How does the form submit? This exploration takes time and uses tokens — and without AgentLimb, your AI does it from scratch every single time.
+
+Muscle memory fixes this. The first time your AI completes a task on a site, AgentLimb records what it learned. Every run after that skips the exploration entirely.
+
+---
+
 ## You Don't Have to Do Anything
 
-Muscle memory in AgentLimb is fully automatic. There's no "save muscle" command to learn. You give your AI a task, it completes it, and AgentLimb quietly records what it learned.
-
-That's it. The next time your AI visits the same site, it already knows the layout.
+Muscle memory is fully automatic. There is no "save" button, no settings to configure, nothing to learn. Just give your AI tasks. AgentLimb handles the rest in the background.
 
 ---
 
-## What Gets Recorded
+## What the First Run Looks Like
 
-Every time your AI clicks an element, AgentLimb captures the selector and context. When the task ends and the AI calls `muscle_commit`, all the captured knowledge is merged into a structured profile for that domain.
+When your AI visits a site for the first time:
 
-The profile includes:
-- **Selectors** — which CSS paths reliably point to which buttons and inputs
-- **Workflows** — the sequence of steps that successfully completed the task
-- **Notes** — things the AI found unusual (e.g. "this editor needs a 2-second wait before typing")
+- It explores the page to understand the layout
+- It finds the buttons, forms, and links it needs
+- It completes your task
+- AgentLimb silently records everything that worked: which buttons are where, what the form fields are called, what sequence of steps led to success
 
-This knowledge is saved as a plain JSON file on your Desktop:
-
-```
-~/Desktop/AgentLimb-muscle/
-  reddit.com.json
-  github.com.json
-  your-company-saas.json
-  ...
-```
+This first run takes a bit longer. Think of it as paying the exploration cost once, then never again.
 
 ---
 
-## The One Thing You Need to Do: Don't Delete That Folder
+## What Every Run After That Looks Like
 
-The `~/Desktop/AgentLimb-muscle/` folder is your AI's long-term memory. If you delete it, your AI goes back to exploring from scratch on the next run.
+From the second time onward:
 
-Keep the folder. Back it up if you want. You can even open the JSON files and read them — they're plain text, fully human-readable.
+- Your AI reads the saved knowledge before touching the page
+- It already knows where everything is
+- It skips the exploration and goes straight to the action
 
----
+**Real numbers from a Reddit posting task:**
 
-## Cold vs Hot Start: Real Numbers
+The first time: around 23 tool calls, roughly 12,000 tokens, 8 to 20 minutes.
 
-The first time your AI visits a site, it needs to explore. The second time, it reads the muscle file and skips most of that work.
+The second time: around 10 tool calls, roughly 1,750 tokens, 30 seconds to 2 minutes.
 
-Real data from a Reddit posting task (low-parameter Codex, 2026-04-18):
-
-| | Cold start (first explore) | Hot start (muscle recall) | Savings |
-|---|---|---|---|
-| `page_snapshot` calls | 3 | **0** | **100%** |
-| Total tool calls | 23 | 10 | 56.5% |
-| Estimated tokens | ~12,250 | **~1,750** | **↓ 85.7%** |
-| Wall-clock time | 8–20 min | 30 s–2 min | **↓ ~80–95%** |
-
-The savings are real and they compound. The third and fourth run stay fast because the knowledge is already there.
+That's about **85% fewer tokens** and **80–95% less time** — and those savings stay every time you run the same task on that site.
 
 ---
 
-## What Happens if a Site Changes Its Layout?
+## The Desktop Folder
 
-AgentLimb doesn't break. If a selector in the muscle file stops working, the AI falls back to a fresh `page_snapshot`, finds the new selector, and continues. At the end of the task, the new selector gets merged into the muscle file automatically.
+AgentLimb saves all this knowledge in a folder on your Desktop called **AgentLimb-muscle**. Inside, there's one file per website your AI has learned.
 
-This is called **self-healing**: the knowledge improves over time instead of going stale.
+**The only thing you need to do: don't delete this folder.**
 
----
-
-## Four Commit Modes
-
-When the AI finishes a task, it calls `muscle_commit` with one of four statuses:
-
-| Status | What happens |
-|---|---|
-| `success` | Full knowledge saved to desktop JSON |
-| `partial` | Partial knowledge saved, workflow marked incomplete |
-| `failed` | Session discarded — bad paths don't pollute the knowledge base |
-| `manual` | Saves current progress, keeps session open for more accumulation |
-
-The `failed` mode is important: if your AI hits a CAPTCHA or a broken page, that failure path is *not* written to the muscle file. Only successful routes get saved.
+It's your AI's memory. If you delete it, your AI goes back to exploring from scratch. You don't need to open it, edit it, or understand it. Just let it be.
 
 ---
 
-## Sharing Muscles
+## What Happens If a Website Changes Its Layout
 
-Because muscle files are plain JSON, you can:
-- Copy a domain's `.json` file to another machine and paste it into the same Desktop folder — instant knowledge transfer
-- Share a file with a colleague so their AI skips the cold start on a platform you've already explored
-- Version-control the folder in git if you want history
+Websites update. Buttons move. Forms get redesigned. AgentLimb handles this gracefully.
+
+When a saved piece of knowledge stops working, your AI notices, finds the new location on its own, completes the task anyway, and updates the saved knowledge automatically. The muscle file improves itself over time.
 
 ---
 
-## Summary
+## The Knowledge Works Across AI Tools
 
-1. Give your AI a task. It explores, completes, and saves.
-2. Give it the same task again. It skips the exploration.
-3. The knowledge lives in `~/Desktop/AgentLimb-muscle/`. Don't delete it.
-4. Everything else is automatic.
+The muscle files on your Desktop are shared across all AI tools. If Claude Code explored Reddit today, Codex can use that knowledge tomorrow. If you switch from one AI tool to another, none of the learned knowledge is lost.
+
+This means the work your AI does today is an investment that pays off for every tool you ever use.

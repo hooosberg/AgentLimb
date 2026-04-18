@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Muscle Library — AgentLimb | Ready-to-Use Browser Automation Sequences</title>
-  <meta name="description" content="Download ready-to-use muscle files for AgentLimb. Automate Reddit posting, Baidu Tieba, and more without AI exploration. Community-verified action sequences.">
-  <meta name="keywords" content="AgentLimb muscles, browser automation presets, Reddit automation, Tieba automation, action sequences, zero-token replay">
+  <title>Muscle Library — AgentLimb | Real Browser Automation Muscles</title>
+  <meta name="description" content="Download real AgentLimb muscle files for Reddit, Baidu Tieba, and more. Verified selectors and workflows — drop into your Desktop folder and your AI skips the exploration phase.">
+  <meta name="keywords" content="AgentLimb muscles, browser automation, Reddit posting automation, Baidu Tieba automation, muscle memory, selector library">
   <meta name="robots" content="index, follow">
   <link rel="stylesheet" href="/styles.css">
   <link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
@@ -15,8 +15,25 @@
 
 <div class="muscle-page">
   <div class="section-label" data-i18n="store.title">Muscle Library</div>
-  <h1 class="section-title" id="page-title">Ready-to-Use Muscles</h1>
-  <p class="section-desc" id="page-desc">Download community-verified action sequences. Import into AgentLimb and replay — zero exploration, zero tokens.</p>
+  <h1 class="section-title" id="page-title">Real Muscles, Ready to Use</h1>
+  <p class="section-desc" id="page-desc">These are actual muscle files from real AgentLimb sessions. Drop them into your <code>AgentLimb-muscle</code> folder on the Desktop and your AI skips the exploration phase entirely.</p>
+
+  <div class="muscle-how">
+    <div class="muscle-how-step" id="how-step-1">
+      <span class="muscle-how-num">1</span>
+      <span id="how-1-text">Download the file for the site you want</span>
+    </div>
+    <div class="muscle-how-arrow">→</div>
+    <div class="muscle-how-step" id="how-step-2">
+      <span class="muscle-how-num">2</span>
+      <span id="how-2-text">Place it in <code>~/Desktop/AgentLimb-muscle/</code></span>
+    </div>
+    <div class="muscle-how-arrow">→</div>
+    <div class="muscle-how-step" id="how-step-3">
+      <span class="muscle-how-num">3</span>
+      <span id="how-3-text">Your AI loads it automatically on the next task</span>
+    </div>
+  </div>
 
   <div class="muscle-grid" id="muscle-grid"></div>
 </div>
@@ -41,43 +58,86 @@
 
   const L = getLang();
 
+  // Real muscle files — v4 format (selectors + workflows + notes)
   const muscles = [
     {
-      id: 'old-reddit-text-post',
-      file: '/content/muscles/old-reddit-text-post.json',
-      name: 'old-reddit-text-post',
-      platform: 'old.reddit.com',
-      confidence: 'low',
-      steps: 7,
-      runs: 0,
-      category: { en: 'Social Posting', zh: '社交发帖', ja: 'SNS投稿', ko: '소셜 게시' },
-      title: { en: 'Reddit Text Post (Old Reddit)', zh: 'Reddit 文字帖 (旧版)', ja: 'Reddit テキスト投稿 (旧版)', ko: 'Reddit 텍스트 게시 (구버전)' },
-      desc: { en: 'Submit a text post on old.reddit.com. Fills title, body, optional flair, and submits. Waits for redirect to confirm success.', zh: '在 old.reddit.com 发布文字帖。填写标题、正文、可选 flair，提交后等待跳转确认。', ja: 'old.reddit.comでテキスト投稿を作成。タイトル、本文、オプションのflairを入力して送信。リダイレクトで成功を確認。', ko: 'old.reddit.com에서 텍스트 게시물을 작성합니다. 제목, 본문, 선택적 flair를 입력하고 제출합니다.' },
+      id: 'www.reddit.com',
+      file: '/AgentLimb-muscle/www.reddit.com.json',
+      domain: 'www.reddit.com',
+      version: 4,
+      selectors: 8,
+      workflows: 3,
+      successfulRuns: 3,
+      lastUpdated: '2026-04-18',
+      category: { en: 'Social Posting', zh: '社交发帖', ja: 'SNS投稿', ko: '소셜 게시', es: 'Publicación social', fr: 'Publication sociale', de: 'Soziale Beiträge' },
+      title: { en: 'Reddit', zh: 'Reddit', ja: 'Reddit', ko: 'Reddit', es: 'Reddit', fr: 'Reddit', de: 'Reddit' },
+      desc: {
+        en: 'Post to any subreddit using the new Reddit interface. Handles the shadow DOM title input, body field, and submit button. Verified across 3 successful runs.',
+        zh: '使用新版 Reddit 界面向任意子版块发帖。处理 shadow DOM 标题输入、正文字段和提交按钮。已验证 3 次成功运行。',
+        ja: '新しいRedditインターフェースを使用して任意のサブレディットに投稿します。shadow DOMタイトル入力、本文フィールド、送信ボタンを処理します。3回の成功実行で検証済み。',
+        ko: '새로운 Reddit 인터페이스를 사용하여 모든 서브레딧에 게시합니다. shadow DOM 제목 입력, 본문 필드, 제출 버튼을 처리합니다. 3회 성공 실행으로 검증됨.',
+        es: 'Publica en cualquier subreddit usando la nueva interfaz de Reddit. Gestiona la entrada de título shadow DOM, campo de cuerpo y botón de envío. Verificado con 3 ejecuciones exitosas.',
+        fr: 'Publiez dans n\'importe quel subreddit en utilisant la nouvelle interface Reddit. Gère l\'entrée de titre shadow DOM, le champ de corps et le bouton de soumission. Vérifié avec 3 exécutions réussies.',
+        de: 'Poste in jedem Subreddit mit der neuen Reddit-Oberfläche. Behandelt shadow DOM Titeleingabe, Textfeld und Senden-Button. Mit 3 erfolgreichen Ausführungen verifiziert.',
+      },
     },
     {
-      id: 'tieba-post',
-      file: '/content/muscles/tieba-post.json',
-      name: 'tieba-post',
-      platform: 'tieba.baidu.com',
-      confidence: 'medium',
-      steps: 6,
-      runs: 2,
-      category: { en: 'Social Posting', zh: '社交发帖', ja: 'SNS投稿', ko: '소셜 게시' },
-      title: { en: 'Baidu Tieba Post', zh: '百度贴吧发帖', ja: '百度貼吧投稿', ko: '바이두 티에바 게시' },
-      desc: { en: 'Create a new post in any Baidu Tieba forum. Opens editor, fills title and body, submits. Verified with 2 successful runs.', zh: '在百度贴吧任意吧内发帖。打开编辑器、填写标题和内容、提交。已验证 2 次成功运行。', ja: '百度貼吧の任意のフォーラムで新規投稿を作成。エディタを開き、タイトルと本文を入力して送信。2回の成功実行で検証済み。', ko: '바이두 티에바의 모든 포럼에서 새 게시물을 작성합니다. 편집기를 열고 제목과 본문을 입력하고 제출합니다. 2회 성공 실행으로 검증됨.' },
+      id: 'tieba.baidu.com',
+      file: '/AgentLimb-muscle/tieba.baidu.com.json',
+      domain: 'tieba.baidu.com',
+      version: 4,
+      selectors: 6,
+      workflows: 1,
+      successfulRuns: 2,
+      lastUpdated: '2026-04-18',
+      category: { en: 'Social Posting', zh: '社交发帖', ja: 'SNS投稿', ko: '소셜 게시', es: 'Publicación social', fr: 'Publication sociale', de: 'Soziale Beiträge' },
+      title: { en: 'Baidu Tieba', zh: '百度贴吧', ja: '百度貼吧', ko: '바이두 티에바', es: 'Baidu Tieba', fr: 'Baidu Tieba', de: 'Baidu Tieba' },
+      desc: {
+        en: 'Create a new post in any Baidu Tieba forum. Opens the rich-text editor, fills title and body, and publishes. Verified with 2 successful runs.',
+        zh: '在百度贴吧任意吧内创建新帖。打开富文本编辑器，填写标题和正文，发布。已验证 2 次成功运行。',
+        ja: '百度貼吧の任意のフォーラムで新規投稿を作成します。リッチテキストエディタを開き、タイトルと本文を入力して公開します。2回の成功実行で検証済み。',
+        ko: '바이두 티에바의 모든 포럼에서 새 게시물을 작성합니다. 리치 텍스트 편집기를 열고 제목과 본문을 입력한 후 게시합니다. 2회 성공 실행으로 검증됨.',
+        es: 'Crea una nueva publicación en cualquier foro de Baidu Tieba. Abre el editor de texto enriquecido, rellena el título y el cuerpo, y publica. Verificado con 2 ejecuciones exitosas.',
+        fr: 'Créez une nouvelle publication dans n\'importe quel forum Baidu Tieba. Ouvre l\'éditeur de texte enrichi, remplit le titre et le corps, et publie. Vérifié avec 2 exécutions réussies.',
+        de: 'Erstelle einen neuen Beitrag in jedem Baidu Tieba Forum. Öffnet den Rich-Text-Editor, füllt Titel und Text aus und veröffentlicht. Mit 2 erfolgreichen Ausführungen verifiziert.',
+      },
     },
   ];
 
-  // Page title/desc i18n
-  const titles = { en: 'Ready-to-Use Muscles', zh: '即用肌肉库', ja: 'すぐに使えるマッスル', ko: '즉시 사용 가능한 근육' };
-  const descs = { en: 'Download community-verified action sequences. Import into AgentLimb and replay — zero exploration, zero tokens.', zh: '下载社区验证的操作序列。导入 AgentLimb 直接回放 — 零探索、零 token。', ja: 'コミュニティ検証済みのアクションシーケンスをダウンロード。AgentLimbにインポートしてリプレイ — 探索ゼロ、トークンゼロ。', ko: '커뮤니티 검증된 액션 시퀀스를 다운로드하세요. AgentLimb에 가져와서 리플레이 — 탐색 제로, 토큰 제로.' };
-  document.getElementById('page-title').textContent = titles[L] || titles.en;
-  document.getElementById('page-desc').textContent = descs[L] || descs.en;
+  // i18n strings
+  const titles = { en: 'Real Muscles, Ready to Use', zh: '真实肌肉，即刻可用', ja: '実際のマッスル、すぐに使える', ko: '실제 근육, 바로 사용 가능', es: 'Músculos reales, listos para usar', fr: 'Vrais muscles, prêts à l\'emploi', de: 'Echte Muscles, sofort einsatzbereit' };
+  const descs = {
+    en: 'These are actual muscle files from real AgentLimb sessions. Drop them into your <code>AgentLimb-muscle</code> folder on the Desktop and your AI skips the exploration phase entirely.',
+    zh: '这些是来自真实 AgentLimb 会话的肌肉文件。将它们放入桌面的 <code>AgentLimb-muscle</code> 文件夹，你的 AI 将完全跳过探索阶段。',
+    ja: 'これらは実際のAgentLimbセッションからの実際のマッスルファイルです。デスクトップの<code>AgentLimb-muscle</code>フォルダに入れると、AIが探索フェーズを完全にスキップします。',
+    ko: '이것들은 실제 AgentLimb 세션에서 나온 실제 근육 파일입니다. 바탕화면의 <code>AgentLimb-muscle</code> 폴더에 넣으면 AI가 탐색 단계를 완전히 건너뜁니다.',
+    es: 'Estos son archivos de músculo reales de sesiones reales de AgentLimb. Colócalos en la carpeta <code>AgentLimb-muscle</code> del escritorio y tu IA se saltará la fase de exploración por completo.',
+    fr: 'Ce sont de vrais fichiers musculaires provenant de vraies sessions AgentLimb. Placez-les dans le dossier <code>AgentLimb-muscle</code> du bureau et votre IA sautera entièrement la phase d\'exploration.',
+    de: 'Dies sind echte Muscle-Dateien aus echten AgentLimb-Sitzungen. Lege sie in den <code>AgentLimb-muscle</code>-Ordner auf dem Desktop und deine KI überspringt die Erkundungsphase vollständig.',
+  };
+  const howTexts = {
+    en: ['Download the muscle file for the site you want', 'Place it in ~/Desktop/AgentLimb-muscle/', 'Your AI loads it automatically on the next task'],
+    zh: ['下载你需要的网站肌肉文件', '放入 ~/Desktop/AgentLimb-muscle/', '下次任务时 AI 自动加载'],
+    ja: ['必要なサイトのマッスルファイルをダウンロード', '~/Desktop/AgentLimb-muscle/ に配置', '次のタスクでAIが自動的に読み込む'],
+    ko: ['원하는 사이트의 근육 파일 다운로드', '~/Desktop/AgentLimb-muscle/ 에 배치', '다음 작업 시 AI가 자동으로 로드'],
+    es: ['Descarga el archivo de músculo para el sitio que quieras', 'Colócalo en ~/Desktop/AgentLimb-muscle/', 'Tu IA lo carga automáticamente en la siguiente tarea'],
+    fr: ['Téléchargez le fichier musculaire pour le site souhaité', 'Placez-le dans ~/Desktop/AgentLimb-muscle/', 'Votre IA le charge automatiquement à la prochaine tâche'],
+    de: ['Lade die Muscle-Datei für die gewünschte Website herunter', 'Lege sie in ~/Desktop/AgentLimb-muscle/', 'Deine KI lädt sie automatisch bei der nächsten Aufgabe'],
+  };
 
-  const dlLabel = { en: 'Download', zh: '下载', ja: 'ダウンロード', ko: '다운로드' };
-  const pvLabel = { en: 'Preview', zh: '预览', ja: 'プレビュー', ko: '미리보기' };
-  const stepsLabel = { en: 'steps', zh: '步', ja: 'ステップ', ko: '단계' };
-  const runsLabel = { en: 'runs', zh: '次运行', ja: '回実行', ko: '회 실행' };
+  document.getElementById('page-title').textContent = titles[L] || titles.en;
+  document.getElementById('page-desc').innerHTML = descs[L] || descs.en;
+  const ht = howTexts[L] || howTexts.en;
+  document.getElementById('how-1-text').textContent = ht[0];
+  document.getElementById('how-2-text').innerHTML = ht[1].replace('~/', '<code>~/</code>').replace('AgentLimb-muscle/', 'AgentLimb-muscle/');
+  document.getElementById('how-3-text').textContent = ht[2];
+
+  const dlLabel = { en: 'Download', zh: '下载', ja: 'ダウンロード', ko: '다운로드', es: 'Descargar', fr: 'Télécharger', de: 'Herunterladen' };
+  const pvLabel = { en: 'Preview', zh: '预览', ja: 'プレビュー', ko: '미리보기', es: 'Vista previa', fr: 'Aperçu', de: 'Vorschau' };
+  const selectorsLabel = { en: 'selectors', zh: '个选择器', ja: 'セレクター', ko: '선택자', es: 'selectores', fr: 'sélecteurs', de: 'Selektoren' };
+  const workflowsLabel = { en: 'workflows', zh: '个工作流', ja: 'ワークフロー', ko: '워크플로', es: 'flujos', fr: 'flux', de: 'Workflows' };
+  const runsLabel = { en: 'verified runs', zh: '次成功验证', ja: '回成功確認', ko: '회 검증', es: 'ejecuciones verificadas', fr: 'exécutions vérifiées', de: 'verifizierte Läufe' };
+  const v4Label = { en: 'v4 format', zh: 'v4 格式', ja: 'v4形式', ko: 'v4 형식', es: 'formato v4', fr: 'format v4', de: 'v4 Format' };
 
   const grid = document.getElementById('muscle-grid');
 
@@ -86,19 +146,20 @@
     card.className = 'muscle-card';
     card.innerHTML = `
       <div class="muscle-card-header">
-        <span class="muscle-card-name">${m.name}</span>
-        <span class="muscle-card-badge ${m.confidence}">${m.confidence}</span>
+        <span class="muscle-card-name">${pick(m.title)}</span>
+        <span class="muscle-card-badge high">${pick(v4Label)}</span>
       </div>
-      <div class="muscle-card-platform">${m.platform}</div>
+      <div class="muscle-card-platform">${m.domain}</div>
       <div class="muscle-card-desc">${pick(m.desc)}</div>
       <div class="muscle-card-meta">
         <span>${pick(m.category)}</span>
-        <span>${m.steps} ${pick(stepsLabel)}</span>
-        <span>${m.runs} ${pick(runsLabel)}</span>
+        <span>${m.selectors} ${pick(selectorsLabel)}</span>
+        <span>${m.workflows} ${pick(workflowsLabel)}</span>
+        <span>${m.successfulRuns} ${pick(runsLabel)}</span>
       </div>
       <div class="muscle-card-actions">
         <a class="muscle-btn muscle-btn-download" href="${m.file}" download="${m.id}.json">${pick(dlLabel)}</a>
-        <button class="muscle-btn muscle-btn-preview" data-file="${m.file}" data-name="${m.name}">${pick(pvLabel)}</button>
+        <button class="muscle-btn muscle-btn-preview" data-file="${m.file}" data-name="${pick(m.title)}">${pick(pvLabel)}</button>
       </div>
     `;
     grid.appendChild(card);
@@ -114,13 +175,11 @@
 
   document.querySelectorAll('.muscle-btn-preview').forEach(btn => {
     btn.addEventListener('click', async () => {
-      const file = btn.dataset.file;
-      const name = btn.dataset.name;
-      modalTitle.textContent = name;
+      modalTitle.textContent = btn.dataset.name;
       modalCode.textContent = 'Loading...';
       overlay.classList.add('open');
       try {
-        const res = await fetch(file);
+        const res = await fetch(btn.dataset.file);
         const data = await res.json();
         modalCode.textContent = JSON.stringify(data, null, 2);
       } catch {
