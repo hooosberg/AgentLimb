@@ -87,6 +87,16 @@ Silêncio não significa mais sucesso. A IA declara explicitamente `task_plan` �
 
 O bridge roda em `127.0.0.1:7791`. Sem analytics, sem rastreamento, sem nuvem. O conhecimento muscular é JSON simples no seu desktop — você pode ler, comparar, compartilhar ou excluir a qualquer momento.
 
+### 6. Controle Paralelo Multi-Conta — Opere Vários Perfis do Chrome ao Mesmo Tempo
+
+Um comando de IA, cada perfil do Chrome o executa simultaneamente. Sejam duas contas do Twitter, três contas corporativas do Google ou uma dúzia de perfis de teste——AgentLimb controla todos em uma única tarefa.
+
+- **Identidade explícita** — cada painel lateral exibe "Este painel: Profile-xxxxxx"; o Bridge sabe qual perfil retornou qual resultado
+- **Suspender / auto-suspender** — fechar o painel (ou clicar em Suspender) remove aquele perfil da tarefa; os demais continuam sem interrupção
+- **Broadcast task\_\*** — `task_plan`, `task_step_done`, `task_complete`, `task_fail` são transmitidos a cada perfil ativo; todos os painéis laterais permanecem sincronizados
+- **Bloqueio de janela** — `navigate` mira automaticamente na janela correta do Chrome, mesmo que o mesmo perfil tenha múltiplas janelas abertas
+- **Roteamento por alvo** — especifique o perfil por rótulo na chamada de ferramenta para precisão cirúrgica
+
 ## Como funciona
 
 ```
@@ -128,6 +138,7 @@ Toda abordagem existente de automação de navegador tem um custo real. Aqui a c
 | **Privacidade de dados** | Local ✅ | Via servidores de terceiros ❌ | Local ✅ | 100% local — apenas 127.0.0.1 ✅ |
 | **Escolha do terminal IA** | Qualquer (script puro) | Varia por plataforma | Incluído com Codex / Claude | Qualquer IA que fale HTTP |
 | **Conhecimento compartilhado** | Script = preso a uma IA | Workflow = preso à plataforma | Sem memória persistente | Arquivos de músculos = cross-IA, transferíveis, permanentes |
+| **Multi-conta paralelo** | Orquestração manual | Dependente da plataforma | Não | ✅ Vários perfis do Chrome, um comando |
 
 **O diferencial**: os arquivos de músculos do AgentLimb vivem em `~/Desktop/AgentLimb-muscle/` como JSON puro. O conhecimento explorado hoje por Claude Code está disponível amanhã para Codex — mesmos arquivos, zero reexploração. Troque de ferramenta IA sem perder um único workflow aprendido.
 

@@ -87,6 +87,16 @@ El silencio ya no equivale a éxito. La IA declara explícitamente `task_plan` �
 
 El bridge corre en `127.0.0.1:7791`. Sin analíticas, sin rastreo, sin nube. El conocimiento muscular es JSON plano en tu escritorio — puedes leerlo, compararlo, compartirlo o borrarlo en cualquier momento.
 
+### 6. Control Paralelo Multi-Cuenta — Opera Varios Perfiles de Chrome a la Vez
+
+Un comando de IA, cada perfil de Chrome lo ejecuta simultáneamente. Ya sean dos cuentas de Twitter, tres cuentas corporativas de Google o una docena de perfiles de prueba——AgentLimb los controla todos en una sola tarea.
+
+- **Identidad explícita** — cada panel lateral muestra "Este panel: Profile-xxxxxx"; Bridge sabe qué perfil devolvió qué resultado
+- **Suspender / auto-suspender** — cerrar el panel (o hacer clic en Suspender) retira ese perfil de la tarea; el resto continúa sin interrupciones
+- **Difusión task\_\*** — `task_plan`, `task_step_done`, `task_complete`, `task_fail` se emiten a cada perfil activo; todos los paneles laterales permanecen sincronizados
+- **Bloqueo de ventana** — `navigate` apunta automáticamente a la ventana de Chrome correcta, aunque el mismo perfil tenga múltiples ventanas abiertas
+- **Enrutamiento por objetivo** — especifica el perfil por etiqueta en la llamada a la herramienta cuando necesitas precisión quirúrgica
+
 ## Cómo funciona
 
 ```
@@ -128,6 +138,7 @@ Cada enfoque existente de automatización del navegador tiene un coste real. Aqu
 | **Privacidad de datos** | Local ✅ | A través de servidores de terceros ❌ | Local ✅ | 100% local — solo 127.0.0.1 ✅ |
 | **Elección de terminal IA** | Cualquiera (script puro) | Varía según plataforma | Empaquetado con Codex / Claude | Cualquier IA que hable HTTP |
 | **Conocimiento compartido** | Script = atado a una sola IA | Flujo = atado a la plataforma | Sin memoria persistente | Archivos de músculos = cross-IA, transferibles, permanentes |
+| **Multi-cuenta paralelo** | Orquestación manual | Depende de la plataforma | No | ✅ Múltiples perfiles de Chrome, un comando |
 
 **El diferenciador**: los archivos de músculos de AgentLimb viven en `~/Desktop/AgentLimb-muscle/` como JSON plano. El conocimiento explorado hoy por Claude Code estará disponible mañana para Codex — mismos archivos, cero re-exploración. Cambia de herramienta de IA sin perder un solo flujo aprendido.
 

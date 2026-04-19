@@ -87,6 +87,16 @@ Le silence ne signifie plus le succès. L'IA déclare explicitement `task_plan` 
 
 Le bridge tourne sur `127.0.0.1:7791`. Pas d'analytique, pas de tracking, pas de cloud. Le savoir musculaire est un JSON brut sur votre bureau — vous pouvez le lire, le comparer, le partager ou le supprimer à tout moment.
 
+### 6. Contrôle Parallèle Multi-Comptes — Opérez Plusieurs Profils Chrome Simultanément
+
+Une commande IA, chaque profil Chrome l'exécute simultanément. Deux comptes Twitter, trois comptes Google d'entreprise ou une dizaine de profils de test——AgentLimb les contrôle tous en une seule tâche.
+
+- **Identité explicite** — chaque panneau latéral affiche "Ce panneau : Profile-xxxxxx" ; Bridge sait quel profil a renvoyé quel résultat
+- **Suspendre / suspension automatique** — fermer le panneau (ou cliquer sur Suspendre) retire ce profil de la tâche ; les autres continuent sans interruption
+- **Diffusion task\_\*** — `task_plan`, `task_step_done`, `task_complete`, `task_fail` sont diffusés à chaque profil actif ; tous les panneaux latéraux restent synchronisés
+- **Verrouillage de fenêtre** — `navigate` cible automatiquement la bonne fenêtre Chrome, même si le même profil a plusieurs fenêtres ouvertes
+- **Routage par cible** — spécifiez le profil par étiquette dans l'appel d'outil pour une précision chirurgicale
+
 ## Fonctionnement
 
 ```
@@ -128,6 +138,7 @@ Chaque approche existante d'automatisation du navigateur a un coût réel. Voici
 | **Confidentialité des données** | Local ✅ | Via des serveurs tiers ❌ | Local ✅ | 100% local — 127.0.0.1 uniquement ✅ |
 | **Choix de terminal IA** | N'importe quoi (script pur) | Varie selon la plateforme | Inclus avec Codex / Claude | N'importe quelle IA qui parle HTTP |
 | **Connaissance partagée** | Script = verrouillé à une seule IA | Workflow = verrouillé à la plateforme | Pas de mémoire persistante | Fichiers muscles = multi-IA, transférables, permanents |
+| **Multi-comptes parallèle** | Orchestration manuelle | Selon la plateforme | Non | ✅ Plusieurs profils Chrome, une commande |
 
 **Le différenciateur** : les fichiers muscles d'AgentLimb vivent dans `~/Desktop/AgentLimb-muscle/` en JSON pur. Le savoir exploré aujourd'hui par Claude Code est disponible demain pour Codex — mêmes fichiers, zéro ré-exploration. Changez d'outil IA sans perdre un seul workflow appris.
 

@@ -87,6 +87,16 @@ Il silenzio non significa più successo. L'IA dichiara esplicitamente `task_plan
 
 Il bridge gira su `127.0.0.1:7791`. Nessuna analitica, nessun tracciamento, nessun cloud. Le conoscenze muscolari sono JSON semplice sul desktop — puoi leggerlo, confrontarlo, condividerlo o eliminarlo in qualsiasi momento.
 
+### 6. Controllo Parallelo Multi-Account — Opera su Più Profili Chrome Contemporaneamente
+
+Un comando IA, ogni profilo Chrome lo esegue simultaneamente. Due account Twitter, tre account Google aziendali o una dozzina di profili di test——AgentLimb li controlla tutti in un'unica attività.
+
+- **Identità esplicita** — ogni pannello laterale mostra "Questo pannello: Profile-xxxxxx"; Bridge sa quale profilo ha restituito quale risultato
+- **Sospendi / auto-sospendi** — chiudi il pannello (o clicca su Sospendi) per escludere quel profilo dall'attività; gli altri continuano senza interruzioni
+- **Broadcast task\_\*** — `task_plan`, `task_step_done`, `task_complete`, `task_fail` vengono trasmessi a ogni profilo attivo; tutti i pannelli laterali rimangono sincronizzati
+- **Blocco finestra** — `navigate` punta automaticamente alla finestra Chrome corretta, anche se lo stesso profilo ha più finestre aperte
+- **Routing per target** — specifica il profilo per etichetta nella chiamata allo strumento per precisione millimetrica
+
 ## Come funziona
 
 ```
@@ -128,6 +138,7 @@ Ogni approccio esistente all'automazione del browser ha un costo reale. Ecco il 
 | **Privacy dei dati** | Locale ✅ | Tramite server di terze parti ❌ | Locale ✅ | 100% locale — solo 127.0.0.1 ✅ |
 | **Scelta del terminale IA** | Qualsiasi (script puro) | Varia in base alla piattaforma | In bundle con Codex / Claude | Qualsiasi IA che parli HTTP |
 | **Conoscenza condivisa** | Script = legato a una sola IA | Workflow = legato alla piattaforma | Nessuna memoria persistente | File muscoli = cross-IA, trasferibili, permanenti |
+| **Multi-account parallelo** | Orchestrazione manuale | Dipende dalla piattaforma | No | ✅ Più profili Chrome, un solo comando |
 
 **Il fattore distintivo**: i file muscoli di AgentLimb vivono in `~/Desktop/AgentLimb-muscle/` come semplice JSON. La conoscenza esplorata oggi da Claude Code è disponibile domani a Codex — stessi file, zero ri-esplorazione. Cambia strumento IA senza perdere un singolo workflow appreso.
 

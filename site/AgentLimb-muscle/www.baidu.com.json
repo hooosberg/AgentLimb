@@ -1,0 +1,25 @@
+{
+  "domain": "www.baidu.com",
+  "lastUpdatedAt": "2026-04-19T14:28:33.414Z",
+  "version": 1,
+  "notes": [
+    {
+      "at": "2026-04-19T14:28:20Z",
+      "text": "Baidu homepage opens successfully on direct navigate to https://www.baidu.com and resolves to https://www.baidu.com/."
+    }
+  ],
+  "selectors": {},
+  "workflows": [
+    {
+      "id": "open-baidu-homepage",
+      "name": "Open Baidu homepage",
+      "description": "Navigate a browser panel directly to the Baidu homepage and verify the active tab URL/title.",
+      "steps": [
+        "Navigate to https://www.baidu.com",
+        "Verify tabs_context.url is https://www.baidu.com/",
+        "Verify tabs_context.title contains 百度一下，你就知道"
+      ],
+      "successCount": 1
+    }
+  ]
+}

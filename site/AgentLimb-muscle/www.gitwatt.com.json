@@ -1,0 +1,432 @@
+{
+  "domain": "www.gitwatt.com",
+  "lastUpdatedAt": "2026-04-18T15:33:28.245Z",
+  "version": 10,
+  "notes": [
+    {
+      "at": "2026-04-18",
+      "text": "Creator posts dashboard is reachable directly when the browser session is already authenticated. Entry page shows Publish Article and Project Launch actions plus post status tabs."
+    },
+    {
+      "at": "2026-04-18",
+      "text": "Publishing a 项目首发 post works from /creator/posts. Required fields observed during AgentLimb launch post: cover image, repo URL, category, topic, and tags. Text covers can be regenerated and reapplied before publishing."
+    },
+    {
+      "at": "2026-04-18T14:15:54.117Z",
+      "text": "[success verification] After clicking 发布, the browser returned to https://www.gitwatt.com/creator/posts and the AgentLimb entry appeared in the list with 已发布 status."
+    },
+    {
+      "at": "2026-04-18T14:21:56.914Z",
+      "text": "[success verification] After clicking 发布, the page redirected to https://www.gitwatt.com/creator/posts and the DOMPrompter 项目首发 entry appeared in the creator list with status 已发布."
+    },
+    {
+      "at": "2026-04-18T14:32:31.296Z",
+      "text": "[success verification] After clicking 发布, the page redirected to https://www.gitwatt.com/creator/posts and the GlotShot 项目首发 entry appeared in the creator list with status 已发布."
+    },
+    {
+      "at": "2026-04-18T14:39:23.770Z",
+      "text": "[success verification] After clicking 发布, the page redirected to https://www.gitwatt.com/creator/posts and the TrekReel 项目首发 entry appeared in the creator list with status 已发布."
+    },
+    {
+      "at": "2026-04-18T14:46:40.541Z",
+      "text": "[success verification] After clicking 发布, the page redirected to https://www.gitwatt.com/creator/posts and the WitNote 项目首发 entry appeared in the creator list with status 已发布."
+    },
+    {
+      "at": "2026-04-18T15:07:30.006Z",
+      "text": "[success verification] Published article appeared on https://www.gitwatt.com/creator/posts as the top item with title 我做了个浏览器肌肉记忆工具，让 AI 别再重复摸同一个网页 and status 已发布."
+    },
+    {
+      "at": "2026-04-18T15:20:51.007Z",
+      "text": "[success verification] 已跳转到 https://www.gitwatt.com/creator/posts，内容管理列表顶部显示《我做了个点击 DOM 元素就能生成 AI 提示词的小工具》，状态为 已发布。"
+    },
+    {
+      "at": "2026-04-18T15:33:28.243Z",
+      "text": "[success verification] 已回到 https://www.gitwatt.com/creator/posts，内容管理页同时包含《我做了个不强迫你把草稿交给云端的 AI 写作工具》《我做了个把 GPX 轨迹直接变成 3D 飞越视频和地图模型的小工具》《我做了个专门帮独立开发者批量做截图和图标的 macOS 工具》，均为已发布状态。"
+    }
+  ],
+  "selectors": {
+    "first_post_cta": [
+      {
+        "lastTestedAt": "2026-04-18",
+        "reliability": 0.9,
+        "type": "text",
+        "value": "a:text(\"去发布第一篇文章\")"
+      }
+    ],
+    "posts_tab_all": [
+      {
+        "lastTestedAt": "2026-04-18",
+        "reliability": 0.85,
+        "type": "css",
+        "value": "#bits-s3"
+      }
+    ],
+    "posts_tab_published": [
+      {
+        "lastTestedAt": "2026-04-18",
+        "reliability": 0.85,
+        "type": "css",
+        "value": "#bits-s6"
+      }
+    ],
+    "project_launch": [
+      {
+        "lastTestedAt": "2026-04-18",
+        "reliability": 0.95,
+        "type": "text",
+        "value": "button:text(\"项目首发\")"
+      }
+    ],
+    "project_launch_entry": [
+      {
+        "lastTestedAt": "2026-04-18",
+        "reliability": 0.98,
+        "type": "text",
+        "value": "button:text(\"项目首发\")"
+      }
+    ],
+    "publish_article": [
+      {
+        "lastTestedAt": "2026-04-18",
+        "reliability": 0.95,
+        "type": "text",
+        "value": "button:text(\"发布图文\")"
+      }
+    ],
+    "publish_post": [
+      {
+        "lastTestedAt": "2026-04-18",
+        "reliability": 0.95,
+        "type": "text",
+        "value": "button:text(\"发布\")"
+      }
+    ],
+    "text_cover_entry": [
+      {
+        "lastTestedAt": "2026-04-18",
+        "reliability": 0.95,
+        "type": "text",
+        "value": "button:text(\"文字封面\")"
+      }
+    ],
+    "use_generated_cover": [
+      {
+        "lastTestedAt": "2026-04-18",
+        "reliability": 0.95,
+        "type": "text",
+        "value": "button:text(\"使用这张封面\")"
+      }
+    ],
+    "上传图片": [
+      {
+        "lastTestedAt": "2026-04-18T15:03:43.761Z",
+        "reliability": 0.8,
+        "type": "css",
+        "value": "button:text(\"上传图片\")"
+      }
+    ],
+    "使用这张封面": [
+      {
+        "lastTestedAt": "2026-04-18T14:45:36.355Z",
+        "reliability": 0.8,
+        "type": "css",
+        "value": "button:text(\"使用这张封面\")"
+      }
+    ],
+    "发布": [
+      {
+        "lastTestedAt": "2026-04-18T15:26:09.339Z",
+        "reliability": 0.8,
+        "type": "css",
+        "value": "button:text(\"发布\")"
+      }
+    ],
+    "发布图文": [
+      {
+        "lastTestedAt": "2026-04-18T15:09:03.190Z",
+        "reliability": 0.8,
+        "type": "css",
+        "value": "button:text(\"发布图文\")"
+      }
+    ],
+    "换一换样式": [
+      {
+        "lastTestedAt": "2026-04-18T14:12:53.939Z",
+        "reliability": 0.8,
+        "type": "css",
+        "value": "button:text(\"换一换样式\")"
+      }
+    ],
+    "文字封面": [
+      {
+        "lastTestedAt": "2026-04-18T14:43:34.958Z",
+        "reliability": 0.8,
+        "type": "css",
+        "value": "button:text(\"文字封面\")"
+      }
+    ],
+    "选择帖子分类...": [
+      {
+        "lastTestedAt": "2026-04-18T14:09:17.736Z",
+        "reliability": 0.8,
+        "type": "css",
+        "value": "#bits-c8"
+      },
+      {
+        "lastTestedAt": "2026-04-18T14:17:57.023Z",
+        "reliability": 0.8,
+        "type": "css",
+        "value": "#bits-c161"
+      },
+      {
+        "lastTestedAt": "2026-04-18T14:30:15.190Z",
+        "reliability": 0.8,
+        "type": "css",
+        "value": "#bits-c316"
+      },
+      {
+        "lastTestedAt": "2026-04-18T14:35:41.167Z",
+        "reliability": 0.8,
+        "type": "css",
+        "value": "#bits-c473"
+      },
+      {
+        "lastTestedAt": "2026-04-18T14:42:43.509Z",
+        "reliability": 0.8,
+        "type": "css",
+        "value": "#bits-c632"
+      },
+      {
+        "lastTestedAt": "2026-04-18T14:49:34.035Z",
+        "reliability": 0.8,
+        "type": "css",
+        "value": "#bits-c792"
+      },
+      {
+        "lastTestedAt": "2026-04-18T15:00:58.358Z",
+        "reliability": 0.8,
+        "type": "css",
+        "value": "#bits-s5"
+      },
+      {
+        "lastTestedAt": "2026-04-18T15:16:02.377Z",
+        "reliability": 0.8,
+        "type": "css",
+        "value": "#bits-c169"
+      }
+    ],
+    "选择标签...": [
+      {
+        "lastTestedAt": "2026-04-18T14:10:00.070Z",
+        "reliability": 0.8,
+        "type": "css",
+        "value": "#bits-c13"
+      },
+      {
+        "lastTestedAt": "2026-04-18T15:05:18.537Z",
+        "reliability": 0.8,
+        "type": "css",
+        "value": "#bits-s10"
+      },
+      {
+        "lastTestedAt": "2026-04-18T15:19:16.290Z",
+        "reliability": 0.8,
+        "type": "css",
+        "value": "#bits-c174"
+      }
+    ],
+    "选择话题...": [
+      {
+        "lastTestedAt": "2026-04-18T14:09:49.591Z",
+        "reliability": 0.8,
+        "type": "css",
+        "value": "#bits-c11"
+      },
+      {
+        "lastTestedAt": "2026-04-18T14:19:12.897Z",
+        "reliability": 0.8,
+        "type": "css",
+        "value": "#bits-c164"
+      },
+      {
+        "lastTestedAt": "2026-04-18T14:50:17.321Z",
+        "reliability": 0.8,
+        "type": "css",
+        "value": "#bits-c795"
+      },
+      {
+        "lastTestedAt": "2026-04-18T15:04:44.293Z",
+        "reliability": 0.8,
+        "type": "css",
+        "value": "#bits-s8"
+      },
+      {
+        "lastTestedAt": "2026-04-18T15:18:35.076Z",
+        "reliability": 0.8,
+        "type": "css",
+        "value": "#bits-c172"
+      }
+    ],
+    "项目首发": [
+      {
+        "lastTestedAt": "2026-04-18T14:41:56.257Z",
+        "reliability": 0.8,
+        "type": "css",
+        "value": "button:text(\"项目首发\")"
+      }
+    ]
+  },
+  "workflows": [
+    {
+      "description": "Reach the creator post management screen and confirm publishing actions are available.",
+      "id": "open_creator_posts_dashboard",
+      "name": "Open GitWatt creator posts dashboard",
+      "steps": [
+        "Navigate to https://www.gitwatt.com/creator/posts",
+        "Confirm the page title is 创作者中心 - GitWatt",
+        "Look for 发布图文 or 项目首发 buttons to verify posting access"
+      ],
+      "successCount": 1
+    },
+    {
+      "description": "Create and publish a GitWatt first-launch project post from the creator dashboard.",
+      "id": "publish_gitwatt_project_launch",
+      "name": "Publish a GitWatt 项目首发 post",
+      "steps": [
+        "Open https://www.gitwatt.com/creator/posts and click 项目首发",
+        "Fill title, body, repo URL, description, category, topic, and tags",
+        "Generate a cover via 文字封面, click 使用这张封面, then click 发布",
+        "Verify the browser returns to /creator/posts and the post appears in the list with 已发布 status"
+      ],
+      "successCount": 1
+    },
+    {
+      "description": "After clicking 发布, the browser returned to https://www.gitwatt.com/creator/posts and the AgentLimb entry appeared in the list with 已发布 status.",
+      "id": "auto-1776521754117",
+      "lastSucceededAt": "2026-04-18T14:15:54.117Z",
+      "name": "auto-captured workflow 2026-04-18",
+      "partial": false,
+      "steps": [
+        "1. click \"项目首发\" (button, selector: button:text(\"项目首发\"))",
+        "2. click \"选择帖子分类...\" (button, selector: #bits-c8)",
+        "3. click \"选择话题...\" (button, selector: #bits-c11)",
+        "4. click \"选择标签...\" (button, selector: #bits-c13)",
+        "5. click \"发布\" (button, selector: button:text(\"发布\"))",
+        "6. click \"文字封面\" (button, selector: button:text(\"文字封面\"))",
+        "7. click \"使用这张封面\" (button, selector: button:text(\"使用这张封面\"))",
+        "8. click \"换一换样式\" (button, selector: button:text(\"换一换样式\"))"
+      ],
+      "stepsCompleted": 8,
+      "successCount": 1
+    },
+    {
+      "description": "After clicking 发布, the page redirected to https://www.gitwatt.com/creator/posts and the DOMPrompter 项目首发 entry appeared in the creator list with status 已发布.",
+      "id": "auto-1776522116914",
+      "lastSucceededAt": "2026-04-18T14:21:56.914Z",
+      "name": "auto-captured workflow 2026-04-18",
+      "partial": false,
+      "steps": [
+        "1. click \"项目首发\" (button, selector: button:text(\"项目首发\"))",
+        "2. click \"选择帖子分类...\" (button, selector: #bits-c161)",
+        "3. click \"选择话题...\" (button, selector: #bits-c164)",
+        "4. click \"文字封面\" (button, selector: button:text(\"文字封面\"))",
+        "5. click \"发布\" (button, selector: button:text(\"发布\"))"
+      ],
+      "stepsCompleted": 5,
+      "successCount": 1
+    },
+    {
+      "description": "After clicking 发布, the page redirected to https://www.gitwatt.com/creator/posts and the GlotShot 项目首发 entry appeared in the creator list with status 已发布.",
+      "id": "auto-1776522751296",
+      "lastSucceededAt": "2026-04-18T14:32:31.296Z",
+      "name": "auto-captured workflow 2026-04-18",
+      "partial": false,
+      "steps": [
+        "1. click \"项目首发\" (button, selector: button:text(\"项目首发\"))",
+        "2. click \"选择帖子分类...\" (button, selector: #bits-c316)",
+        "3. click \"文字封面\" (button, selector: button:text(\"文字封面\"))",
+        "4. click \"发布\" (button, selector: button:text(\"发布\"))"
+      ],
+      "stepsCompleted": 4,
+      "successCount": 1
+    },
+    {
+      "description": "After clicking 发布, the page redirected to https://www.gitwatt.com/creator/posts and the TrekReel 项目首发 entry appeared in the creator list with status 已发布.",
+      "id": "auto-1776523163770",
+      "lastSucceededAt": "2026-04-18T14:39:23.770Z",
+      "name": "auto-captured workflow 2026-04-18",
+      "partial": false,
+      "steps": [
+        "1. click \"项目首发\" (button, selector: button:text(\"项目首发\"))",
+        "2. click \"选择帖子分类...\" (button, selector: #bits-c473)",
+        "3. click \"文字封面\" (button, selector: button:text(\"文字封面\"))",
+        "4. click \"发布\" (button, selector: button:text(\"发布\"))"
+      ],
+      "stepsCompleted": 4,
+      "successCount": 1
+    },
+    {
+      "description": "After clicking 发布, the page redirected to https://www.gitwatt.com/creator/posts and the WitNote 项目首发 entry appeared in the creator list with status 已发布.",
+      "id": "auto-1776523600541",
+      "lastSucceededAt": "2026-04-18T14:46:40.541Z",
+      "name": "auto-captured workflow 2026-04-18",
+      "partial": false,
+      "steps": [
+        "1. click \"项目首发\" (button, selector: button:text(\"项目首发\"))",
+        "2. click \"选择帖子分类...\" (button, selector: #bits-c632)",
+        "3. click \"文字封面\" (button, selector: button:text(\"文字封面\"))",
+        "4. click \"使用这张封面\" (button, selector: button:text(\"使用这张封面\"))",
+        "5. click \"发布\" (button, selector: button:text(\"发布\"))"
+      ],
+      "stepsCompleted": 5,
+      "successCount": 1
+    },
+    {
+      "description": "Published article appeared on https://www.gitwatt.com/creator/posts as the top item with title 我做了个浏览器肌肉记忆工具，让 AI 别再重复摸同一个网页 and status 已发布.",
+      "id": "gitwatt-发布图文软文",
+      "lastSucceededAt": "2026-04-18T15:07:30.006Z",
+      "name": "GitWatt 发布图文软文",
+      "partial": false,
+      "steps": [
+        "1. click \"发布图文\" (button, selector: button:text(\"发布图文\"))",
+        "2. click \"选择帖子分类...\" (button, selector: #bits-c792)",
+        "3. click \"选择话题...\" (button, selector: #bits-c795)",
+        "4. click \"选择帖子分类...\" (button, selector: #bits-s5)",
+        "5. click \"上传图片\" (button, selector: button:text(\"上传图片\"))",
+        "6. click \"选择话题...\" (button, selector: #bits-s8)",
+        "7. click \"选择标签...\" (button, selector: #bits-s10)",
+        "8. click \"发布\" (button, selector: button:text(\"发布\"))"
+      ],
+      "stepsCompleted": 8,
+      "successCount": 1
+    },
+    {
+      "description": "已跳转到 https://www.gitwatt.com/creator/posts，内容管理列表顶部显示《我做了个点击 DOM 元素就能生成 AI 提示词的小工具》，状态为 已发布。",
+      "id": "发布图文软文并上传素材封面",
+      "lastSucceededAt": "2026-04-18T15:20:51.007Z",
+      "name": "发布图文软文并上传素材封面",
+      "partial": false,
+      "steps": [
+        "1. click \"发布图文\" (button, selector: button:text(\"发布图文\"))",
+        "2. click \"选择帖子分类...\" (button, selector: #bits-c169)",
+        "3. click \"选择话题...\" (button, selector: #bits-c172)",
+        "4. click \"选择标签...\" (button, selector: #bits-c174)",
+        "5. click \"发布\" (button, selector: button:text(\"发布\"))"
+      ],
+      "stepsCompleted": 5,
+      "successCount": 1
+    },
+    {
+      "id": "批量发布剩余项目图文",
+      "name": "批量发布剩余项目图文",
+      "description": "已回到 https://www.gitwatt.com/creator/posts，内容管理页同时包含《我做了个不强迫你把草稿交给云端的 AI 写作工具》《我做了个把 GPX 轨迹直接变成 3D 飞越视频和地图模型的小工具》《我做了个专门帮独立开发者批量做截图和图标的 macOS 工具》，均为已发布状态。",
+      "steps": [
+        "1. click \"发布\" (button, selector: button:text(\"发布\"))"
+      ],
+      "partial": false,
+      "stepsCompleted": 1,
+      "lastSucceededAt": "2026-04-18T15:33:28.243Z",
+      "successCount": 1
+    }
+  ]
+}

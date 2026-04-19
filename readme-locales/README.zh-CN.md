@@ -87,6 +87,16 @@ AgentLimb 通过 Chrome Debugger Protocol 直接读取 DOM。AI 拿到的是结�
 
 Bridge 运行在 `127.0.0.1:7791`。无分析、无追踪、无云服务器。肌肉知识是桌面上的纯文本 JSON — 你可以随时读取、对比、分享或删除。
 
+### 6. 多账号并行控制 — 同时操作多个 Chrome Profile
+
+一条 AI 命令，每个 Chrome Profile 同时执行。无论是两个 Twitter 账号、三个公司 Google 账号，还是十几个测试 Profile——AgentLimb 都能在一次任务中全部驱动。
+
+- **显式身份** — 每个侧边面板显示「本面板：Profile-xxxxxx」；Bridge 知道哪个 Profile 返回了哪个结果
+- **挂起 / 自动挂起** — 关闭面板（或点击挂起按钮）即可让该 Profile 退出当前任务，其余 Profile 照常运行
+- **task\_\* 广播** — `task_plan`、`task_step_done`、`task_complete`、`task_fail` 广播到每个活跃 Profile；所有侧边面板保持同步
+- **窗口锁定** — `navigate` 自动定向到侧边面板所在的 Chrome 窗口，即使同一 Profile 开了多个窗口也不会走错
+- **精准路由** — 需要只操作某个 Profile 时，可在工具调用中用 label 指定
+
 ## 工作原理
 
 ```
@@ -128,6 +138,7 @@ AgentLimb 扩展  (Chrome MV3 · 侧边栏 UI · 任务/肌肉/日志三 Tab)
 | **数据隐私** | 本地 ✅ | 经过第三方服务器 ❌ | 本地 ✅ | 100% 本地——仅 127.0.0.1 ✅ |
 | **AI 终端选择** | 任意（纯脚本） | 因平台而异 | 与 Codex / Claude 捆绑 | 任何会说 HTTP 的 AI |
 | **知识共享** | 脚本 = 绑死一个 AI | 工作流 = 绑死平台 | 无持久记忆 | 肌肉文件 = 跨 AI、可迁移、永久 |
+| **多账号并行** | 需手动编排 | 因平台而异 | 不支持 | ✅ 多 Chrome Profile，一条命令 |
 
 **独特之处**：AgentLimb 的肌肉文件以纯 JSON 形式存放在 `~/Desktop/AgentLimb-muscle/`。今天用 Claude Code 探索出来的知识，明天 Codex 直接拿来用——同一组 JSON 文件，同一个桌面文件夹。换 AI 工具，不丢任何已学会的工作流。
 

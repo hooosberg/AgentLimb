@@ -87,6 +87,16 @@ Stille bedeutet nicht länger Erfolg. Die KI deklariert explizit `task_plan` →
 
 Bridge läuft auf `127.0.0.1:7791`. Keine Analytik, kein Tracking, keine Cloud. Muskelwissen liegt als einfaches JSON auf deinem Desktop — du kannst es jederzeit lesen, vergleichen, teilen oder löschen.
 
+### 6. Multi-Account-Parallelsteuerung — Mehrere Chrome-Profile gleichzeitig steuern
+
+Ein KI-Befehl, jedes Chrome-Profil führt ihn gleichzeitig aus. Ob zwei Twitter-Konten, drei Unternehmens-Google-Konten oder ein Dutzend Testprofile——AgentLimb steuert sie alle in einer einzigen Aufgabe.
+
+- **Explizite Identität** — jedes Seitenpanel zeigt "Dieses Panel: Profile-xxxxxx"; Bridge weiß, welches Profil welches Ergebnis geliefert hat
+- **Anhalten / automatisches Anhalten** — Panel schließen (oder auf Anhalten klicken), um dieses Profil aus der Aufgabe zu entfernen; die anderen laufen unterbrechungsfrei weiter
+- **task\_\*-Broadcast** — `task_plan`, `task_step_done`, `task_complete`, `task_fail` werden an jedes aktive Profil übertragen; alle Seitenpanels bleiben synchron
+- **Fenster-Lock** — `navigate` zielt automatisch auf das richtige Chrome-Fenster, auch wenn dasselbe Profil mehrere Fenster geöffnet hat
+- **Ziel-Routing** — Profil per Label im Tool-Aufruf angeben für chirurgische Präzision
+
 ## Funktionsweise
 
 ```
@@ -128,6 +138,7 @@ Jeder bestehende Ansatz zur Browser-Automatisierung hat reale Kosten. Hier der e
 | **Datenschutz** | Lokal ✅ | Über Drittanbieter-Server ❌ | Lokal ✅ | 100% lokal — nur 127.0.0.1 ✅ |
 | **KI-Terminal-Auswahl** | Beliebig (reines Skript) | Je nach Plattform | Gebündelt mit Codex / Claude | Jede KI, die HTTP spricht |
 | **Gemeinsames Wissen** | Skript = an eine KI gebunden | Workflow = an Plattform gebunden | Kein dauerhaftes Gedächtnis | Muskeldateien = KI-übergreifend, übertragbar, dauerhaft |
+| **Multi-Account-parallel** | Manuelle Orchestrierung | Plattformabhängig | Nein | ✅ Mehrere Chrome-Profile, ein Befehl |
 
 **Das Alleinstellungsmerkmal**: AgentLimbs Muskeldateien liegen als reines JSON in `~/Desktop/AgentLimb-muscle/`. Wissen, das Claude Code heute erkundet, steht Codex morgen zur Verfügung — gleiche Dateien, null Neu-Erkundung. Wechsle KI-Tools, ohne einen einzigen gelernten Workflow zu verlieren.
 

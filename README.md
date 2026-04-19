@@ -96,6 +96,16 @@ Silence no longer equals success. The AI explicitly declares `task_plan` → `ta
 
 Bridge runs on `127.0.0.1:7791`. No analytics, no tracking, no cloud. Muscle knowledge is plain JSON on your desktop — you can read, diff, share, or delete it at any time.
 
+### 6. Multi-Account Parallel Control — Run Multiple Chrome Profiles at Once
+
+One AI command, every Chrome profile executes it. Whether you have two Twitter accounts, three company Google accounts, or a dozen test profiles — AgentLimb drives them all in a single task.
+
+- **Explicit identity** — each side panel shows "This panel: Profile-xxxxxx"; the Bridge tracks which profile sent which result
+- **Suspend / auto-suspend** — close a panel (or click Suspend) to opt that profile out; the rest continue without interruption
+- **task_\* fan-out** — `task_plan`, `task_step_done`, `task_complete`, `task_fail` broadcast to every active profile; all side panels stay in sync
+- **Window locking** — `navigate` targets the correct Chrome window automatically, even when the same profile has multiple windows open
+- **Target routing** — point a tool call at a specific profile by label for surgical precision
+
 ## How It Works
 
 ```
@@ -137,6 +147,7 @@ Every existing approach to browser automation has a real cost. Here's the honest
 | **Data privacy** | Local ✅ | Third-party servers ❌ | Local ✅ | 100% local, 127.0.0.1 ✅ |
 | **AI choice** | Any (pure script) | Platform-dependent | Bundled with Codex / Claude | Any AI that speaks HTTP |
 | **Shared knowledge** | Script = one AI only | Workflow = locked to platform | No persistent memory | Muscle files = cross-AI, transferable |
+| **Multi-account parallel** | Manual orchestration | Platform-dependent | No | ✅ Multiple Chrome profiles, one command |
 
 **The unique differentiator:** AgentLimb's muscle files live in `~/Desktop/AgentLimb-muscle/` as plain JSON. Knowledge explored by Claude Code today is available to Codex tomorrow — same files, zero re-exploration. Switch AI tools without losing a single learned workflow.
 

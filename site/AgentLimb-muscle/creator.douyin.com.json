@@ -1,0 +1,53 @@
+{
+  "domain": "creator.douyin.com",
+  "lastUpdatedAt": "2026-04-18T19:30:54.999Z",
+  "version": 1,
+  "notes": [
+    {
+      "at": "2026-04-18T19:30:54.997Z",
+      "text": "[success verification] After publishing, the page navigated to content management and the new article title appeared in the list with status 审核中."
+    }
+  ],
+  "selectors": {
+    "高清发布": [
+      {
+        "value": "button:text(\"高清发布\")",
+        "type": "css",
+        "reliability": 0.8,
+        "lastTestedAt": "2026-04-18T19:22:24.923Z"
+      }
+    ],
+    "我要发文": [
+      {
+        "value": "button:text(\"我要发文\")",
+        "type": "css",
+        "reliability": 0.8,
+        "lastTestedAt": "2026-04-18T19:24:15.206Z"
+      }
+    ],
+    "发布": [
+      {
+        "value": "button:text(\"发布\")",
+        "type": "css",
+        "reliability": 0.8,
+        "lastTestedAt": "2026-04-18T19:25:42.136Z"
+      }
+    ]
+  },
+  "workflows": [
+    {
+      "id": "publish-douyin-revenue-report-as-article",
+      "name": "Publish Douyin revenue report as article",
+      "description": "After publishing, the page navigated to content management and the new article title appeared in the list with status 审核中.",
+      "steps": [
+        "1. click \"高清发布\" (button, selector: button:text(\"高清发布\"))",
+        "2. click \"我要发文\" (button, selector: button:text(\"我要发文\"))",
+        "3. click \"发布\" (button, selector: button:text(\"发布\"))"
+      ],
+      "partial": false,
+      "stepsCompleted": 3,
+      "lastSucceededAt": "2026-04-18T19:30:54.997Z",
+      "successCount": 1
+    }
+  ]
+}

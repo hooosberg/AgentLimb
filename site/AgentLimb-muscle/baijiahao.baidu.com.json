@@ -1,0 +1,64 @@
+{
+  "domain": "baijiahao.baidu.com",
+  "lastUpdatedAt": "2026-04-18T20:24:00.187Z",
+  "version": 1,
+  "notes": [
+    {
+      "at": "2026-04-19",
+      "text": "Baijiahao article publishing for build-in-public posts uses heterogeneous editors: title is Lexical-style, body is UEditor inside iframe, and publish often requires both cover and source declaration before the button really works."
+    },
+    {
+      "at": "2026-04-19",
+      "text": "Reliable completion check is not just the submit success page; always open content management and confirm the title row shows publish time and status 已发布."
+    }
+  ],
+  "selectors": {
+    "body_editor_iframe": [
+      {
+        "value": "iframe#ueditor_0",
+        "type": "css",
+        "reliability": 0.95,
+        "lastTestedAt": "2026-04-19"
+      }
+    ],
+    "publish_button": [
+      {
+        "value": "[data-testid=\"publish-btn\"]",
+        "type": "css",
+        "reliability": 0.78,
+        "lastTestedAt": "2026-04-19"
+      }
+    ],
+    "content_search_input": [
+      {
+        "value": "input[placeholder=\"输入标题关键字\"]",
+        "type": "css",
+        "reliability": 0.88,
+        "lastTestedAt": "2026-04-19"
+      }
+    ],
+    "source_declaration_label": [
+      {
+        "value": "来源说明",
+        "type": "text",
+        "reliability": 0.7,
+        "lastTestedAt": "2026-04-19"
+      }
+    ]
+  },
+  "workflows": [
+    {
+      "id": "baijiahao-build-in-public-article",
+      "name": "Publish Baijiahao build-in-public article",
+      "description": "Publish a long-form progress report on Baijiahao with AI cover and source declaration completed.",
+      "steps": [
+        "Fill the Lexical title editor with the final article title.",
+        "Set the UEditor iframe body content with the long-form article text.",
+        "Open cover settings and use AI封图, then confirm until the main page shows 编辑 / 更换.",
+        "Open 创作声明, enable 来源说明, then fill time and place before publishing.",
+        "Trigger publish, then verify first on the submit success page and finally in 内容管理 where the title row must show publish time and 已发布."
+      ],
+      "successCount": 1
+    }
+  ]
+}

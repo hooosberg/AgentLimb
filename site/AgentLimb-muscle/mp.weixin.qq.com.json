@@ -1,0 +1,102 @@
+{
+  "domain": "mp.weixin.qq.com",
+  "lastUpdatedAt": "2026-04-18T20:51:43.939Z",
+  "version": 2,
+  "notes": [
+    {
+      "at": "2026-04-19",
+      "text": "公众号长文发布已打通：封面可走站内AI配图；原文链接可留空；创作来源可选个人观点，仅供参考；点击发表后可能还会触发微信扫码验证；最终验收以发表记录里检索到标题为准。"
+    },
+    {
+      "at": "2026-04-18T20:51:43.931Z",
+      "text": "[success verification] 在 mp.weixin.qq.com 的发表记录页中，已通知 2 可见，且列表中检索到标题《[article-title]》，确认公众号文章已成功发表。"
+    }
+  ],
+  "selectors": {
+    "draftBoxMenu": [
+      {
+        "value": "#menu_10125",
+        "type": "css",
+        "reliability": 0.93,
+        "lastTestedAt": "2026-04-19"
+      }
+    ],
+    "publishRecordMenu": [
+      {
+        "value": "#menu_10126",
+        "type": "css",
+        "reliability": 0.95,
+        "lastTestedAt": "2026-04-19"
+      }
+    ],
+    "recordSearchInput": [
+      {
+        "value": "input[placeholder=\"输入标题/关键词/文章链接\"]",
+        "type": "css",
+        "reliability": 0.78,
+        "lastTestedAt": "2026-04-19"
+      }
+    ],
+    "发表": [
+      {
+        "value": "button:text(\"发表\")",
+        "type": "css",
+        "reliability": 0.8,
+        "lastTestedAt": "2026-04-18T20:33:47.723Z"
+      }
+    ],
+    "下一步": [
+      {
+        "value": "button:text(\"下一步\")",
+        "type": "css",
+        "reliability": 0.8,
+        "lastTestedAt": "2026-04-18T20:39:21.931Z"
+      }
+    ],
+    "全部草稿": [
+      {
+        "value": "button:text(\"全部草稿\")",
+        "type": "css",
+        "reliability": 0.8,
+        "lastTestedAt": "2026-04-18T20:48:24.063Z"
+      },
+      {
+        "value": "#reload",
+        "type": "css",
+        "reliability": 0.8,
+        "lastTestedAt": "2026-04-18T20:49:12.503Z"
+      }
+    ]
+  },
+  "workflows": [
+    {
+      "id": "wechat_longform_publish_verify",
+      "name": "公众号长文发布并验收",
+      "description": "发布公众号长文后，通过发表记录确认真正发出，而不是只看草稿或跳页。",
+      "steps": [
+        "写标题和长正文",
+        "设置封面（站内AI配图可行）",
+        "声明原创并检查创作来源",
+        "点击发表，完成微信扫码验证",
+        "进入发表记录，必要时用标题搜索",
+        "以已通知计数和标题出现在列表中作为成功验收"
+      ],
+      "successCount": 1
+    },
+    {
+      "id": "公众号长文发布并验收",
+      "name": "公众号长文发布并验收",
+      "description": "在 mp.weixin.qq.com 的发表记录页中，已通知 2 可见，且列表中检索到标题《[article-title]》，确认公众号文章已成功发表。",
+      "steps": [
+        "1. click \"发表\" (button, selector: button:text(\"发表\"))",
+        "2. click \"下一步\" (button, selector: button:text(\"下一步\"))",
+        "3. click \"全部草稿\" (button, selector: button:text(\"全部草稿\"))",
+        "4. click \"全部草稿\" (link, selector: #reload)"
+      ],
+      "partial": false,
+      "stepsCompleted": 4,
+      "lastSucceededAt": "2026-04-18T20:51:43.931Z",
+      "successCount": 1
+    }
+  ]
+}

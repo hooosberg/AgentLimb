@@ -1,0 +1,34 @@
+{
+  "domain": "reddit.com",
+  "lastUpdatedAt": "2026-04-18T21:39:58.841Z",
+  "version": 1,
+  "notes": [
+    {
+      "at": "r/macapps megathread",
+      "text": "Promotion belongs in the pinned App Pile megathread, not a standalone post, unless the account already qualifies for main-feed trust/transparency."
+    },
+    {
+      "at": "r/macapps megathread",
+      "text": "Use PCP format exactly: App Name or Title, Problem, Comparison, Pricing. Avoid links in the first promotional comment to reduce Reddit auto-removal risk."
+    },
+    {
+      "at": "r/macapps megathread",
+      "text": "Workflow that worked: click the collapsed comment trigger, use form_input on the visible contenteditable textbox, then click the visible submit button. Direct DOM value injection into the hidden trigger field is unreliable."
+    }
+  ],
+  "selectors": {},
+  "workflows": [
+    {
+      "id": "reddit-macapps-megathread-pcp-comment",
+      "name": "Post PCP comment in r/macapps App Pile megathread",
+      "description": "Open the collapsed top-level comment composer in the App Pile thread and submit a PCP-format comment without links.",
+      "steps": [
+        "Open the pinned r/macapps App Pile megathread.",
+        "Click the collapsed comment trigger labeled Join the conversation.",
+        "Use form_input on the visible contenteditable textbox with PCP content.",
+        "Click the visible Comment button and verify the app name appears in page text."
+      ],
+      "successCount": 1
+    }
+  ]
+}

@@ -1,0 +1,106 @@
+{
+  "domain": "www.v2ex.com",
+  "lastUpdatedAt": "2026-04-18T18:39:13.088Z",
+  "version": 3,
+  "notes": [
+    {
+      "at": "2026-04-19",
+      "text": "For V2EX topic edit/create flow, always ensure both #topic_title and #topic_content are populated before clicking save. Editing only the title can leave the post body empty or unchanged."
+    },
+    {
+      "at": "2026-04-19",
+      "text": "The real persisted body field is #topic_content. On edit/review flows, verify its value length with javascript_eval before saving if there is any doubt."
+    },
+    {
+      "at": "2026-04-19",
+      "text": "When posting DOMPrompter-like developer tools, the 程序员 node can carry a soft developer-workflow angle focused on interface micro-tuning rather than hard product promotion."
+    },
+    {
+      "at": "2026-04-18T16:20:48.328Z",
+      "text": "[success verification] Saved the edited V2EX post and verified navigation to https://www.v2ex.com/t/[post-id] with page title [article-title] - V2EX; confirmed GitHub and Mac App Store links appear in the published body."
+    },
+    {
+      "at": "2026-04-18T18:39:13.087Z",
+      "text": "[success verification] Published the V2EX revenue-report topic, verified it on the homepage list, and confirmed the final topic page at https://www.v2ex.com/t/[post-id] contains the full body plus GitHub homepage link."
+    }
+  ],
+  "selectors": {
+    "post_body": [
+      {
+        "lastTestedAt": "2026-04-19",
+        "reliability": 0.99,
+        "type": "css",
+        "value": "#topic_content"
+      }
+    ],
+    "post_title": [
+      {
+        "lastTestedAt": "2026-04-19",
+        "reliability": 0.99,
+        "type": "css",
+        "value": "#topic_title"
+      }
+    ],
+    "save_post": [
+      {
+        "lastTestedAt": "2026-04-19",
+        "reliability": 0.75,
+        "type": "css",
+        "value": "input[type=\"submit\"]"
+      }
+    ],
+    "发布主题": [
+      {
+        "lastTestedAt": "2026-04-18T16:13:53.758Z",
+        "reliability": 0.8,
+        "type": "css",
+        "value": "button:text(\"发布主题\")"
+      }
+    ],
+    "预览主题": [
+      {
+        "lastTestedAt": "2026-04-18T16:13:32.087Z",
+        "reliability": 0.8,
+        "type": "css",
+        "value": "button:text(\"预览主题\")"
+      }
+    ],
+    "post_link": [
+      {
+        "value": "#topic-link-1206920",
+        "type": "css",
+        "reliability": 0.8,
+        "lastTestedAt": "2026-04-18T18:37:31.100Z"
+      }
+    ]
+  },
+  "workflows": [
+    {
+      "description": "Fill title and body, then save and verify landing on the final topic URL.",
+      "id": "v2ex-topic-create-or-edit",
+      "name": "Create or edit a V2EX topic",
+      "steps": [
+        "Open /new or the topic edit page",
+        "Confirm the target node if creating a new post",
+        "Fill #topic_title with a problem-led title that includes the product name",
+        "Fill #topic_content with the full body before saving",
+        "Click the submit button and wait for navigation to the final topic URL",
+        "Verify the final page title and confirm GitHub/product links appear in the body"
+      ],
+      "successCount": 1
+    },
+    {
+      "description": "Saved the edited V2EX post and verified navigation to https://www.v2ex.com/t/[post-id] with page title [article-title] - V2EX; confirmed GitHub and Mac App Store links appear in the published body.",
+      "id": "auto-1776529248328",
+      "lastSucceededAt": "2026-04-18T16:20:48.328Z",
+      "name": "auto-captured workflow 2026-04-18",
+      "partial": false,
+      "steps": [
+        "1. click \"预览主题\" (button, selector: button:text(\"预览主题\"))",
+        "2. click \"发布主题\" (button, selector: button:text(\"发布主题\"))"
+      ],
+      "stepsCompleted": 2,
+      "successCount": 1
+    }
+  ]
+}

@@ -1,0 +1,105 @@
+{
+  "domain": "meta.appinn.net",
+  "lastUpdatedAt": "2026-04-19T09:10:26.376Z",
+  "version": 3,
+  "notes": [
+    {
+      "at": "2026-04-19",
+      "text": "AppInn 发现频道适合 DOMPrompter 这类开发者工具用真实痛点故事切入。继续保持 GitHub only，不放 App Store 直链；待处理页面的标题列表可用来确认是否成功进入人工审核队列。"
+    },
+    {
+      "at": "2026-04-18T17:54:39.417Z",
+      "text": "[success verification] After submission, the browser opened https://meta.appinn.net/u/[username]/activity/pending and the pending list contains the title DOMPrompter：我做了个专门给前端界面微调的提示词工具，点中元素就能生成更准的 AI 修改描述 [macOS]."
+    },
+    {
+      "at": "2026-04-19T09:10:26.375Z",
+      "text": "[success verification] AppInn pending page /u/[username]/activity/pending showed title AgentLimb - 给 AI 编程工具用的浏览器肌肉记忆 [Chrome] and full template body; local promotion docs updated and grep verified."
+    }
+  ],
+  "selectors": {
+    "或按 ⌘ Enter": [
+      {
+        "lastTestedAt": "2026-04-19T09:06:43.316Z",
+        "reliability": 0.8,
+        "type": "css",
+        "value": "button:text(\"立即发布\")"
+      }
+    ],
+    "提交新发现": [
+      {
+        "lastTestedAt": "2026-04-19T09:04:46.772Z",
+        "reliability": 0.8,
+        "type": "css",
+        "value": "#custom-create-topic"
+      }
+    ],
+    "确定": [
+      {
+        "lastTestedAt": "2026-04-18T17:54:15.013Z",
+        "reliability": 0.8,
+        "type": "css",
+        "value": "button:text(\"确定\")"
+      }
+    ],
+    "显示更多": [
+      {
+        "value": "[aria-label=\"显示更多\"]",
+        "type": "css",
+        "reliability": 0.8,
+        "lastTestedAt": "2026-04-19T09:02:59.760Z"
+      }
+    ],
+    "切换到标准 Markdown 编辑器 (⌃ M)": [
+      {
+        "value": "[aria-label=\"切换到标准\\ Markdown\\ 编辑器\\ \\(⌃\\ M\\)\"]",
+        "type": "css",
+        "reliability": 0.8,
+        "lastTestedAt": "2026-04-19T09:05:09.356Z"
+      }
+    ]
+  },
+  "workflows": [
+    {
+      "description": "Open 发现频道 composer, fill a concise title plus story-driven body, keep only GitHub link, submit, confirm in 待处理 page.",
+      "id": "appinn_submit_discovery_post_github_only",
+      "name": "Submit discovery post on AppInn with GitHub-only link",
+      "steps": [
+        "Open https://meta.appinn.net/c/faxian and click 提交新发现",
+        "Fill title with concise, non-clickbait wording",
+        "Write a simple story-driven body focused on pain point and workflow",
+        "Keep only the GitHub link in the body for developer-community friendliness",
+        "Submit and confirm the post appears under 待处理 with the expected title"
+      ],
+      "successCount": 2
+    },
+    {
+      "description": "After submission, the browser opened https://meta.appinn.net/u/[username]/activity/pending and the pending list contains the title DOMPrompter：我做了个专门给前端界面微调的提示词工具，点中元素就能生成更准的 AI 修改描述 [macOS].",
+      "id": "auto-1776534879417",
+      "lastSucceededAt": "2026-04-18T17:54:39.417Z",
+      "name": "auto-captured workflow 2026-04-18",
+      "partial": false,
+      "steps": [
+        "1. click \"提交新发现\" (button, selector: #custom-create-topic)",
+        "2. click \"或按 ⌘ Enter\" (button, selector: button:text(\"立即发布\"))",
+        "3. click \"确定\" (button, selector: button:text(\"确定\"))"
+      ],
+      "stepsCompleted": 3,
+      "successCount": 1
+    },
+    {
+      "id": "auto-1776589826375",
+      "name": "auto-captured workflow 2026-04-19",
+      "description": "AppInn pending page /u/[username]/activity/pending showed title AgentLimb - 给 AI 编程工具用的浏览器肌肉记忆 [Chrome] and full template body; local promotion docs updated and grep verified.",
+      "steps": [
+        "1. click \"显示更多\" (button, selector: [aria-label=\"显示更多\"])",
+        "2. click \"提交新发现\" (button, selector: #custom-create-topic)",
+        "3. click \"切换到标准 Markdown 编辑器 (⌃ M)\" (switch, selector: [aria-label=\"切换到标准\\ Markdown\\ 编辑器\\ \\(⌃\\ M\\)\"])",
+        "4. click \"或按 ⌘ Enter\" (button, selector: button:text(\"立即发布\"))"
+      ],
+      "partial": false,
+      "stepsCompleted": 4,
+      "lastSucceededAt": "2026-04-19T09:10:26.375Z",
+      "successCount": 1
+    }
+  ]
+}
