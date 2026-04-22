@@ -37,7 +37,7 @@ export function renderFooter(style = 'full') {
             <span>DOMPrompter</span>
           </a>
           <a href="https://uixskills.com" target="_blank" rel="noopener" class="footer-more-works-card">
-            <img src="https://uixskills.com/icons/icon.png" alt="UIXskills" loading="lazy">
+            <img src="https://uixskills.com/icons/uixskillicon.png" alt="UIXskills" loading="lazy">
             <span>UIXskills</span>
           </a>
         </div>
