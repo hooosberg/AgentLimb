@@ -46,10 +46,12 @@ export function renderFooter(style = 'full') {
           <div class="footer-col">
             <h4 data-i18n="footer.products">Our Products</h4>
             <ul>
+              <li><a href="https://hooosberg.github.io/BeRaw/" target="_blank">BeRaw</a></li>
+              <li><a href="https://hooosberg.github.io/Packpour/" target="_blank">Packpour</a></li>
               <li><a href="https://hooosberg.github.io/WitNote/" target="_blank">WitNote</a></li>
-              <li><a href="https://hooosberg.github.io/DOMPrompter/" target="_blank">DOMPrompter</a></li>
               <li><a href="https://hooosberg.github.io/GlotShot/" target="_blank">GlotShot</a></li>
               <li><a href="https://hooosberg.github.io/TrekReel/" target="_blank">TrekReel</a></li>
+              <li><a href="https://hooosberg.github.io/DOMPrompter/" target="_blank">DOMPrompter</a></li>
               <li><a href="https://uixskills.com" target="_blank">UIXskills</a></li>
             </ul>
           </div>

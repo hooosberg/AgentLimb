@@ -180,42 +180,17 @@ Every existing approach to browser automation has a real cost. Here's the honest
 - **GitHub**: [hooosberg/AgentLimb](https://github.com/hooosberg/AgentLimb)
 - **Email**: [zikedece@proton.me](mailto:zikedece@proton.me)
 
-## More Projects
+## Sibling projects
 
-<table>
-  <tr>
-    <td align="center">
-      <a href="https://hooosberg.github.io/WitNote/">
-        <b>✍️ WitNote</b><br>
-        <sub>AI Writing Companion</sub>
-      </a>
-    </td>
-    <td align="center">
-      <a href="https://hooosberg.github.io/DOMPrompter/">
-        <b>🎯 DOMPrompter</b><br>
-        <sub>Visual AI Prompt Generator</sub>
-      </a>
-    </td>
-    <td align="center">
-      <a href="https://hooosberg.github.io/GlotShot/">
-        <b>📸 GlotShot</b><br>
-        <sub>App Store Screenshots</sub>
-      </a>
-    </td>
-    <td align="center">
-      <a href="https://hooosberg.github.io/TrekReel/">
-        <b>🏔️ TrekReel</b><br>
-        <sub>3D Trail Stories</sub>
-      </a>
-    </td>
-    <td align="center">
-      <a href="https://uixskills.com/">
-        <b>🎨 UIXskills</b><br>
-        <sub>Design Protocol Layer</sub>
-      </a>
-    </td>
-  </tr>
-</table>
+Built by [hooosberg](https://github.com/hooosberg):
+
+- [BeRaw](https://hooosberg.github.io/BeRaw/) — Behance raw-image grabber
+- [Packpour](https://hooosberg.github.io/Packpour/) — App Store Connect locale filler
+- [WitNote](https://hooosberg.github.io/WitNote/) — local-first AI writing companion
+- [GlotShot](https://hooosberg.github.io/GlotShot/) — perfect App Store preview images
+- [TrekReel](https://hooosberg.github.io/TrekReel/) — outdoor trails, cinematic reels
+- [DOMPrompter](https://hooosberg.github.io/DOMPrompter/) — visualize DOM for AI code
+- [UIXskills](https://uixskills.com) — AI → JSON → Whiteboard → UI
 
 ## License
 
