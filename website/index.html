@@ -26,7 +26,7 @@
   <meta name="twitter:title" content="AgentLimb — 90% Fewer Tokens on Repeat Browser Tasks">
   <meta name="twitter:description" content="The open-source alternative to CoWork. Record once, replay forever. 90% fewer tokens. Any AI tool. Free & local.">
   <!-- SEO Keywords -->
-  <meta name="keywords" content="AI browser automation, Chrome extension, Claude Code browser, Cursor browser automation, Codex browser, MCP tools, muscle memory AI, token savings, browser agent, AI coding agent, web automation, Windsurf, Trae, no-code browser automation, AI web scraping, automated testing, social media automation, local AI tools, privacy-first AI, browser extension AI, AgentLimb">
+  <meta name="keywords" content="AI browser automation, Chrome extension, Claude Code browser, Cursor browser automation, Codex browser, MCP tools, muscle memory AI, token savings, browser agent, AI coding agent, web automation, Windsurf, Trae, no-code browser automation, AI web scraping, automated testing, social media automation, local AI tools, privacy-first AI, browser extension AI, AgentLimb, WorkBuddy, Qwen Office, TRAE Work, Cola, Kimi Work, 腾讯 WorkBuddy, 千问办公, 国产 Agent 浏览器控制, Edge automation, Brave automation, Chromium automation">
   <meta name="author" content="hooosberg">
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
   <meta name="googlebot" content="index, follow">
@@ -65,7 +65,7 @@
         "name": "What is AgentLimb?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "AgentLimb is a Chrome extension that lets any AI terminal — Claude Code, Cursor, Codex, Trae, Windsurf, or any local model — drive your browser via 16 standardized tools over HTTP. It uses your existing Chrome sessions (no headless browsers, no re-login), builds muscle memory to save 85.7% tokens on repeat tasks, and enforces an explicit task lifecycle so silence never equals success."
+          "text": "AgentLimb is a browser extension that lets any AI terminal — Claude Code, Cursor, Codex, Windsurf, WorkBuddy, Qwen Office, TRAE Work, Cola, Kimi Work, or any local model — drive every Chromium browser (Chrome, Edge, Brave, Vivaldi) via 16 standardized tools over HTTP, on both Windows and macOS. It uses your existing browser sessions (no headless browsers, no re-login), builds muscle memory to save 85.7% tokens on repeat tasks, and enforces an explicit task lifecycle so silence never equals success."
         }
       },
       {
@@ -108,7 +108,7 @@
   </div>
   <h1><span data-i18n="hero.line1">Stop Watching Your AI</span><br><span class="gradient" data-i18n="hero.line2">Relearn the Same Task</span></h1>
   <p class="hero-sub" data-i18n="hero.sub">Record once. Replay forever. 85% fewer tokens.</p>
-  <p class="hero-desc" data-i18n="hero.desc">Works with Claude Code, Cursor, Codex, Windsurf, or any AI terminal — no setup, no API keys, your existing Chrome sessions.</p>
+  <p class="hero-desc" data-i18n="hero.desc">Works with Claude Code, Cursor, Codex, WorkBuddy, Qwen Office, TRAE Work, Cola, Kimi Work — or any AI terminal, in every Chromium browser (Chrome, Edge, Brave, Vivaldi). No setup, no API keys, your existing sessions.</p>
   <div class="hero-buttons">
     <a href="https://chromewebstore.google.com/detail/agentlimb/hldldfepjhljhbcneojddjkkodkjglof" class="btn btn-primary" target="_blank" rel="noopener">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="21.17" y1="8" x2="12" y2="8"/><line x1="3.95" y1="6.06" x2="8.54" y2="14"/><line x1="10.88" y1="21.94" x2="15.46" y2="14"/></svg>
@@ -143,8 +143,8 @@
     </div>
     <div class="feature-card">
       <div class="feature-icon">🔌</div>
-      <div class="feature-title" data-i18n="feat.2.title">Any AI Tool. Zero Setup.</div>
-      <div class="feature-desc" data-i18n="feat.2.desc">Claude Code, Cursor, Codex, Trae, Windsurf — paste one prompt and your AI auto-configures in seconds. No config files, no API keys.</div>
+      <div class="feature-title" data-i18n="feat.2.title">Any AI Tool. Any Chromium Browser. Zero Setup.</div>
+      <div class="feature-desc" data-i18n="feat.2.desc">Claude Code, Cursor, Codex, Trae, Windsurf, WorkBuddy, Qwen Office, TRAE Work, Cola, Kimi Work — paste one prompt and your AI auto-configures in seconds. Works on Windows & macOS, in every Chromium-based browser. No config files, no API keys.</div>
     </div>
     <div class="feature-card">
       <div class="feature-icon">🔑</div>
@@ -214,7 +214,7 @@
     <div class="arch-flow">
       <div class="arch-node">
         <span class="arch-node-label" data-i18n="arch.ai">Your AI Terminal</span>
-        <span class="arch-node-sub">Claude Code / Cursor / Codex / Trae / any script</span>
+        <span class="arch-node-sub">Claude Code / Codex / WorkBuddy / TRAE Work / any agent</span>
       </div>
       <div class="arch-arrow"><div class="arch-arrow-line"></div><span class="arch-arrow-proto">HTTP + SSE</span><div class="arch-arrow-line"></div></div>
       <div class="arch-node">
@@ -413,6 +413,11 @@
     { name: 'Kilo',        icon: '/icons/agents/code ide icon_kilo.svg' },
     { name: 'Factory',     icon: '/icons/agents/code ide icon_factory.svg' },
     { name: 'OpenCode',    icon: '/icons/agents/code ide icon_opencode.svg' },
+    { name: 'WorkBuddy',   icon: '/icons/agents/code ide icon_workbuddy.svg' },
+    { name: 'Qwen Office', icon: '/icons/agents/code ide icon_qwen.svg' },
+    { name: 'TRAE Work',   icon: '/icons/agents/code ide icon_traework.svg' },
+    { name: 'Cola',        icon: '/icons/agents/code ide icon_cola.svg' },
+    { name: 'Kimi Work',   icon: '/icons/agents/code ide icon_kimi.svg' },
   ];
   const track = document.getElementById('agents-track');
   [...agents, ...agents].forEach(a => {

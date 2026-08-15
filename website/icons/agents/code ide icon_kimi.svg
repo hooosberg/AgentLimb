@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #919191;
+      }
+    </style>
+  </defs>
+  <g id="kimi">
+    <path class="cls-1" d="M62 60h11v30l34-30h14l-38 33 40 37h-14l-36-33v33H62z"/>
+  </g>
+</svg>

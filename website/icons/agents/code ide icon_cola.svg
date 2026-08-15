@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #919191;
+      }
+    </style>
+  </defs>
+  <g id="cola">
+    <path class="cls-1" d="M118 66c-7-6-17-9-28-9-22 0-38 13-38 31s16 31 38 31c11 0 21-3 28-9v-9c-6 6-15 9-26 9-17 0-30-10-30-22s13-22 30-22c11 0 20 3 26 9z"/>
+    <circle class="cls-1" cx="90" cy="130" r="5"/>
+  </g>
+</svg>

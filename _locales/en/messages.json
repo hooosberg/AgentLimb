@@ -1171,6 +1171,12 @@
   "aboutLinkWebsiteTitle": {
     "message": "Official Website"
   },
+  "aboutLinkBlogTitle": {
+    "message": "Blog"
+  },
+  "idleLinkBlog": {
+    "message": "Blog"
+  },
   "aboutLinkGitHubTitle": {
     "message": "GitHub Repository"
   },

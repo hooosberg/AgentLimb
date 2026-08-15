@@ -50,7 +50,7 @@
 
 ## 关于
 
-**AgentLimb** 是一款[已上架 Chrome 应用商店](https://chromewebstore.google.com/detail/agentlimb/hldldfepjhljhbcneojddjkkodkjglof)的 Chrome 扩展，让任何 AI 终端 — Claude Code、Cursor、Codex、Trae、Windsurf，以及任何能执行命令的工具 — 都能精准控制你的浏览器。安装扩展、复制一个提示词、粘贴给 AI，10 秒内自动配置完成。
+**AgentLimb** 是一款[已上架 Chrome 应用商店](https://chromewebstore.google.com/detail/agentlimb/hldldfepjhljhbcneojddjkkodkjglof)的浏览器扩展，让任何 AI 终端都能精准控制你的浏览器。**所有谷歌（Chromium）内核浏览器均可使用**（Chrome、Edge、Brave、Vivaldi、Chromium 等），并支持所有主流 AI 终端 — Claude Code、Codex、Cursor、Trae、Windsurf、腾讯 WorkBuddy、阿里千问办公、字节 TRAE Work、Cola、Kimi Work，以及任何本地模型。安装扩展、复制一个提示词、粘贴给 AI，10 秒内自动配置完成。
 
 无需无头浏览器。无需重新登录。无侵入式代理。你的真实 Chrome、真实 Cookie、真实登录会话 — 加上肌肉记忆，让重复任务的成本越来越低。
 
@@ -100,7 +100,7 @@ Bridge 运行在 `127.0.0.1:7791`。无分析、无追踪、无云服务器。�
 ## 工作原理
 
 ```
-你的 AI 终端  (Claude Code / Cursor / Codex / Trae / Windsurf / 本地模型)
+你的 AI 终端  (Claude Code / Codex / Cursor / TRAE Work / WorkBuddy / 千问办公 / Kimi Work / 本地模型)
     ↕  HTTP + 16 个标准化工具（通过 /docs 端点自动发现）
 AgentLimb Bridge  (本地 Node.js · 127.0.0.1:7791)
     ↕  chrome.runtime 消息传递
@@ -111,14 +111,63 @@ AgentLimb 扩展  (Chrome MV3 · 侧边栏 UI · 任务/肌肉/日志三 Tab)
 ~/Desktop/AgentLimb-muscle/<domain>.json  (永久，人类可读)
 ```
 
+## 支持的 AI 终端与平台
+
+AgentLimb 天生与 Agent 无关：只要你的 AI 能发 HTTP 请求或执行本机命令，就能控制浏览器。**全平台支持（Windows 和 macOS）**，**所有谷歌（Chromium）内核浏览器均可使用**。
+
+**国际主流终端** — Claude Code、Codex、Cursor、Trae、Windsurf，以及任何本地模型。
+
+**国产 Agent 平台** — 全面支持：
+
+| | 平台 | 亮点 |
+|---|---|---|
+| TOP 1 | **腾讯 WorkBuddy** | 腾讯出品的 AI 生产力专家，编程、数据分析、办公自动化样样精通 — 配合 AgentLimb 实现端到端网页控制 |
+| TOP 2 | **阿里千问办公** | 阿里通义千问驱动的办公智能体；一个提示词，即可通过你的真实浏览器会话操作网页 |
+| TOP 3 | **字节 TRAE Work** | 字节跳动 AI 原生工作终端；接入 AgentLimb，让对话直接变成精准的浏览器操作 |
+| TOP 4 | **Cola** | 轻量国产 Agent 客户端，终端集成能力强 — 粘贴一个接入提示词即可就绪 |
+| TOP 5 | **Kimi Work** | 月之暗面的 Kimi Work 擅长长周期网页任务；配合肌肉记忆，重复任务成本断崖式下降 |
+
+> 全平台、全软件、全浏览器 — 让每一个 Agent 都能控制网页，这就是我们的目标。
+
 ## 快速开始
 
-1. **在你的 Chromium 浏览器中安装扩展**：推荐从 [Chrome 应用商店安装](https://chromewebstore.google.com/detail/agentlimb/hldldfepjhljhbcneojddjkkodkjglof)。同一个扩展也可用于 Edge、Brave、Vivaldi、Chromium 及其他支持 Chrome 扩展的浏览器；也可以[下载 `agentlimb-chrome-v0.2.1-b6.zip`](https://github.com/hooosberg/AgentLimb/releases/download/v0.2.1/agentlimb-chrome-v0.2.1-b6.zip)，解压后在浏览器的扩展管理页开启开发者模式并加载。
-2. **复制接入提示词** — 打开侧边栏，点击“复制接入提示词”。一次性配置本地运行时需要 Node.js 18 或更高版本。
-3. **粘贴给你的 AI 终端** — 任何能执行本机终端命令的 agent 都遵循同一套 Windows 或 macOS 协议：先征得你的明确安装授权，再从 GitHub 版本 tag 的固定位置下载小型 Runtime 并校验 SHA-256，在临时目录解压后完成 Bridge 与 Native Messaging 配置并验证健康检查。它不会扫描浏览器 Profile、目录或扩展源码。
-4. **开始使用浏览器** — 健康检查通过后，同一段提示词会通过本地 Bridge 连接，并按需获取工具 Schema。
+### 下载哪个安装包？
 
-   Runtime 的下载和安装特意交由有终端能力的 agent 完成。浏览器扩展自身不能注册 Native Messaging、修改系统配置或启动本地服务。
+每次 GitHub Release 提供**两个安装包** — 请确认下载正确的那个：
+
+| 安装包 | 是什么 | 谁来安装 |
+|---|---|---|
+| `agentlimb-chrome-v0.2.1-b7.zip` | **浏览器扩展** | **你本人** — 安装到你的 Chromium 浏览器 |
+| `agentlimb-runtime-v0.2.1-b7.zip` | **本地 Runtime**（Bridge + CLI） | **你的 AI agent** — 经你授权后自动下载 |
+
+> 一般情况下你完全不需要手动碰 Runtime 包。接入提示词会让你的 AI 自动完成下载、SHA-256 校验和安装。
+
+### 第 1 步 — 安装扩展（Windows 和 macOS 操作相同）
+
+- **Chrome 应用商店**（推荐）：[安装 AgentLimb](https://chromewebstore.google.com/detail/agentlimb/hldldfepjhljhbcneojddjkkodkjglof)。Chrome、Edge、Brave、Vivaldi、Chromium 等所有谷歌内核浏览器均可使用。
+- **手动安装**：从 [Releases](https://github.com/hooosberg/AgentLimb/releases) 页面下载 [`agentlimb-chrome-v0.2.1-b7.zip`](https://github.com/hooosberg/AgentLimb/releases/download/v0.2.1/agentlimb-chrome-v0.2.1-b7.zip)，解压后在浏览器的扩展管理页开启开发者模式并加载解压后的文件夹。
+
+### 第 2 步 — 复制接入提示词
+
+打开 AgentLimb 侧边栏，点击**「复制接入提示词」**。本机需要 Node.js 18 或更高版本。
+
+### 第 3 步 — 粘贴给你的 AI 终端（Windows 或 macOS）
+
+任何能执行本机命令的 agent 都遵循同一套协议：先征得你的明确安装授权，再从 GitHub Release 下载小型 Runtime、校验 SHA-256、安装本地 Bridge 与 Native Messaging，最后运行健康检查。它不会扫描浏览器 Profile、目录或扩展源码。
+
+各平台幕后流程：
+
+- **macOS** — agent 解压 `agentlimb-runtime-v0.2.1-b7.zip` 后执行
+  `scripts/install.sh --extension-id <你的扩展ID>`。
+  如果 AgentLimb 已安装过，agent 会直接通过 `launchctl` 启动现有 Runtime，**无需重新下载**。
+- **Windows** — agent 解压同一个包后执行
+  `powershell -ExecutionPolicy Bypass -File scripts\install.ps1 -ExtensionId <你的扩展ID>`。
+
+两个安装器都会注册 Native Messaging、安装 `agentlimb` CLI，并在 `127.0.0.1:7791` 启动本地 Bridge。浏览器扩展自身无法完成这些系统级操作 — 这正是 Runtime 安装特意交由有终端能力的 agent 完成的原因。
+
+### 第 4 步 — 开始使用
+
+健康检查通过后，侧边栏显示 **ONLINE**，你的 AI 即可通过本地 Bridge 驱动每一个 Chromium 浏览器窗口，并按需获取工具 Schema。
 
 ## 工具集 — 16 个工具
 
@@ -160,6 +209,7 @@ AgentLimb 扩展  (Chrome MV3 · 侧边栏 UI · 任务/肌肉/日志三 Tab)
 ## 资源
 
 - **官网**: [agentlimb.com](https://agentlimb.com)
+- **博客**: [hooosberg.com/apps/agentlimb](https://hooosberg.com/apps/agentlimb/)
 - **教程**: [agentlimb.com/tutorials.html](https://agentlimb.com/tutorials.html)
 - **AI 工具导航**: [agentlimb.com/tools.html](https://agentlimb.com/tools.html)
 - **新闻**: [agentlimb.com/news.html](https://agentlimb.com/news.html)

@@ -59,7 +59,7 @@
 
 ## About
 
-**AgentLimb** is a Chrome extension — [now live on the Chrome Web Store](https://chromewebstore.google.com/detail/agentlimb/hldldfepjhljhbcneojddjkkodkjglof) — that lets any AI terminal — Claude Code, Cursor, Codex, Trae, Windsurf, or any local model — drive your browser with precision. Install the extension, copy one prompt, paste it to your AI, and it auto-configures in 10 seconds.
+**AgentLimb** is a browser extension — [now live on the Chrome Web Store](https://chromewebstore.google.com/detail/agentlimb/hldldfepjhljhbcneojddjkkodkjglof) — that lets any AI terminal drive your browser with precision. It works with every Chromium-based browser (Chrome, Edge, Brave, Vivaldi, Chromium, …) and every major AI terminal — Claude Code, Codex, Cursor, Trae, Windsurf, Tencent WorkBuddy, Alibaba Qwen Office, ByteDance TRAE Work, Cola, Kimi Work, or any local model. Install the extension, copy one prompt, paste it to your AI, and it auto-configures in 10 seconds.
 
 No headless browsers. No re-login. No invasive agents. Your real Chrome, your real cookies, your real sessions — plus muscle memory that makes repeat tasks dramatically cheaper every time you run them.
 
@@ -109,7 +109,7 @@ One AI command, every Chrome profile executes it. Whether you have two Twitter a
 ## How It Works
 
 ```
-Your AI Terminal  (Claude Code / Cursor / Codex / Trae / Windsurf / local model)
+Your AI Terminal  (Claude Code / Codex / Cursor / TRAE Work / WorkBuddy / Qwen Office / Kimi Work / local model)
     ↕  HTTP + SSE  (16 standardized tools, auto-discoverable via /docs endpoints)
 AgentLimb Bridge  (local Node.js · 127.0.0.1:7791)
     ↕  chrome.runtime message passing
@@ -120,16 +120,63 @@ Your Browser  (logged in, with cookies, your real sessions)
 ~/Desktop/AgentLimb-muscle/<domain>.json  (durable, human-readable)
 ```
 
+## Supported AI Terminals & Platforms
+
+AgentLimb is agent-agnostic by design: if your AI can send an HTTP request or run a local command, it can drive the browser. It works on **all platforms (Windows & macOS)** with **every Chromium-based browser**.
+
+**International terminals** — Claude Code, Codex, Cursor, Trae, Windsurf, and any local model.
+
+**Chinese agent platforms** — fully supported:
+
+| | Platform | Highlights |
+|---|---|---|
+| TOP 1 | **Tencent WorkBuddy（腾讯 WorkBuddy）** | Tencent's AI productivity expert with coding, data analysis, and office automation — pairs perfectly with AgentLimb for end-to-end web control |
+| TOP 2 | **Alibaba Qwen Office（阿里千问办公）** | Alibaba's Qwen-powered workspace agent; give it a prompt and let it operate the web through your real browser sessions |
+| TOP 3 | **ByteDance TRAE Work（字节 TRAE Work）** | ByteDance's AI-native work terminal; connect it to AgentLimb to turn chat into precise browser actions |
+| TOP 4 | **Cola** | Lightweight Chinese agent client with strong terminal integration — one onboarding prompt and it's ready |
+| TOP 5 | **Kimi Work** | Moonshot's Kimi Work agent handles long-horizon web tasks; muscle memory makes its repeat runs dramatically cheaper |
+
+> Universal web-control for every agent, on every Chromium browser. That's the goal.
+
 ## Quick Start
 
-1. **Install the extension in your Chromium browser**:
-   - **Chrome Web Store** (recommended): [Install AgentLimb](https://chromewebstore.google.com/detail/agentlimb/hldldfepjhljhbcneojddjkkodkjglof). The same extension can be used in Edge, Brave, Vivaldi, Chromium, and other browsers that support Chrome extensions.
-   - **Manual build**: [download `agentlimb-chrome-v0.2.1-b6.zip`](https://github.com/hooosberg/AgentLimb/releases/download/v0.2.1/agentlimb-chrome-v0.2.1-b6.zip), extract it, then load the extracted folder from your browser's extensions page with Developer Mode enabled.
-2. **Copy the onboarding prompt** — Open the side panel and click "Copy Onboard Prompt". Node.js 18 or later is required for the one-time local runtime setup.
-3. **Paste it into your AI terminal** — Any agent that can run local commands follows the same Windows or macOS protocol. After your explicit approval, it downloads the small Runtime at a fixed path in the matching GitHub version tag, verifies its SHA-256 file, installs the local Bridge and Native Messaging host, then verifies the health check. It does not scan browser profiles, folders, or extension sources.
-4. **Use the browser** — Once the health check passes, the same prompt connects through the local Bridge and discovers tool schemas on demand.
+### Which package do I download?
 
-   The Runtime download and installer are intentionally handled by a terminal-capable agent. A browser extension alone cannot register Native Messaging, write system configuration, or start a local service.
+Every GitHub Release ships **two packages** — make sure you grab the right one:
+
+| Package | What it is | Who installs it |
+|---|---|---|
+| `agentlimb-chrome-v0.2.1-b7.zip` | **Browser extension** | **You** — install it into your Chromium browser |
+| `agentlimb-runtime-v0.2.1-b7.zip` | **Local Runtime** (Bridge + CLI) | **Your AI agent** — downloaded automatically after your approval |
+
+> You normally never need to touch the Runtime zip manually. The onboarding prompt lets your AI download, verify (SHA-256), and install it for you.
+
+### Step 1 — Install the extension (Windows & macOS, identical)
+
+- **Chrome Web Store** (recommended): [Install AgentLimb](https://chromewebstore.google.com/detail/agentlimb/hldldfepjhljhbcneojddjkkodkjglof). Works in Chrome, Edge, Brave, Vivaldi, Chromium, and any other Chromium-based browser.
+- **Manual install**: download [`agentlimb-chrome-v0.2.1-b7.zip`](https://github.com/hooosberg/AgentLimb/releases/download/v0.2.1/agentlimb-chrome-v0.2.1-b7.zip) from the [Releases](https://github.com/hooosberg/AgentLimb/releases) page, unzip it, then load the extracted folder on your browser's extensions page with Developer Mode enabled.
+
+### Step 2 — Copy the onboarding prompt
+
+Open the AgentLimb side panel and click **"Copy Onboard Prompt"**. Node.js 18 or later is required on your machine.
+
+### Step 3 — Paste it into your AI terminal (Windows or macOS)
+
+Any agent that can run local commands follows the same protocol: it asks for your explicit approval, then downloads the small Runtime from the GitHub Release, verifies its SHA-256 checksum, installs the local Bridge and Native Messaging host, and runs a health check. It does not scan browser profiles, folders, or extension sources.
+
+What happens behind the scenes, per platform:
+
+- **macOS** — the agent extracts `agentlimb-runtime-v0.2.1-b7.zip`, then runs
+  `scripts/install.sh --extension-id <your-extension-id>`.
+  If AgentLimb is already installed, the agent simply starts the existing Runtime via `launchctl` — no re-download needed.
+- **Windows** — the agent extracts the same zip, then runs
+  `powershell -ExecutionPolicy Bypass -File scripts\install.ps1 -ExtensionId <your-extension-id>`.
+
+Both installers register the Native Messaging host, install the `agentlimb` CLI, and start the local Bridge on `127.0.0.1:7791`. A browser extension alone cannot do any of this — that's why the Runtime setup is deliberately handled by a terminal-capable agent.
+
+### Step 4 — Use the browser
+
+Once the health check passes, the side panel shows **ONLINE** and your AI can drive every Chromium browser window through the local Bridge, discovering tool schemas on demand.
 
 ## Toolset — 16 Tools
 
@@ -196,6 +243,7 @@ Cloudflare Pages should use the repository root as its root directory and `websi
 ## Resources
 
 - **Website**: [agentlimb.com](https://agentlimb.com)
+- **Blog**: [hooosberg.com/apps/agentlimb](https://hooosberg.com/apps/agentlimb/)
 - **Windows test checklist**: [docs/windows-testing.md](docs/windows-testing.md)
 - **Development notes**: [docs/development/README.md](docs/development/README.md)
 - **Tutorials**: [agentlimb.com/tutorials.html](https://agentlimb.com/tutorials.html)

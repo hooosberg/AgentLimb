@@ -1315,6 +1315,7 @@ function initSettings() {
   const LINKS = {
     'link-chromestore': 'https://chromewebstore.google.com/detail/agentlimb/hldldfepjhljhbcneojddjkkodkjglof',
     'link-website':     'https://agentlimb.com/',
+    'link-blog':        'https://hooosberg.com/apps/agentlimb/',
     'link-github':      'https://github.com/hooosberg/AgentLimb',
   };
   for (const [id, url] of Object.entries(LINKS)) {

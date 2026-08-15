@@ -1350,6 +1350,12 @@
   "aboutLinkWebsiteTitle": {
     "message": "官网"
   },
+  "aboutLinkBlogTitle": {
+    "message": "博客"
+  },
+  "idleLinkBlog": {
+    "message": "博客"
+  },
   "aboutLinkGitHubTitle": {
     "message": "GitHub 开源仓库"
   },

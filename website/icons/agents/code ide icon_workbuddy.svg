@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #919191;
+      }
+    </style>
+  </defs>
+  <g id="workbuddy">
+    <path class="cls-1" d="M28 62h10l12 46 14-46h9l14 46 12-46h10l-17 62h-10l-14-47-14 47h-10z"/>
+  </g>
+</svg>
