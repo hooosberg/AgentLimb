@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="site/icons/icon.svg" alt="AgentLimb Logo" width="64" height="64">
+  <img src="website/icons/icon.svg" alt="AgentLimb Logo" width="64" height="64">
 </p>
 
 <h1 align="center">AgentLimb</h1>
@@ -67,7 +67,7 @@ No headless browsers. No re-login. No invasive agents. Your real Chrome, your re
 
 ### 1. One-Prompt Setup
 
-Copy a single prompt, paste it to any AI tool. No config files, no terminal commands, no API keys. If your AI can run commands, it can use AgentLimb.
+After the one-time local runtime install, copy a single prompt and paste it to any AI tool. No API keys or cloud account. If your AI can run commands, it can use AgentLimb.
 
 ### 2. Muscle Memory — 85% Fewer Tokens, 80–95% Less Waiting
 
@@ -122,11 +122,23 @@ Your Browser  (logged in, with cookies, your real sessions)
 
 ## Quick Start
 
-1. **Install** — Two options:
-   - **Chrome Web Store** (recommended): [Install AgentLimb](https://chromewebstore.google.com/detail/agentlimb/hldldfepjhljhbcneojddjkkodkjglof) — one click, auto-updates
-   - **Manual (latest build)**: [Download the latest zip](https://github.com/hooosberg/AgentLimb/releases/latest), unzip, open `chrome://extensions`, enable **Developer Mode**, click **Load unpacked**
-2. **Copy** — Open the side panel, click "Copy Onboard Prompt"
-3. **Paste** — Paste to any AI terminal. It auto-connects, fetches the tool schema on demand, and starts working
+1. **Install the extension**:
+   - **Chrome Web Store** (recommended): [Install AgentLimb](https://chromewebstore.google.com/detail/agentlimb/hldldfepjhljhbcneojddjkkodkjglof)
+   - **Manual build**: [download `agentlimb-chrome-v0.2.1.zip`](https://github.com/hooosberg/AgentLimb/releases/download/v0.2.1/agentlimb-chrome-v0.2.1.zip), extract it, then load the extracted folder from `chrome://extensions` with Developer Mode enabled.
+2. **Copy the onboarding prompt** — Open the side panel and click "Copy Onboard Prompt". Node.js 18 or later is required for the one-time local runtime setup.
+3. **Paste it into your AI terminal** — Any agent that can run local terminal commands can follow the platform-specific bootstrap protocol. It asks for approval, uses the current extracted package when available, or downloads the fixed public source tag, then validates the Bridge and Native Messaging setup.
+4. **Use the browser** — Once the health check passes, the same prompt connects through the local Bridge and discovers tool schemas on demand.
+
+   If your AI cannot execute terminal commands, run the installer from an extracted extension package instead:
+
+   ```powershell
+   Set-ExecutionPolicy -Scope Process Bypass
+   .\scripts\install.ps1 -ChromeExtensionId <id-from-chrome://extensions>
+   ```
+
+   ```bash
+   chmod +x scripts/install.sh && ./scripts/install.sh --extension-id <id-from-chrome://extensions>
+   ```
 
 ## Toolset — 16 Tools
 
@@ -165,9 +177,36 @@ Every existing approach to browser automation has a real cost. Here's the honest
 - **Local-first** — privacy by architecture, not by promise
 - **AI-agnostic** — any tool that can send HTTP can connect; no vendor lock-in
 
+## Repository Layout
+
+The public repository contains the complete product source:
+
+```text
+_locales/          Extension translations
+icons/             Extension icons
+kernel/            Bridge, CLI, prompt, browser control, and muscle runtime
+scripts/           macOS and Windows installers plus release tooling
+tests/             Node test suite
+ui/                Chrome extension side panel and options UI
+website/           Static agentlimb.com site deployed by Cloudflare Pages
+忽略上传/           Local-only references, legacy worktrees, private material, and builds
+```
+
+Development commands:
+
+```bash
+npm test
+npm run build                    # builds into 忽略上传/dist/
+npm run release -- 0.2.1        # sets the version and builds release assets
+```
+
+Cloudflare Pages should use the repository root as its root directory and `website` as its build output directory. Release zips are generated in `忽略上传/dist/` and published through GitHub Releases; the entire `忽略上传/` directory is never committed.
+
 ## Resources
 
 - **Website**: [agentlimb.com](https://agentlimb.com)
+- **Windows test checklist**: [docs/windows-testing.md](docs/windows-testing.md)
+- **Development notes**: [docs/development/README.md](docs/development/README.md)
 - **Tutorials**: [agentlimb.com/tutorials.html](https://agentlimb.com/tutorials.html)
 - **AI Tools Directory**: [agentlimb.com/tools.html](https://agentlimb.com/tools.html)
 - **News**: [agentlimb.com/news.html](https://agentlimb.com/news.html)

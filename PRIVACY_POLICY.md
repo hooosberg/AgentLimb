@@ -1,17 +1,17 @@
 # Privacy Policy
 
 **AgentLimb**
-Last updated: 2026-04-18
+Last updated: 2026-08-15
 
 ## Overview
 
-AgentLimb is a Chrome extension that lets a terminal-based AI coding assistant (such as Claude Code, Cursor, Codex, or any tool that can send HTTP) observe and control the user's active Chrome tab. Every piece of the system — the extension, the Node.js bridge, the AI agent, and the stored "muscle" files — runs on the user's own machine. AgentLimb operates no servers and communicates only over the loopback address `127.0.0.1`.
+AgentLimb is a Chrome extension that lets a terminal-based AI coding assistant (such as Claude Code, Cursor, Codex, or any tool that can send HTTP) observe and control the user's active Chrome tab. Every browser-automation component — the extension, the Node.js bridge, the AI agent, and the stored "muscle" files — runs on the user's own machine. AgentLimb operates no backend servers. Browser content and automation commands communicate only over the loopback address `127.0.0.1`; the side panel separately reads public release metadata from GitHub to check for a newer AgentLimb version.
 
 ## Data Handling — What AgentLimb Does Not Do
 
 - **No telemetry.** AgentLimb does not send any analytics, crash reports, usage metrics, or diagnostics anywhere.
 - **No accounts, no login.** There is no sign-up flow and no remote user identifier.
-- **No third-party servers.** The extension never contacts a cloud backend, CDN, or analytics provider at runtime. All communication is confined to loopback.
+- **No cloud backend or analytics.** Browser content, automation commands, muscle files, and diagnostics stay local. The only routine remote request is a version check against GitHub's public Releases API; it does not include browsing data, prompts, muscle data, or an AgentLimb account identifier.
 - **No sale or sharing of user data.** We do not sell, transfer, or share any user data with third parties.
 - **No use of data for unrelated purposes.** User data is used only to fulfill the automation request the user issued.
 - **No use of data for creditworthiness or lending decisions.**
@@ -26,8 +26,9 @@ To let the AI reason about the current page, AgentLimb reads the following when 
 | DOM tree / element attributes of the active tab | So the AI can identify clickable and fillable elements | Sent to the local bridge |
 | Screenshots of the active tab (`Page.captureScreenshot` via CDP, with `chrome.tabs.captureVisibleTab` as fallback) | So the AI can see page state when DOM is ambiguous | Sent to the local bridge |
 | Short JavaScript expressions supplied by the AI | Evaluated in the target page's MAIN world via `chrome.scripting.executeScript` so the AI can probe page state | Executes in-page; result returned to the local bridge |
+| Installed AgentLimb version | Compare with the latest public release | GitHub Releases API; no browser or muscle data is included |
 
-These values are transmitted **only** to the local bridge on `127.0.0.1:7791` over loopback HTTP and WebSocket. The bridge does not forward them anywhere outside the user's machine.
+Browser page values are transmitted **only** to the local bridge on `127.0.0.1:7791` over loopback HTTP and WebSocket. The bridge does not forward them anywhere outside the user's machine.
 
 ## Data Handling — What AgentLimb Stores Locally
 

@@ -1,12 +1,23 @@
 .DS_Store
-
-# Local release assets: prepare here, upload manually to GitHub Releases.
-Releases/
-*.zip
-
-# Local/private helper files should never land in the public branch.
-.claude/
-CLAUDE.md
-docs/
-scripts/
+node_modules/
+coverage/
 *.log
+
+# Everything in this directory is local-only and never uploaded.
+/忽略上传/
+
+# Local environment and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.mobileprovision
+secrets/
+credentials/
+
+# Runtime state
+.muscle/
+**/.mvp-terminal-session.json

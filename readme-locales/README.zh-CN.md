@@ -113,11 +113,21 @@ AgentLimb 扩展  (Chrome MV3 · 侧边栏 UI · 任务/肌肉/日志三 Tab)
 
 ## 快速开始
 
-1. **安装** — 两种方式：
-   - **Chrome 应用商店**（推荐）：[安装 AgentLimb](https://chromewebstore.google.com/detail/agentlimb/hldldfepjhljhbcneojddjkkodkjglof) — 一键安装，自动更新
-   - **手动安装（最新构建）**：[下载最新 zip](https://github.com/hooosberg/AgentLimb/releases/latest)，解压后打开 `chrome://extensions`，开启**开发者模式**，点击**加载已解压的扩展程序**
-2. **复制** — 打开侧边栏，点击"复制接入提示词"
-3. **粘贴** — 将提示词粘贴给任何 AI 终端，自动连接、按需获取工具 Schema，立即开始工作
+1. **安装扩展**：推荐从 [Chrome 应用商店安装](https://chromewebstore.google.com/detail/agentlimb/hldldfepjhljhbcneojddjkkodkjglof)；也可以[下载 `agentlimb-chrome-v0.2.1.zip`](https://github.com/hooosberg/AgentLimb/releases/download/v0.2.1/agentlimb-chrome-v0.2.1.zip)，解压后在 `chrome://extensions` 开启开发者模式并加载。
+2. **复制接入提示词** — 打开侧边栏，点击“复制接入提示词”。一次性配置本地运行时需要 Node.js 18 或更高版本。
+3. **粘贴给你的 AI 终端** — 任何能执行本机终端命令的 agent 都会遵循同一套平台自举协议：先征得安装授权，优先使用当前解压的包；找不到时下载固定公开源码 tag，随后验证 Bridge 和 Native Messaging。
+4. **开始使用浏览器** — 健康检查通过后，同一段提示词会通过本地 Bridge 连接，并按需获取工具 Schema。
+
+   如果 AI 没有终端执行能力，可以从解压后的扩展包手动运行安装器：
+
+   ```powershell
+   Set-ExecutionPolicy -Scope Process Bypass
+   .\scripts\install.ps1 -ChromeExtensionId <chrome://extensions 中的 ID>
+   ```
+
+   ```bash
+   chmod +x scripts/install.sh && ./scripts/install.sh --extension-id <chrome://extensions 中的 ID>
+   ```
 
 ## 工具集 — 16 个工具
 

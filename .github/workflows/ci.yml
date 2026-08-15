@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Test
+        run: npm test
+      - name: Build release assets
+        run: npm run build
+      - name: Validate extension manifest
+        run: node -e "const m=require('./manifest.json'); if(m.manifest_version!==3) process.exit(1)"
+
+  windows-compatibility:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Parse Windows PowerShell 5.1 scripts
+        shell: powershell
+        run: |
+          $failed = $false
+          Get-ChildItem scripts -Recurse -Filter *.ps1 | ForEach-Object {
+            $tokens = $null
+            $errors = $null
+            [void][System.Management.Automation.Language.Parser]::ParseFile($_.FullName, [ref]$tokens, [ref]$errors)
+            if ($errors.Count -gt 0) {
+              $errors | ForEach-Object { Write-Error "$($_.Extent.File):$($_.Extent.StartLineNumber) $($_.Message)" }
+              $failed = $true
+            }
+          }
+          if ($failed) { exit 1 }
+      - name: Compile Native Messaging host
+        shell: powershell
+        run: |
+          $csc = "$env:WINDIR\Microsoft.NET\Framework64\v4.0.30319\csc.exe"
+          & $csc /nologo /target:exe "/out:$env:TEMP\agentlimb-native-host.exe" scripts\windows\AgentLimbNativeHost.cs
+          if ($LASTEXITCODE -ne 0 -or -not (Test-Path "$env:TEMP\agentlimb-native-host.exe")) { exit 1 }
+      - name: Run Windows-focused tests
+        run: node --test tests/windows-runtime-layout.test.mjs tests/prompt-identity.test.mjs

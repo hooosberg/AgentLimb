@@ -1,0 +1,1415 @@
+{
+  "extName": {
+    "message": "AgentLimb"
+  },
+  "extDesc": {
+    "message": "Brazo universal del navegador — Permite que la IA de terminal (Claude Code / Codex / Cursor) controle tu navegador Chrome"
+  },
+  "headerTitle": {
+    "message": "AgentLimb"
+  },
+  "bridgeNotConnected": {
+    "message": "Bridge no conectado"
+  },
+  "bridgeConnected": {
+    "message": "Bridge conectado"
+  },
+  "bridgeNotConnectedShort": {
+    "message": "No conectado"
+  },
+  "bridgeConnectedShort": {
+    "message": "Conectado"
+  },
+  "bridgeSuspended": {
+    "message": "Bridge conectado · este panel pausado"
+  },
+  "bridgeSuspendedShort": {
+    "message": "Pausado"
+  },
+  "identityPrefix": {
+    "message": "Este panel"
+  },
+  "suspendAction": {
+    "message": "Pausar"
+  },
+  "resumeAction": {
+    "message": "Reanudar"
+  },
+  "suspendActionTitle": {
+    "message": "Dejar de aceptar comandos de IA en este perfil"
+  },
+  "resumeActionTitle": {
+    "message": "Reanudar aceptación de comandos de IA en este perfil"
+  },
+  "suspendBlockedLastWorker": {
+    "message": "No se puede pausar — este es el único perfil activo"
+  },
+  "suspendFailed": {
+    "message": "No se pudo actualizar el estado de pausa"
+  },
+  "identityCopyHint": {
+    "message": "Haz clic para copiar el nombre del perfil"
+  },
+  "identityCopied": {
+    "message": "Copiado"
+  },
+  "identityCopyFailed": {
+    "message": "Error al copiar"
+  },
+  "connectedIdleTitle": {
+    "message": "Conectado"
+  },
+  "connectedIdleSubtitle": {
+    "message": "Listo para una misión. Describe lo que quieres que haga la IA."
+  },
+  "copyPromptTitle": {
+    "message": "Copiar prompt de incorporación"
+  },
+  "shutdownBtnTitle": {
+    "message": "Copiar el prompt de apagado al portapapeles y pegarlo en la IA para ejecutarlo"
+  },
+  "settings": {
+    "message": "Configuración"
+  },
+  "copyPrompt": {
+    "message": "Copiar prompt de inicio"
+  },
+  "viewPrompt": {
+    "message": "Ver prompt"
+  },
+  "about": {
+    "message": "Acerca de"
+  },
+  "tabMonitor": {
+    "message": "Monitor"
+  },
+  "tabSkills": {
+    "message": "Músculos locales"
+  },
+  "tabLogs": {
+    "message": "Registros"
+  },
+  "idleTitle": {
+    "message": "AgentLimb listo"
+  },
+  "idleDesc": {
+    "message": "Copia el prompt de inicio a cualquier IA de terminal para empezar a controlar el navegador"
+  },
+  "copyPromptBtn": {
+    "message": "📋 Copiar prompt de inicio"
+  },
+  "promptCopied": {
+    "message": "✓ ¡Copiado! Pégalo en la IA para comenzar"
+  },
+  "viewPromptContent": {
+    "message": "Ver contenido del prompt ▾"
+  },
+  "connectedTerminals": {
+    "message": "Terminales conectados"
+  },
+  "debugInfo": {
+    "message": "⚠ Info de depuración"
+  },
+  "clear": {
+    "message": "Limpiar"
+  },
+  "currentTask": {
+    "message": "Tarea actual"
+  },
+  "statusRunning": {
+    "message": "Ejecutando"
+  },
+  "statusDone": {
+    "message": "Completado"
+  },
+  "statusError": {
+    "message": "Error"
+  },
+  "statusIdle": {
+    "message": "Inactivo"
+  },
+  "closeTask": {
+    "message": "Cerrar tarea"
+  },
+  "progress": {
+    "message": "Progreso"
+  },
+  "workProject": {
+    "message": "Proyecto de trabajo"
+  },
+  "notSet": {
+    "message": "No configurado"
+  },
+  "projectNoneDesc": {
+    "message": "Selecciona una carpeta local como proyecto de trabajo. La IA puede leer/escribir documentos, planes y registros para colaboración a largo plazo."
+  },
+  "pickProjectFolder": {
+    "message": "📁 Seleccionar carpeta de proyecto"
+  },
+  "pastePath": {
+    "message": "Pegar ruta completa (opcional, para acceso directo desde terminal IA)"
+  },
+  "pastePathHint": {
+    "message": "La IA puede hacer cd al directorio del proyecto cuando se establece la ruta"
+  },
+  "needReauth": {
+    "message": "⚠ Se necesita reautorización para acceder a los archivos"
+  },
+  "authAccess": {
+    "message": "🔓 Autorizar acceso a carpeta"
+  },
+  "changeProject": {
+    "message": "📁 Cambiar"
+  },
+  "removeProject": {
+    "message": "✕ Eliminar"
+  },
+  "projectReady": {
+    "message": "✓ Listo"
+  },
+  "projectNeedAuth": {
+    "message": "Necesita autorización"
+  },
+  "createdAt": {
+    "message": "Creado el $date$",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
+  },
+  "globalSkillLib": {
+    "message": "Caché de músculos del navegador"
+  },
+  "skillCount": {
+    "message": "$count$ músculos",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "skillAutoSave": {
+    "message": "Guardado automático tras exploración de IA. ⚡ Los músculos se reproducen sin IA — cero tokens."
+  },
+  "loading": {
+    "message": "Cargando…"
+  },
+  "importMuscle": {
+    "message": "📥 Importar músculos"
+  },
+  "archiveFolderDesc": {
+    "message": "Carpeta de archivo local (cada cambio escribe un archivo con marca de tiempo)"
+  },
+  "archiveSelectFolder": {
+    "message": "Elegir carpeta"
+  },
+  "archiveChangeFolder": {
+    "message": "Cambiar carpeta"
+  },
+  "archiveNoFolder": {
+    "message": "Sin carpeta de archivo seleccionada"
+  },
+  "archiveSyncNow": {
+    "message": "Sincronizar ahora"
+  },
+  "archiveFolderSet": {
+    "message": "Carpeta seleccionada: $name$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "archiveSynced": {
+    "message": "Sincronizado con el archivo local"
+  },
+  "restoreFromArchive": {
+    "message": "⏮ Restaurar desde el último archivo"
+  },
+  "archiveLatest": {
+    "message": "Último archivo"
+  },
+  "archiveNoFiles": {
+    "message": "No hay archivos en la carpeta aún"
+  },
+  "archiveCount": {
+    "message": "$count$ archivos",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "archiveRestored": {
+    "message": "$count$ músculos restaurados desde el archivo",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "archiveRestoreFailed": {
+    "message": "Error al restaurar: $msg$",
+    "placeholders": {
+      "msg": {
+        "content": "$1"
+      }
+    }
+  },
+  "exportSkills": {
+    "message": "📤 Exportar"
+  },
+  "importSkills": {
+    "message": "📥 Importar"
+  },
+  "noSkills": {
+    "message": "Aún no hay músculos"
+  },
+  "noSkillsHint": {
+    "message": "Llama a muscle(action:\"save\") tras una exploración exitosa de IA"
+  },
+  "deleteSkillConfirm": {
+    "message": "¿Eliminar músculo \"$name$\"?",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "confidenceHigh": {
+    "message": "✓ Alto"
+  },
+  "confidenceMedium": {
+    "message": "◑ Medio"
+  },
+  "confidenceLow": {
+    "message": "○ Nuevo"
+  },
+  "successRuns": {
+    "message": "$count$ ejecuciones",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "activityLog": {
+    "message": "Registro de actividad"
+  },
+  "logEmpty": {
+    "message": "La actividad aparecerá aquí en tiempo real…"
+  },
+  "ready": {
+    "message": "Listo"
+  },
+  "copied": {
+    "message": "✓ ¡Copiado!"
+  },
+  "copyFailed": {
+    "message": "Error al copiar: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "promptToast": {
+    "message": "Prompt de inicio"
+  },
+  "bridgeConnectedWaiting": {
+    "message": "Bridge conectado, esperando IA…"
+  },
+  "bridgeConnectedLog": {
+    "message": "Bridge conectado · Esperando IA de terminal"
+  },
+  "bridgeDisconnected": {
+    "message": "Bridge desconectado, reconectando en 30s…"
+  },
+  "connectionLost": {
+    "message": "Desconectado"
+  },
+  "terminalsConnected": {
+    "message": "⚡ $count$ terminales conectados",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "bridgeConnectedTerminals": {
+    "message": "Bridge conectado — $count$ terminales",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "readPageState": {
+    "message": "Leyendo estado de la página"
+  },
+  "readPageStateScreenshot": {
+    "message": "Leyendo estado de la página + captura"
+  },
+  "navigateTo": {
+    "message": "Navegar a $url$",
+    "placeholders": {
+      "url": {
+        "content": "$1"
+      }
+    }
+  },
+  "arrivedAt": {
+    "message": "Llegó a $url$",
+    "placeholders": {
+      "url": {
+        "content": "$1"
+      }
+    }
+  },
+  "actionFailed": {
+    "message": "Acción fallida: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "waiting": {
+    "message": "Esperando: $condition$",
+    "placeholders": {
+      "condition": {
+        "content": "$1"
+      }
+    }
+  },
+  "executeJS": {
+    "message": "Ejecutar JS: $code$",
+    "placeholders": {
+      "code": {
+        "content": "$1"
+      }
+    }
+  },
+  "exception": {
+    "message": "Error: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "task": {
+    "message": "Tarea: $title$",
+    "placeholders": {
+      "title": {
+        "content": "$1"
+      }
+    }
+  },
+  "executing": {
+    "message": "Ejecutando…"
+  },
+  "muscleReplay": {
+    "message": "Reproducción de músculo: $name$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "muscleReplayDesc": {
+    "message": "Reproducción de músculo · $count$ pasos",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "muscleComplete": {
+    "message": "Músculo completado: $name$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "muscleInvalid": {
+    "message": "Formato de músculo no válido"
+  },
+  "missingFields": {
+    "message": "Campos faltantes: $fields$",
+    "placeholders": {
+      "fields": {
+        "content": "$1"
+      }
+    }
+  },
+  "stepOf": {
+    "message": "Paso $current$/$total$: $desc$",
+    "placeholders": {
+      "current": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      },
+      "desc": {
+        "content": "$3"
+      }
+    }
+  },
+  "stepFailed": {
+    "message": "Paso $step$ falló: $error$",
+    "placeholders": {
+      "step": {
+        "content": "$1"
+      },
+      "error": {
+        "content": "$2"
+      }
+    }
+  },
+  "stepsComplete": {
+    "message": "$count$ pasos completados",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "detectedReusable": {
+    "message": "Secuencia reutilizable detectada ($count$ pasos)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "importComplete": {
+    "message": "Importación completada"
+  },
+  "importFailed": {
+    "message": "Importación fallida: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "loadFailed": {
+    "message": "Carga fallida: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "manualClose": {
+    "message": "Cerrado manualmente"
+  },
+  "closeTaskConfirm": {
+    "message": "¿Cerrar tarea \"$title$\"?",
+    "placeholders": {
+      "title": {
+        "content": "$1"
+      }
+    }
+  },
+  "projectSelected": {
+    "message": "Proyecto: $name$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "listFiles": {
+    "message": "Listar archivos: $dir$",
+    "placeholders": {
+      "dir": {
+        "content": "$1"
+      }
+    }
+  },
+  "readFile": {
+    "message": "Leer: $path$",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      }
+    }
+  },
+  "writeFile": {
+    "message": "Escribir: $path$",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      }
+    }
+  },
+  "written": {
+    "message": "Escrito: $path$",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      }
+    }
+  },
+  "projectAccessRestored": {
+    "message": "Acceso al proyecto restaurado"
+  },
+  "authFailed": {
+    "message": "Autorización fallida: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "pickFolderFailed": {
+    "message": "Selección de carpeta fallida: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "noProjectFolder": {
+    "message": "No se ha seleccionado carpeta de proyecto"
+  },
+  "noFolderPermission": {
+    "message": "Sin permiso de carpeta. Haz clic en autorizar en el panel lateral"
+  },
+  "pathTraversal": {
+    "message": "Traversal de ruta: \"$path$\"",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      }
+    }
+  },
+  "fileNotFound": {
+    "message": "Archivo no encontrado: \"$path$\"",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      }
+    }
+  },
+  "readFailed": {
+    "message": "Lectura fallida: \"$path$\" — $error$",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      },
+      "error": {
+        "content": "$2"
+      }
+    }
+  },
+  "writeFailed": {
+    "message": "Escritura fallida: \"$path$\" — $error$",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      },
+      "error": {
+        "content": "$2"
+      }
+    }
+  },
+  "clickAction": {
+    "message": "Clic en $target$",
+    "placeholders": {
+      "target": {
+        "content": "$1"
+      }
+    }
+  },
+  "typeAction": {
+    "message": "Escribir \"$value$\" → $target$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      },
+      "target": {
+        "content": "$2"
+      }
+    }
+  },
+  "selectAction": {
+    "message": "Seleccionar \"$value$\" @ $target$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      },
+      "target": {
+        "content": "$2"
+      }
+    }
+  },
+  "pressKeyAction": {
+    "message": "Presionar $key$",
+    "placeholders": {
+      "key": {
+        "content": "$1"
+      }
+    }
+  },
+  "stepDefault": {
+    "message": "Paso $num$",
+    "placeholders": {
+      "num": {
+        "content": "$1"
+      }
+    }
+  },
+  "navFailed": {
+    "message": "Navegación fallida: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "inputFailed": {
+    "message": "Entrada fallida: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "clickFailed": {
+    "message": "Clic fallido: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "selectFailed": {
+    "message": "Selección fallida: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "keyFailed": {
+    "message": "Tecla fallida: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "waitUrlTimeout": {
+    "message": "Tiempo de espera URL agotado: $pattern$",
+    "placeholders": {
+      "pattern": {
+        "content": "$1"
+      }
+    }
+  },
+  "jsFailed": {
+    "message": "JS falló: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "assertFailed": {
+    "message": "Aserción fallida: \"$text$\" no encontrado",
+    "placeholders": {
+      "text": {
+        "content": "$1"
+      }
+    }
+  },
+  "assertUrlFailed": {
+    "message": "Aserción fallida: URL no coincide con \"$pattern$\"",
+    "placeholders": {
+      "pattern": {
+        "content": "$1"
+      }
+    }
+  },
+  "assertSelectorFailed": {
+    "message": "Aserción fallida: $selector$ = $actual$, esperado $expected$",
+    "placeholders": {
+      "selector": {
+        "content": "$1"
+      },
+      "actual": {
+        "content": "$2"
+      },
+      "expected": {
+        "content": "$3"
+      }
+    }
+  },
+  "textTimeout": {
+    "message": "Tiempo agotado: \"$text$\" no encontrado",
+    "placeholders": {
+      "text": {
+        "content": "$1"
+      }
+    }
+  },
+  "aboutTitle": {
+    "message": "AgentLimb - Acerca de"
+  },
+  "aboutDesc": {
+    "message": "AgentLimb es una extensión universal de automatización del navegador que permite a la IA de terminal (Claude Code, Cursor, Codex, etc.) controlar Chrome mediante herramientas MCP, convirtiendo la IA en tu \"brazo mecánico\"."
+  },
+  "featureAI": {
+    "message": "La IA explora la estructura de la página e identifica automáticamente elementos interactivos"
+  },
+  "featureSkills": {
+    "message": "Memoria muscular: guarda tras explorar, reproduce sin tokens la próxima vez"
+  },
+  "featureSchedule": {
+    "message": "Tareas programadas: el navegador se ejecuta automáticamente incluso con la IA desconectada"
+  },
+  "featureMCP": {
+    "message": "Cualquier herramienta de IA compatible con MCP o HTTP puede conectarse"
+  },
+  "versionInfo": {
+    "message": "Información de versión"
+  },
+  "extensionVersion": {
+    "message": "Versión de la extensión"
+  },
+  "architecture": {
+    "message": "Arquitectura"
+  },
+  "architectureValue": {
+    "message": "MCP-first v6 (Brazo universal)"
+  },
+  "bridgePort": {
+    "message": "Puerto Bridge"
+  },
+  "skillStorage": {
+    "message": "Almacenamiento de habilidades"
+  },
+  "skillStorageValue": {
+    "message": "chrome.storage.local (persistente entre proyectos)"
+  },
+  "settingsTitle": {
+    "message": "Configuración"
+  },
+  "settingsBack": {
+    "message": "Atrás"
+  },
+  "menuPrompt": {
+    "message": "📋 Prompt de inicio"
+  },
+  "menuPromptDesc": {
+    "message": "Copia el prompt a la IA de terminal para comenzar"
+  },
+  "menuLanguage": {
+    "message": "🌐 Idioma"
+  },
+  "menuLanguageDesc": {
+    "message": "Cambiar idioma de visualización"
+  },
+  "menuGuide": {
+    "message": "📖 Guía de usuario"
+  },
+  "menuGuideDesc": {
+    "message": "Memoria muscular, ahorro de tokens, mejores prácticas"
+  },
+  "menuAbout": {
+    "message": "ℹ️ Acerca de AgentLimb"
+  },
+  "menuAboutDesc": {
+    "message": "Versión · Arquitectura · Código abierto"
+  },
+  "communityTitle": {
+    "message": "Encontrar más músculos"
+  },
+  "communityDesc": {
+    "message": "Explora la biblioteca de músculos de la comunidad — descarga e importa para reproducción sin tokens"
+  },
+  "starTitle": {
+    "message": "⭐ Danos una estrella en GitHub"
+  },
+  "starDesc": {
+    "message": "AgentLimb es código abierto y gratuito. Si te ayuda, ¡por favor danos una estrella!"
+  },
+  "langCurrent": {
+    "message": "Idioma actual"
+  },
+  "langZhCN": {
+    "message": "简体中文"
+  },
+  "langAuto": {
+    "message": "Auto (seguir navegador)"
+  },
+  "langEn": {
+    "message": "English"
+  },
+  "langRestart": {
+    "message": "Reabre el panel lateral después de cambiar el idioma"
+  },
+  "guideTitle": {
+    "message": "Guía de usuario"
+  },
+  "guideWhatIsMuscle": {
+    "message": "¿Qué es la memoria muscular?"
+  },
+  "guideWhatIsMuscleBody": {
+    "message": "La memoria muscular es el mecanismo central de ahorro de tokens de AgentLimb. Cuando la IA completa una operación en una plataforma por primera vez (p.ej. publicar), AgentLimb guarda automáticamente la secuencia de acciones como un \"músculo\". La próxima vez, simplemente reproduce el músculo — sin necesidad de re-exploración de IA."
+  },
+  "guideSaveToken": {
+    "message": "Ahorro de tokens — Datos reales"
+  },
+  "guideSaveTokenBody": {
+    "message": "Dos comparaciones del mundo real, conclusión clara:"
+  },
+  "guideExploreLabel": {
+    "message": "Primera exploración"
+  },
+  "guideExploreValue": {
+    "message": "~30 llamadas API, ~5000 tokens"
+  },
+  "guideMuscleLabel": {
+    "message": "Reproducción de músculo"
+  },
+  "guideMuscleValue": {
+    "message": "1 llamada, ~300 tokens, 0 errores"
+  },
+  "guideSavings": {
+    "message": "~16x mejora de eficiencia"
+  },
+  "guideSaveTokenTip": {
+    "message": "Cada plataforma solo necesita una exploración, un guardado — luego reutilización permanente. Cuanto más operas en una plataforma, más ahorras."
+  },
+  "guideWorkflow": {
+    "message": "Flujo de trabajo recomendado"
+  },
+  "guideWorkflowBody": {
+    "message": "1. Planifica primero con IA — organiza objetivos, lista de plataformas, plantillas de contenido en la carpeta del proyecto\n2. Establece proyecto de trabajo — selecciona carpeta local, la IA puede leer/escribir documentos de planificación a largo plazo\n3. La IA explora por primera vez — usa observe + act en la plataforma objetivo\n4. Guarda como músculo — la IA llama a muscle(action:\"save\") para persistir la secuencia de acciones\n5. Reutilización con un clic — muscle(action:\"run\") reproduce sin costo de tokens\n6. Programar/lote — los músculos se pueden programar para ejecución totalmente automática"
+  },
+  "guideConnect": {
+    "message": "Cómo conectar la IA"
+  },
+  "guideConnectBody": {
+    "message": "1. Haz clic en el botón \"Copiar prompt de inicio\" en la página principal\n2. Pégalo en tu IA de terminal (Claude Code / Cursor / Codex, etc.)\n3. La IA detectará automáticamente las herramientas y comenzará a controlar el navegador\n\nConsejo: Establece una carpeta de \"Proyecto de trabajo\" para que la IA pueda leer/escribir tus documentos de planificación para colaboración a largo plazo entre sesiones."
+  },
+  "promptPageTitle": {
+    "message": "Prompt de inicio"
+  },
+  "promptPageDesc": {
+    "message": "Copia el prompt de abajo y pégalo en cualquier IA de terminal para comenzar"
+  },
+  "checkUpdate": {
+    "message": "Buscar actualizaciones"
+  },
+  "checking": {
+    "message": "Verificando…"
+  },
+  "upToDate": {
+    "message": "Estás actualizado"
+  },
+  "newVersion": {
+    "message": "Nueva versión v$version$ disponible",
+    "placeholders": {
+      "version": {
+        "content": "$1"
+      }
+    }
+  },
+  "downloadUpdate": {
+    "message": "Descargar"
+  },
+  "checkFailed": {
+    "message": "Verificación fallida, inténtalo de nuevo más tarde"
+  },
+  "updateNote": {
+    "message": "Las actualizaciones no afectarán tus músculos ni la configuración del proyecto"
+  },
+  "linkWebsite": {
+    "message": "Sitio web agentlimb.com"
+  },
+  "linkGitHub": {
+    "message": "Repositorio GitHub"
+  },
+  "linkPrivacy": {
+    "message": "Política de privacidad"
+  },
+  "linkLicense": {
+    "message": "Licencia (BSL 1.1)"
+  },
+  "linkTerms": {
+    "message": "Términos de servicio"
+  },
+  "linkChromeStore": {
+    "message": "Chrome Web Store"
+  },
+  "goToUpdate": {
+    "message": "Ir a actualizar"
+  },
+  "menuInterface": {
+    "message": "🎨 Interfaz"
+  },
+  "menuInterfaceDesc": {
+    "message": "Tema, idioma y apariencia"
+  },
+  "themeLabel": {
+    "message": "Tema"
+  },
+  "themeAuto": {
+    "message": "Sistema"
+  },
+  "themeDark": {
+    "message": "Oscuro"
+  },
+  "themeLight": {
+    "message": "Claro"
+  },
+  "langJa": {
+    "message": "日本語"
+  },
+  "langKo": {
+    "message": "한국어"
+  },
+  "langEs": {
+    "message": "Español"
+  },
+  "langFr": {
+    "message": "Français"
+  },
+  "langDe": {
+    "message": "Deutsch"
+  },
+  "langPtBR": {
+    "message": "Português"
+  },
+  "langRu": {
+    "message": "Русский"
+  },
+  "langAr": {
+    "message": "العربية"
+  },
+  "langIt": {
+    "message": "Italiano"
+  },
+  "langHi": {
+    "message": "हिन्दी"
+  },
+  "aiOperating": {
+    "message": "AI operando"
+  },
+  "confirmNeeded": {
+    "message": "Confirmación necesaria"
+  },
+  "confirmApprove": {
+    "message": "✓ Aprobar"
+  },
+  "confirmDeny": {
+    "message": "✗ Rechazar"
+  },
+  "userApproved": {
+    "message": "Usuario aprobó"
+  },
+  "userDenied": {
+    "message": "Usuario rechazó"
+  },
+  "saveAsMuscle": {
+    "message": "💪 ¿Guardar como memoria muscular?"
+  },
+  "saveAsMuscleDesc": {
+    "message": "Guarda este flujo para repetirlo después sin tokens de IA"
+  },
+  "muscleNamePlaceholder": {
+    "message": "Dale un nombre, ej. Publicar tweet"
+  },
+  "saveMuscleBtn": {
+    "message": "💪 Guardar"
+  },
+  "muscleSaved": {
+    "message": "Músculo guardado"
+  },
+  "noActionsToSave": {
+    "message": "No hay acciones para guardar"
+  },
+  "dismiss": {
+    "message": "Omitir"
+  },
+  "phaseNavigate": {
+    "message": "Abrir $host$",
+    "placeholders": {
+      "host": {
+        "content": "$1"
+      }
+    }
+  },
+  "phaseInput": {
+    "message": "Editar contenido"
+  },
+  "phaseAction": {
+    "message": "Ejecutar acción"
+  },
+  "phaseConfirm": {
+    "message": "Confirmar acción"
+  },
+  "phaseVerify": {
+    "message": "Verificar resultado"
+  },
+  "phaseReview": {
+    "message": "Revisar finalización"
+  },
+  "taskReviewDesc": {
+    "message": "Tarea terminada, esperando revisión"
+  },
+  "reviewConfirm": {
+    "message": "Confirmado"
+  },
+  "reviewReject": {
+    "message": "No terminado"
+  },
+  "muscleStatus": {
+    "message": "Estado de muscle"
+  },
+  "muscleStoragePath": {
+    "message": "Ubicación:"
+  },
+  "openFolder": {
+    "message": "Abrir carpeta"
+  },
+  "learnedSites": {
+    "message": "Sitios aprendidos"
+  },
+  "muscleNoSites": {
+    "message": "Aún no hay registros de aprendizaje"
+  },
+  "currentSession": {
+    "message": "Sesión actual"
+  },
+  "guideHeroTitle": {
+    "message": "AgentLimb — cualquier terminal de IA controla tu navegador con precisión"
+  },
+  "guideHeroDesc": {
+    "message": "Una extensión de Chrome + un prompt convierten Claude Code, Codex o Cursor en operadores fiables del navegador. Sin código, sin facturas de nube, más barato cuanto más lo uses."
+  },
+  "guideWhatItIs": {
+    "message": "¿Qué es esto?"
+  },
+  "guideWhatItIsBody": {
+    "message": "AgentLimb es una extensión de Chrome acoplada a un Bridge local. Traduce las llamadas a herramientas de tu terminal de IA en comandos del Chrome Debugger Protocol, permitiendo a la IA leer el DOM, hacer clic, escribir, capturar pantalla y navegar — como un brazo robótico preciso. Sin adivinar por capturas, sin nubes de terceros, y reutiliza las cuentas con las que ya iniciaste sesión en tu Chrome."
+  },
+  "guideWhoItsFor": {
+    "message": "Para quién"
+  },
+  "guideWhoItsForBody": {
+    "message": "Desarrolladores que usan Claude Code / Codex / Cursor para tareas en el navegador; personas que quieren que la IA gestione trabajo web repetitivo (scraping, formularios, operaciones SaaS) sin escribir scripts; usuarios a los que Browser Use o BrowseAI les resultaron demasiado complejos o caros; equipos que necesitan que la IA opere sistemas internos usando sesiones ya iniciadas."
+  },
+  "guideQuickStart": {
+    "message": "Empieza en 3 pasos"
+  },
+  "guideStep1Title": {
+    "message": "Copia el prompt"
+  },
+  "guideStep1Desc": {
+    "message": "Haz clic en 📋 arriba o en «Copiar prompt» en la pantalla inactiva — el prompt va directo al portapapeles."
+  },
+  "guideStep2Title": {
+    "message": "Pégalo en tu terminal de IA"
+  },
+  "guideStep2Desc": {
+    "message": "Abre Claude Code / Codex / Cursor y pega el prompt. El Bridge se inicia automáticamente en segundo plano — sin comandos de terminal."
+  },
+  "guideStep3Title": {
+    "message": "Dale una tarea a la IA"
+  },
+  "guideStep3Desc": {
+    "message": "Describe lo que quieres en lenguaje natural. La IA controla el navegador a través de la extensión y el panel lateral muestra el progreso en vivo."
+  },
+  "guideMuscle": {
+    "message": "Más barato cada vez: memoria muscular"
+  },
+  "guideMuscleBody": {
+    "message": "En la primera visita, la IA explora y memoriza: dónde está cada botón, cómo rellenar el formulario, qué trampas evitar. Estas notas se guardan como JSON en ~/Desktop/AgentLimb-muscle/ y se reproducen en la siguiente ejecución — saltando la exploración. Pruebas reales: ~85 % menos tokens y minutos comprimidos a segundos para la misma tarea."
+  },
+  "guideMultiProfile": {
+    "message": "Ejecuta múltiples perfiles de navegador en paralelo"
+  },
+  "guideMultiProfileBody": {
+    "message": "Abre un segundo (o tercer) perfil de Chrome en la misma máquina y la IA puede manejar todos a la vez. Cada panel muestra su propia etiqueta Profile-xxxxxx en la parte superior. El indicador de estado superior derecho tiene tres estados: 🟢 trabajando / 🟡 pausado / 🔴 desconectado. Haz clic en Pausar junto a la identidad para que un perfil deje temporalmente de aceptar comandos de IA — Bridge lo omite, los demás siguen trabajando (el último perfil activo no se puede pausar, así siempre hay alguien de servicio). Los eventos del ciclo de vida (plan → step_done → complete) se distribuyen automáticamente a todos los perfiles activos, así cada panel ve el progreso completo — no una vista partida. Todos los perfiles comparten una única biblioteca de músculo del escritorio — el conocimiento de un sitio aprendido por cualquier perfil es reutilizable al instante por los demás."
+  },
+  "guideSupportedTerminals": {
+    "message": "Terminales de IA compatibles"
+  },
+  "guideSupportedTerminalsBody": {
+    "message": "Claude Code (Anthropic) · Codex (OpenAI) · Cursor · Ollama / LM Studio alojados localmente — cualquier terminal de IA con llamadas a herramientas. Misma extensión, cambia de IA libremente."
+  },
+  "guidePrivacy": {
+    "message": "Datos y privacidad"
+  },
+  "guidePrivacyBody": {
+    "message": "Todos los datos se quedan en local. Los datos muscle viven en ~/Desktop/AgentLimb-muscle/ — puedes verlos, respaldarlos o moverlos en cualquier momento. Sin telemetría, sin subidas, sin servidores de terceros."
+  },
+  "guideTroubleshoot": {
+    "message": "Solución de problemas"
+  },
+  "guideTroubleshootBody": {
+    "message": "Bridge en rojo: abre ⚙️ y vuelve a copiar el prompt en el terminal de IA. La IA no responde: confirma que las llamadas a herramientas están habilitadas en el terminal. Las acciones no surten efecto: pulsa ⏻ para detener el Bridge y pega de nuevo el prompt para reiniciar. Más dudas → GitHub Issues."
+  },
+  "aboutTagline": {
+    "message": "Cualquier terminal de IA controla tu navegador con precisión — sin código, sin tarifas cloud, más barato cuanto más lo uses."
+  },
+  "aboutLinkStoreTitle": {
+    "message": "Chrome Web Store"
+  },
+  "aboutLinkStoreSub": {
+    "message": "Instalar, actualizar, reseñar"
+  },
+  "aboutLinkWebsiteTitle": {
+    "message": "Sitio oficial"
+  },
+  "aboutLinkGitHubTitle": {
+    "message": "Repositorio de GitHub"
+  },
+  "aboutLegalLabel": {
+    "message": "Legal y contacto"
+  },
+  "aboutLinkLegal": {
+    "message": "Legal (Licencia · Términos · Privacidad)"
+  },
+  "aboutLinkContact": {
+    "message": "Contacto"
+  },
+  "idleStarText": {
+    "message": "Danos una estrella en GitHub"
+  },
+  "idleLinkTutorial": {
+    "message": "Tutorial"
+  },
+  "idleLinkWebsite": {
+    "message": "Sitio web"
+  },
+  "idleLinkContact": {
+    "message": "Contacto"
+  },
+  "idleLinkLegal": {
+    "message": "Legal"
+  },
+  "aboutFooter": {
+    "message": "© 2026 AgentLimb · Hecho con cuidado."
+  },
+  "updateTitle": {
+    "message": "Buscar actualizaciones"
+  },
+  "updateSub": {
+    "message": "Fuentes dobles: Chrome Web Store y GitHub Releases"
+  },
+  "updateCheck": {
+    "message": "Buscar actualizaciones"
+  },
+  "updateChecking": {
+    "message": "Buscando…"
+  },
+  "updateUpToDate": {
+    "message": "Estás en la última versión"
+  },
+  "updateNewVersion": {
+    "message": "Nueva versión v$version$ disponible",
+    "placeholders": {
+      "version": {
+        "content": "$1"
+      }
+    }
+  },
+  "updateOpenStore": {
+    "message": "Actualizar en Chrome Web Store"
+  },
+  "updateOpenGitHub": {
+    "message": "Ver la release en GitHub"
+  },
+  "updateCheckFailed": {
+    "message": "Falló la verificación. Inténtalo más tarde."
+  },
+  "statusPromptCopied": {
+    "message": "✓ Prompt copiado — pégalo en tu terminal de IA para empezar"
+  },
+  "statusCopyFailed": {
+    "message": "Error al copiar: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "statusTerminalConnected": {
+    "message": "✓ Terminal conectado: $name$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "statusIdleHint": {
+    "message": "Haz clic en «Copiar prompt» y pégalo en un terminal de IA"
+  },
+  "statusTaskTimeout": {
+    "message": "Tarea expirada"
+  },
+  "statusBridgeLost": {
+    "message": "Bridge desconectado — tarea abortada"
+  },
+  "statusTaskComplete": {
+    "message": "✓ Tarea completada"
+  },
+  "statusTaskCompleteWith": {
+    "message": "✓ Tarea completada: $summary$",
+    "placeholders": {
+      "summary": {
+        "content": "$1"
+      }
+    }
+  },
+  "statusTaskFailed": {
+    "message": "✗ Tarea fallida: $reason$",
+    "placeholders": {
+      "reason": {
+        "content": "$1"
+      }
+    }
+  },
+  "statusShutdownCopied": {
+    "message": "Prompt de apagado copiado — pégalo en la IA para ejecutarlo"
+  },
+  "statusShutdownCopyFailed": {
+    "message": "Error al copiar — envía esto a la IA manualmente: pkill -f \"run-server.js\""
+  },
+  "statusPathCopied": {
+    "message": "Ruta copiada al portapapeles"
+  },
+  "reasonUnknown": {
+    "message": "Razón desconocida"
+  },
+  "taskDefaultTitle": {
+    "message": "Tarea de IA"
+  },
+  "taskAIRunning": {
+    "message": "IA en ejecución…"
+  },
+  "badgeRunning": {
+    "message": "En curso"
+  },
+  "badgeDone": {
+    "message": "Completado"
+  },
+  "badgeFailed": {
+    "message": "Fallido"
+  },
+  "badgeTimeout": {
+    "message": "Expirado"
+  },
+  "progressStepsMeta": {
+    "message": "$done$ / $total$ pasos",
+    "placeholders": {
+      "done": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "progressCallsMeta": {
+    "message": "$count$ llamadas",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "toolSummaryNavigate": {
+    "message": "Navegar → $host$",
+    "placeholders": {
+      "host": {
+        "content": "$1"
+      }
+    }
+  },
+  "toolSummaryClick": {
+    "message": "Clic"
+  },
+  "toolSummaryType": {
+    "message": "Escribir: $text$",
+    "placeholders": {
+      "text": {
+        "content": "$1"
+      }
+    }
+  },
+  "toolSummaryScroll": {
+    "message": "Desplazar $direction$",
+    "placeholders": {
+      "direction": {
+        "content": "$1"
+      }
+    }
+  },
+  "toolSummaryScreenshot": {
+    "message": "Captura"
+  },
+  "toolSummarySnapshot": {
+    "message": "Instantánea de página"
+  },
+  "toolSummaryWait": {
+    "message": "Esperar $condition$",
+    "placeholders": {
+      "condition": {
+        "content": "$1"
+      }
+    }
+  },
+  "toolSummaryEval": {
+    "message": "Ejecutar JS"
+  },
+  "toolSummarySelect": {
+    "message": "Seleccionar: $value$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "toolSummaryTabNew": {
+    "message": "Nueva pestaña"
+  },
+  "toolSummaryTabClose": {
+    "message": "Cerrar pestaña"
+  },
+  "muscleOpenFolderTitle": {
+    "message": "Abrir carpeta muscle"
+  },
+  "muscleFolderNotCreatedTitle": {
+    "message": "Carpeta muscle aún no creada (~/Desktop/AgentLimb-muscle/)"
+  },
+  "muscleReadFailed": {
+    "message": "Error de lectura: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "muscleCandidatesCaptured": {
+    "message": "$count$ candidatos capturados (pendiente de muscle_commit)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "muscleNoBridgeData": {
+    "message": "Bridge no conectado — sin datos del sitio"
+  }
+}

@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AgentLimb Runtime Options</title>
+    <link rel="icon" type="image/svg+xml" href="/icons/icon.svg" />
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family:
+          "SF Pro Display",
+          "Segoe UI",
+          system-ui,
+          sans-serif;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: #0b1120;
+        color: #eef4ff;
+      }
+
+      main {
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 32px 20px 48px;
+      }
+
+      h1 {
+        margin: 0 0 8px;
+      }
+
+      p,
+      li {
+        color: #aab8d3;
+        line-height: 1.6;
+      }
+
+      code {
+        color: #8bc0ff;
+      }
+
+      .panel {
+        margin-top: 20px;
+        padding: 18px;
+        border-radius: 18px;
+        background: rgba(17, 26, 46, 0.88);
+        border: 1px solid rgba(139, 192, 255, 0.15);
+      }
+
+      pre {
+        margin: 0;
+        white-space: pre-wrap;
+        word-break: break-word;
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>AgentLimb Runtime Options</h1>
+      <p>
+        This page exists to validate the new extension shell. It will later
+        host Browser Host settings, IDE integration policies, permission
+        preferences, and product-level options.
+      </p>
+
+      <div class="panel">
+        <h2>Current Build Strategy</h2>
+        <ul>
+          <li><code>reference-claude-chrome-ext</code> is the primary reference for page operations.</li>
+          <li>The repository root contains the extension, Bridge, and CLI source.</li>
+          <li><code>website/</code> contains the independently deployed landing site.</li>
+        </ul>
+      </div>
+
+      <div class="panel">
+        <h2>Runtime Status</h2>
+        <pre id="runtime-status">Loading runtime status…</pre>
+      </div>
+    </main>
+    <script type="module" src="options.js"></script>
+  </body>
+</html>

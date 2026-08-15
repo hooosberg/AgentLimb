@@ -1,0 +1,1415 @@
+{
+  "extName": {
+    "message": "AgentLimb"
+  },
+  "extDesc": {
+    "message": "यूनिवर्सल ब्राउज़र आर्म — टर्मिनल AI (Claude Code / Codex / Cursor) को अपने Chrome ब्राउज़र को नियंत्रित करने दें"
+  },
+  "headerTitle": {
+    "message": "AgentLimb"
+  },
+  "bridgeNotConnected": {
+    "message": "Bridge कनेक्ट नहीं है"
+  },
+  "bridgeConnected": {
+    "message": "Bridge कनेक्ट है"
+  },
+  "bridgeNotConnectedShort": {
+    "message": "कनेक्ट नहीं है"
+  },
+  "bridgeConnectedShort": {
+    "message": "कनेक्टेड"
+  },
+  "bridgeSuspended": {
+    "message": "Bridge कनेक्टेड · यह पैनल निलंबित"
+  },
+  "bridgeSuspendedShort": {
+    "message": "निलंबित"
+  },
+  "identityPrefix": {
+    "message": "यह पैनल"
+  },
+  "suspendAction": {
+    "message": "निलंबित करें"
+  },
+  "resumeAction": {
+    "message": "फिर से शुरू करें"
+  },
+  "suspendActionTitle": {
+    "message": "इस प्रोफ़ाइल पर AI कमांड स्वीकार करना बंद करें"
+  },
+  "resumeActionTitle": {
+    "message": "इस प्रोफ़ाइल पर AI कमांड स्वीकार करना फिर से शुरू करें"
+  },
+  "suspendBlockedLastWorker": {
+    "message": "निलंबित नहीं कर सकते — यह एकमात्र सक्रिय प्रोफ़ाइल है"
+  },
+  "suspendFailed": {
+    "message": "निलंबित स्थिति अपडेट करने में विफल"
+  },
+  "identityCopyHint": {
+    "message": "प्रोफ़ाइल नाम कॉपी करने के लिए क्लिक करें"
+  },
+  "identityCopied": {
+    "message": "कॉपी किया गया"
+  },
+  "identityCopyFailed": {
+    "message": "कॉपी विफल"
+  },
+  "connectedIdleTitle": {
+    "message": "कनेक्टेड"
+  },
+  "connectedIdleSubtitle": {
+    "message": "मिशन के लिए तैयार। बताएं कि AI को क्या करना है।"
+  },
+  "copyPromptTitle": {
+    "message": "ऑनबोर्ड प्रॉम्प्ट कॉपी करें"
+  },
+  "shutdownBtnTitle": {
+    "message": "शटडाउन प्रॉम्प्ट को क्लिपबोर्ड पर कॉपी करें और AI में पेस्ट करके चलाएँ"
+  },
+  "settings": {
+    "message": "सेटिंग्स"
+  },
+  "copyPrompt": {
+    "message": "ऑनबोर्ड प्रॉम्प्ट कॉपी करें"
+  },
+  "viewPrompt": {
+    "message": "प्रॉम्प्ट देखें"
+  },
+  "about": {
+    "message": "के बारे में"
+  },
+  "tabMonitor": {
+    "message": "मॉनिटर"
+  },
+  "tabSkills": {
+    "message": "स्थानीय मसल्स"
+  },
+  "tabLogs": {
+    "message": "लॉग"
+  },
+  "idleTitle": {
+    "message": "AgentLimb तैयार"
+  },
+  "idleDesc": {
+    "message": "ब्राउज़र को नियंत्रित करने के लिए किसी भी टर्मिनल AI में ऑनबोर्ड प्रॉम्प्ट कॉपी करें"
+  },
+  "copyPromptBtn": {
+    "message": "📋 ऑनबोर्ड प्रॉम्प्ट कॉपी करें"
+  },
+  "promptCopied": {
+    "message": "✓ कॉपी हो गया! शुरू करने के लिए AI में पेस्ट करें"
+  },
+  "viewPromptContent": {
+    "message": "प्रॉम्प्ट सामग्री देखें ▾"
+  },
+  "connectedTerminals": {
+    "message": "कनेक्टेड टर्मिनल"
+  },
+  "debugInfo": {
+    "message": "⚠ डीबग जानकारी"
+  },
+  "clear": {
+    "message": "साफ़ करें"
+  },
+  "currentTask": {
+    "message": "वर्तमान कार्य"
+  },
+  "statusRunning": {
+    "message": "चल रहा है"
+  },
+  "statusDone": {
+    "message": "पूर्ण"
+  },
+  "statusError": {
+    "message": "त्रुटि"
+  },
+  "statusIdle": {
+    "message": "निष्क्रिय"
+  },
+  "closeTask": {
+    "message": "कार्य बंद करें"
+  },
+  "progress": {
+    "message": "प्रगति"
+  },
+  "workProject": {
+    "message": "कार्य प्रोजेक्ट"
+  },
+  "notSet": {
+    "message": "सेट नहीं है"
+  },
+  "projectNoneDesc": {
+    "message": "कार्य प्रोजेक्ट के रूप में एक स्थानीय फ़ोल्डर चुनें। AI दीर्घकालिक सहयोग के लिए दस्तावेज़, योजनाएँ और रिकॉर्ड पढ़/लिख सकता है।"
+  },
+  "pickProjectFolder": {
+    "message": "📁 प्रोजेक्ट फ़ोल्डर चुनें"
+  },
+  "pastePath": {
+    "message": "पूरा पथ पेस्ट करें (वैकल्पिक, AI टर्मिनल सीधे एक्सेस के लिए)"
+  },
+  "pastePathHint": {
+    "message": "पथ सेट होने पर AI प्रोजेक्ट डायरेक्टरी में cd कर सकता है"
+  },
+  "needReauth": {
+    "message": "⚠ फ़ाइलों तक पहुँचने के लिए पुन: प्राधिकरण आवश्यक है"
+  },
+  "authAccess": {
+    "message": "🔓 फ़ोल्डर एक्सेस अधिकृत करें"
+  },
+  "changeProject": {
+    "message": "📁 बदलें"
+  },
+  "removeProject": {
+    "message": "✕ हटाएँ"
+  },
+  "projectReady": {
+    "message": "✓ तैयार"
+  },
+  "projectNeedAuth": {
+    "message": "प्राधिकरण चाहिए"
+  },
+  "createdAt": {
+    "message": "$date$ को बनाया गया",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
+  },
+  "globalSkillLib": {
+    "message": "ब्राउज़र टेम्प मसल लाइब्रेरी"
+  },
+  "skillCount": {
+    "message": "$count$ मसल्स",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "skillAutoSave": {
+    "message": "AI अन्वेषण के बाद स्वतः सहेजा गया। ⚡ मसल्स AI के बिना रीप्ले होते हैं — शून्य टोकन।"
+  },
+  "loading": {
+    "message": "लोड हो रहा है…"
+  },
+  "importMuscle": {
+    "message": "📥 मसल्स आयात करें"
+  },
+  "archiveFolderDesc": {
+    "message": "स्थानीय आर्काइव फ़ोल्डर (हर बदलाव पर टाइमस्टैम्प के साथ नई फ़ाइल लिखी जाती है)"
+  },
+  "archiveSelectFolder": {
+    "message": "फ़ोल्डर चुनें"
+  },
+  "archiveChangeFolder": {
+    "message": "फ़ोल्डर बदलें"
+  },
+  "archiveNoFolder": {
+    "message": "कोई आर्काइव फ़ोल्डर नहीं चुना"
+  },
+  "archiveSyncNow": {
+    "message": "अभी सिंक करें"
+  },
+  "archiveFolderSet": {
+    "message": "फ़ोल्डर चुना: $name$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "archiveSynced": {
+    "message": "स्थानीय आर्काइव से सिंक किया"
+  },
+  "restoreFromArchive": {
+    "message": "⏮ नवीनतम आर्काइव से पुनर्स्थापित करें"
+  },
+  "archiveLatest": {
+    "message": "नवीनतम आर्काइव"
+  },
+  "archiveNoFiles": {
+    "message": "फ़ोल्डर में अभी कोई आर्काइव फ़ाइल नहीं है"
+  },
+  "archiveCount": {
+    "message": "$count$ आर्काइव",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "archiveRestored": {
+    "message": "आर्काइव से $count$ मसल्स पुनर्स्थापित",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "archiveRestoreFailed": {
+    "message": "पुनर्स्थापन विफल: $msg$",
+    "placeholders": {
+      "msg": {
+        "content": "$1"
+      }
+    }
+  },
+  "exportSkills": {
+    "message": "📤 निर्यात"
+  },
+  "importSkills": {
+    "message": "📥 आयात"
+  },
+  "noSkills": {
+    "message": "अभी तक कोई मसल नहीं"
+  },
+  "noSkillsHint": {
+    "message": "सफल AI अन्वेषण के बाद muscle(action:\"save\") कॉल करें"
+  },
+  "deleteSkillConfirm": {
+    "message": "मसल \"$name$\" हटाएँ?",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "confidenceHigh": {
+    "message": "✓ उच्च"
+  },
+  "confidenceMedium": {
+    "message": "◑ मध्यम"
+  },
+  "confidenceLow": {
+    "message": "○ नया"
+  },
+  "successRuns": {
+    "message": "$count$ बार चलाया",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "activityLog": {
+    "message": "गतिविधि लॉग"
+  },
+  "logEmpty": {
+    "message": "गतिविधि यहाँ रीयल टाइम में दिखाई देगी…"
+  },
+  "ready": {
+    "message": "तैयार"
+  },
+  "copied": {
+    "message": "✓ कॉपी हो गया!"
+  },
+  "copyFailed": {
+    "message": "कॉपी विफल: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "promptToast": {
+    "message": "ऑनबोर्ड प्रॉम्प्ट"
+  },
+  "bridgeConnectedWaiting": {
+    "message": "Bridge कनेक्ट है, AI की प्रतीक्षा…"
+  },
+  "bridgeConnectedLog": {
+    "message": "Bridge कनेक्ट है · टर्मिनल AI की प्रतीक्षा"
+  },
+  "bridgeDisconnected": {
+    "message": "Bridge डिस्कनेक्ट, 30 सेकंड में पुन: कनेक्ट…"
+  },
+  "connectionLost": {
+    "message": "डिस्कनेक्ट"
+  },
+  "terminalsConnected": {
+    "message": "⚡ $count$ टर्मिनल कनेक्ट",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "bridgeConnectedTerminals": {
+    "message": "Bridge कनेक्ट — $count$ टर्मिनल",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "readPageState": {
+    "message": "पेज स्थिति पढ़ रहे हैं"
+  },
+  "readPageStateScreenshot": {
+    "message": "पेज स्थिति + स्क्रीनशॉट पढ़ रहे हैं"
+  },
+  "navigateTo": {
+    "message": "$url$ पर जाएँ",
+    "placeholders": {
+      "url": {
+        "content": "$1"
+      }
+    }
+  },
+  "arrivedAt": {
+    "message": "$url$ पर पहुँचे",
+    "placeholders": {
+      "url": {
+        "content": "$1"
+      }
+    }
+  },
+  "actionFailed": {
+    "message": "क्रिया विफल: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "waiting": {
+    "message": "प्रतीक्षा: $condition$",
+    "placeholders": {
+      "condition": {
+        "content": "$1"
+      }
+    }
+  },
+  "executeJS": {
+    "message": "JS चलाएँ: $code$",
+    "placeholders": {
+      "code": {
+        "content": "$1"
+      }
+    }
+  },
+  "exception": {
+    "message": "त्रुटि: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "task": {
+    "message": "कार्य: $title$",
+    "placeholders": {
+      "title": {
+        "content": "$1"
+      }
+    }
+  },
+  "executing": {
+    "message": "चल रहा है…"
+  },
+  "muscleReplay": {
+    "message": "मसल रीप्ले: $name$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "muscleReplayDesc": {
+    "message": "मसल रीप्ले · $count$ चरण",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "muscleComplete": {
+    "message": "मसल पूर्ण: $name$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "muscleInvalid": {
+    "message": "अमान्य मसल प्रारूप"
+  },
+  "missingFields": {
+    "message": "अनुपलब्ध फ़ील्ड: $fields$",
+    "placeholders": {
+      "fields": {
+        "content": "$1"
+      }
+    }
+  },
+  "stepOf": {
+    "message": "चरण $current$/$total$: $desc$",
+    "placeholders": {
+      "current": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      },
+      "desc": {
+        "content": "$3"
+      }
+    }
+  },
+  "stepFailed": {
+    "message": "चरण $step$ विफल: $error$",
+    "placeholders": {
+      "step": {
+        "content": "$1"
+      },
+      "error": {
+        "content": "$2"
+      }
+    }
+  },
+  "stepsComplete": {
+    "message": "$count$ चरण पूर्ण",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "detectedReusable": {
+    "message": "पुन: उपयोग योग्य अनुक्रम पता चला ($count$ चरण)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "importComplete": {
+    "message": "आयात पूर्ण"
+  },
+  "importFailed": {
+    "message": "आयात विफल: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "loadFailed": {
+    "message": "लोड विफल: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "manualClose": {
+    "message": "मैन्युअल रूप से बंद किया"
+  },
+  "closeTaskConfirm": {
+    "message": "कार्य \"$title$\" बंद करें?",
+    "placeholders": {
+      "title": {
+        "content": "$1"
+      }
+    }
+  },
+  "projectSelected": {
+    "message": "प्रोजेक्ट: $name$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "listFiles": {
+    "message": "फ़ाइलें सूचीबद्ध करें: $dir$",
+    "placeholders": {
+      "dir": {
+        "content": "$1"
+      }
+    }
+  },
+  "readFile": {
+    "message": "पढ़ें: $path$",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      }
+    }
+  },
+  "writeFile": {
+    "message": "लिखें: $path$",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      }
+    }
+  },
+  "written": {
+    "message": "लिखा गया: $path$",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      }
+    }
+  },
+  "projectAccessRestored": {
+    "message": "प्रोजेक्ट एक्सेस बहाल"
+  },
+  "authFailed": {
+    "message": "प्राधिकरण विफल: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "pickFolderFailed": {
+    "message": "फ़ोल्डर चयन विफल: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "noProjectFolder": {
+    "message": "कोई प्रोजेक्ट फ़ोल्डर चयनित नहीं"
+  },
+  "noFolderPermission": {
+    "message": "फ़ोल्डर अनुमति नहीं है। साइड पैनल में अधिकृत करें पर क्लिक करें"
+  },
+  "pathTraversal": {
+    "message": "पथ ट्रैवर्सल: \"$path$\"",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      }
+    }
+  },
+  "fileNotFound": {
+    "message": "फ़ाइल नहीं मिली: \"$path$\"",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      }
+    }
+  },
+  "readFailed": {
+    "message": "पढ़ना विफल: \"$path$\" — $error$",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      },
+      "error": {
+        "content": "$2"
+      }
+    }
+  },
+  "writeFailed": {
+    "message": "लिखना विफल: \"$path$\" — $error$",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      },
+      "error": {
+        "content": "$2"
+      }
+    }
+  },
+  "clickAction": {
+    "message": "$target$ पर क्लिक करें",
+    "placeholders": {
+      "target": {
+        "content": "$1"
+      }
+    }
+  },
+  "typeAction": {
+    "message": "\"$value$\" टाइप करें → $target$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      },
+      "target": {
+        "content": "$2"
+      }
+    }
+  },
+  "selectAction": {
+    "message": "\"$value$\" चुनें @ $target$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      },
+      "target": {
+        "content": "$2"
+      }
+    }
+  },
+  "pressKeyAction": {
+    "message": "$key$ दबाएँ",
+    "placeholders": {
+      "key": {
+        "content": "$1"
+      }
+    }
+  },
+  "stepDefault": {
+    "message": "चरण $num$",
+    "placeholders": {
+      "num": {
+        "content": "$1"
+      }
+    }
+  },
+  "navFailed": {
+    "message": "नेविगेशन विफल: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "inputFailed": {
+    "message": "इनपुट विफल: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "clickFailed": {
+    "message": "क्लिक विफल: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "selectFailed": {
+    "message": "चयन विफल: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "keyFailed": {
+    "message": "कुंजी दबाना विफल: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "waitUrlTimeout": {
+    "message": "URL प्रतीक्षा समयसीमा: $pattern$",
+    "placeholders": {
+      "pattern": {
+        "content": "$1"
+      }
+    }
+  },
+  "jsFailed": {
+    "message": "JS विफल: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "assertFailed": {
+    "message": "दावा विफल: \"$text$\" नहीं मिला",
+    "placeholders": {
+      "text": {
+        "content": "$1"
+      }
+    }
+  },
+  "assertUrlFailed": {
+    "message": "दावा विफल: URL \"$pattern$\" से मेल नहीं खाता",
+    "placeholders": {
+      "pattern": {
+        "content": "$1"
+      }
+    }
+  },
+  "assertSelectorFailed": {
+    "message": "दावा विफल: $selector$ = $actual$, अपेक्षित $expected$",
+    "placeholders": {
+      "selector": {
+        "content": "$1"
+      },
+      "actual": {
+        "content": "$2"
+      },
+      "expected": {
+        "content": "$3"
+      }
+    }
+  },
+  "textTimeout": {
+    "message": "समयसीमा: \"$text$\" नहीं मिला",
+    "placeholders": {
+      "text": {
+        "content": "$1"
+      }
+    }
+  },
+  "aboutTitle": {
+    "message": "AgentLimb - के बारे में"
+  },
+  "aboutDesc": {
+    "message": "AgentLimb एक यूनिवर्सल ब्राउज़र ऑटोमेशन एक्सटेंशन है जो टर्मिनल AI (Claude Code, Cursor, Codex, आदि) को MCP टूल्स के माध्यम से Chrome को नियंत्रित करने देता है, AI को आपकी \"मैकेनिकल आर्म\" में बदलता है।"
+  },
+  "featureAI": {
+    "message": "AI पेज संरचना का अन्वेषण करता है, इंटरैक्टिव तत्वों को स्वतः पहचानता है"
+  },
+  "featureSkills": {
+    "message": "मसल मेमोरी: अन्वेषण के बाद सहेजें, अगली बार शून्य टोकन रीप्ले"
+  },
+  "featureSchedule": {
+    "message": "शेड्यूल्ड कार्य: AI ऑफ़लाइन होने पर भी ब्राउज़र स्वतः चलता है"
+  },
+  "featureMCP": {
+    "message": "MCP या HTTP सपोर्ट करने वाला कोई भी AI टूल कनेक्ट हो सकता है"
+  },
+  "versionInfo": {
+    "message": "संस्करण जानकारी"
+  },
+  "extensionVersion": {
+    "message": "एक्सटेंशन संस्करण"
+  },
+  "architecture": {
+    "message": "आर्किटेक्चर"
+  },
+  "architectureValue": {
+    "message": "MCP-first v6 (यूनिवर्सल आर्म)"
+  },
+  "bridgePort": {
+    "message": "Bridge पोर्ट"
+  },
+  "skillStorage": {
+    "message": "स्किल स्टोरेज"
+  },
+  "skillStorageValue": {
+    "message": "chrome.storage.local (प्रोजेक्ट-व्यापी स्थायी)"
+  },
+  "settingsTitle": {
+    "message": "सेटिंग्स"
+  },
+  "settingsBack": {
+    "message": "वापस"
+  },
+  "menuPrompt": {
+    "message": "📋 ऑनबोर्ड प्रॉम्प्ट"
+  },
+  "menuPromptDesc": {
+    "message": "शुरू करने के लिए टर्मिनल AI में प्रॉम्प्ट कॉपी करें"
+  },
+  "menuLanguage": {
+    "message": "🌐 भाषा"
+  },
+  "menuLanguageDesc": {
+    "message": "प्रदर्शन भाषा बदलें"
+  },
+  "menuGuide": {
+    "message": "📖 उपयोगकर्ता गाइड"
+  },
+  "menuGuideDesc": {
+    "message": "मसल मेमोरी, टोकन बचत, सर्वोत्तम अभ्यास"
+  },
+  "menuAbout": {
+    "message": "ℹ️ AgentLimb के बारे में"
+  },
+  "menuAboutDesc": {
+    "message": "संस्करण · आर्किटेक्चर · ओपन सोर्स"
+  },
+  "communityTitle": {
+    "message": "और मसल्स खोजें"
+  },
+  "communityDesc": {
+    "message": "कम्युनिटी मसल लाइब्रेरी ब्राउज़ करें — डाउनलोड और इम्पोर्ट करें शून्य टोकन रीप्ले के लिए"
+  },
+  "starTitle": {
+    "message": "⭐ GitHub पर स्टार दें"
+  },
+  "starDesc": {
+    "message": "AgentLimb ओपन सोर्स और मुफ़्त है। अगर मदद मिली, तो कृपया हमें एक स्टार दें!"
+  },
+  "langCurrent": {
+    "message": "वर्तमान भाषा"
+  },
+  "langZhCN": {
+    "message": "简体中文"
+  },
+  "langAuto": {
+    "message": "स्वचालित (ब्राउज़र के अनुसार)"
+  },
+  "langEn": {
+    "message": "English"
+  },
+  "langRestart": {
+    "message": "भाषा बदलने के बाद साइड पैनल फिर से खोलें"
+  },
+  "guideTitle": {
+    "message": "उपयोगकर्ता गाइड"
+  },
+  "guideWhatIsMuscle": {
+    "message": "मसल मेमोरी क्या है?"
+  },
+  "guideWhatIsMuscleBody": {
+    "message": "मसल मेमोरी AgentLimb का मुख्य टोकन-बचत तंत्र है। जब AI किसी प्लेटफ़ॉर्म पर पहली बार कोई ऑपरेशन पूरा करता है (जैसे पोस्ट करना), AgentLimb स्वतः क्रिया अनुक्रम को \"मसल\" के रूप में सहेजता है। अगली बार, बस मसल रीप्ले करें — AI पुनः अन्वेषण की आवश्यकता नहीं।"
+  },
+  "guideSaveToken": {
+    "message": "टोकन बचत — वास्तविक परीक्षण डेटा"
+  },
+  "guideSaveTokenBody": {
+    "message": "दो वास्तविक तुलनाएँ, स्पष्ट निष्कर्ष:"
+  },
+  "guideExploreLabel": {
+    "message": "पहला अन्वेषण"
+  },
+  "guideExploreValue": {
+    "message": "~30 API कॉल, ~5000 टोकन"
+  },
+  "guideMuscleLabel": {
+    "message": "मसल रीप्ले"
+  },
+  "guideMuscleValue": {
+    "message": "1 कॉल, ~300 टोकन, 0 त्रुटियाँ"
+  },
+  "guideSavings": {
+    "message": "~16 गुना दक्षता वृद्धि"
+  },
+  "guideSaveTokenTip": {
+    "message": "प्रत्येक प्लेटफ़ॉर्म को केवल एक अन्वेषण, एक सेव चाहिए — फिर स्थायी पुन: उपयोग। जितना अधिक आप किसी प्लेटफ़ॉर्म पर काम करें, उतनी अधिक बचत।"
+  },
+  "guideWorkflow": {
+    "message": "अनुशंसित कार्यप्रवाह"
+  },
+  "guideWorkflowBody": {
+    "message": "1. पहले AI के साथ योजना बनाएँ — प्रोजेक्ट फ़ोल्डर में लक्ष्य, प्लेटफ़ॉर्म सूची, सामग्री टेम्पलेट व्यवस्थित करें\n2. कार्य प्रोजेक्ट सेट करें — स्थानीय फ़ोल्डर चुनें, AI दीर्घकालिक योजना दस्तावेज़ पढ़/लिख सकता है\n3. AI पहली बार अन्वेषण — लक्ष्य प्लेटफ़ॉर्म पर observe + act उपयोग करें\n4. मसल के रूप में सहेजें — AI muscle(action:\"save\") कॉल करके क्रिया अनुक्रम सहेजता है\n5. एक-क्लिक पुन: उपयोग — muscle(action:\"run\") शून्य टोकन लागत से रीप्ले करता है\n6. शेड्यूल/बैच — मसल्स को पूर्ण स्वचालित निष्पादन के लिए शेड्यूल किया जा सकता है"
+  },
+  "guideConnect": {
+    "message": "AI कैसे कनेक्ट करें"
+  },
+  "guideConnectBody": {
+    "message": "1. होम पेज पर \"ऑनबोर्ड प्रॉम्प्ट कॉपी करें\" बटन क्लिक करें\n2. अपने टर्मिनल AI (Claude Code / Cursor / Codex, आदि) में पेस्ट करें\n3. AI स्वतः टूल्स पहचानेगा और ब्राउज़र नियंत्रित करना शुरू करेगा\n\nसुझाव: \"कार्य प्रोजेक्ट\" फ़ोल्डर सेट करें ताकि AI सत्रों के बीच दीर्घकालिक सहयोग के लिए आपके योजना दस्तावेज़ पढ़/लिख सके।"
+  },
+  "promptPageTitle": {
+    "message": "ऑनबोर्ड प्रॉम्प्ट"
+  },
+  "promptPageDesc": {
+    "message": "नीचे दिया गया प्रॉम्प्ट कॉपी करें और शुरू करने के लिए किसी भी टर्मिनल AI में पेस्ट करें"
+  },
+  "checkUpdate": {
+    "message": "अपडेट जाँचें"
+  },
+  "checking": {
+    "message": "जाँच रहे हैं…"
+  },
+  "upToDate": {
+    "message": "आप अपडेट हैं"
+  },
+  "newVersion": {
+    "message": "नया संस्करण v$version$ उपलब्ध",
+    "placeholders": {
+      "version": {
+        "content": "$1"
+      }
+    }
+  },
+  "downloadUpdate": {
+    "message": "डाउनलोड"
+  },
+  "checkFailed": {
+    "message": "जाँच विफल, कृपया बाद में पुनः प्रयास करें"
+  },
+  "updateNote": {
+    "message": "अपडेट आपके मसल्स या प्रोजेक्ट सेटिंग्स को प्रभावित नहीं करेंगे"
+  },
+  "linkWebsite": {
+    "message": "वेबसाइट agentlimb.com"
+  },
+  "linkGitHub": {
+    "message": "GitHub रिपॉज़िटरी"
+  },
+  "linkPrivacy": {
+    "message": "गोपनीयता नीति"
+  },
+  "linkLicense": {
+    "message": "लाइसेंस (BSL 1.1)"
+  },
+  "linkTerms": {
+    "message": "सेवा की शर्तें"
+  },
+  "linkChromeStore": {
+    "message": "Chrome वेब स्टोर"
+  },
+  "goToUpdate": {
+    "message": "अपडेट पर जाएँ"
+  },
+  "menuInterface": {
+    "message": "🎨 इंटरफ़ेस"
+  },
+  "menuInterfaceDesc": {
+    "message": "थीम, भाषा और दिखावट"
+  },
+  "themeLabel": {
+    "message": "थीम"
+  },
+  "themeAuto": {
+    "message": "सिस्टम"
+  },
+  "themeDark": {
+    "message": "डार्क"
+  },
+  "themeLight": {
+    "message": "लाइट"
+  },
+  "langJa": {
+    "message": "日本語"
+  },
+  "langKo": {
+    "message": "한국어"
+  },
+  "langEs": {
+    "message": "Español"
+  },
+  "langFr": {
+    "message": "Français"
+  },
+  "langDe": {
+    "message": "Deutsch"
+  },
+  "langPtBR": {
+    "message": "Português"
+  },
+  "langRu": {
+    "message": "Русский"
+  },
+  "langAr": {
+    "message": "العربية"
+  },
+  "langIt": {
+    "message": "Italiano"
+  },
+  "langHi": {
+    "message": "हिन्दी"
+  },
+  "aiOperating": {
+    "message": "AI काम कर रहा है"
+  },
+  "confirmNeeded": {
+    "message": "पुष्टि आवश्यक"
+  },
+  "confirmApprove": {
+    "message": "✓ स्वीकार"
+  },
+  "confirmDeny": {
+    "message": "✗ अस्वीकार"
+  },
+  "userApproved": {
+    "message": "उपयोगकर्ता ने स्वीकार किया"
+  },
+  "userDenied": {
+    "message": "उपयोगकर्ता ने अस्वीकार किया"
+  },
+  "saveAsMuscle": {
+    "message": "💪 मसल मेमोरी के रूप में सहेजें?"
+  },
+  "saveAsMuscleDesc": {
+    "message": "इस वर्कफ़्लो को सहेजें, बाद में बिना AI टोकन के फिर से चलाएं"
+  },
+  "muscleNamePlaceholder": {
+    "message": "नाम दें, जैसे ट्वीट पोस्ट करें"
+  },
+  "saveMuscleBtn": {
+    "message": "💪 सहेजें"
+  },
+  "muscleSaved": {
+    "message": "मसल सहेजा गया"
+  },
+  "noActionsToSave": {
+    "message": "सहेजने के लिए कोई कार्रवाई नहीं"
+  },
+  "dismiss": {
+    "message": "छोड़ें"
+  },
+  "phaseNavigate": {
+    "message": "$host$ खोलें",
+    "placeholders": {
+      "host": {
+        "content": "$1"
+      }
+    }
+  },
+  "phaseInput": {
+    "message": "सामग्री संपादित करें"
+  },
+  "phaseAction": {
+    "message": "क्रिया निष्पादित करें"
+  },
+  "phaseConfirm": {
+    "message": "क्रिया की पुष्टि करें"
+  },
+  "phaseVerify": {
+    "message": "परिणाम सत्यापित करें"
+  },
+  "phaseReview": {
+    "message": "पूर्णता की समीक्षा करें"
+  },
+  "taskReviewDesc": {
+    "message": "कार्य पूर्ण, समीक्षा की प्रतीक्षा"
+  },
+  "reviewConfirm": {
+    "message": "पुष्टि हुई"
+  },
+  "reviewReject": {
+    "message": "पूर्ण नहीं"
+  },
+  "muscleStatus": {
+    "message": "मसल स्थिति"
+  },
+  "muscleStoragePath": {
+    "message": "संग्रह स्थान:"
+  },
+  "openFolder": {
+    "message": "फ़ोल्डर खोलें"
+  },
+  "learnedSites": {
+    "message": "सीखी गई साइटें"
+  },
+  "muscleNoSites": {
+    "message": "अभी तक कोई सीखने का रिकॉर्ड नहीं है"
+  },
+  "currentSession": {
+    "message": "वर्तमान सत्र"
+  },
+  "guideHeroTitle": {
+    "message": "AgentLimb — किसी भी AI टर्मिनल से अपने ब्राउज़र को सटीकता से नियंत्रित करें"
+  },
+  "guideHeroDesc": {
+    "message": "एक Chrome एक्सटेंशन + एक प्रॉम्प्ट Claude Code, Codex या Cursor को भरोसेमंद ब्राउज़र ऑपरेटर बना देते हैं। न कोडिंग, न क्लाउड बिल, जितना अधिक उपयोग उतना सस्ता।"
+  },
+  "guideWhatItIs": {
+    "message": "यह क्या है?"
+  },
+  "guideWhatItIsBody": {
+    "message": "AgentLimb एक Chrome एक्सटेंशन है जो एक लोकल Bridge के साथ जुड़ता है। यह आपके AI टर्मिनल के टूल कॉल को Chrome Debugger Protocol कमांड में अनुवाद करता है, जिससे AI DOM पढ़ सकता है, क्लिक, टाइप, स्क्रीनशॉट और नेविगेट कर सकता है — एक सटीक रोबोटिक आर्म की तरह। स्क्रीनशॉट से अनुमान नहीं, तीसरे पक्ष का क्लाउड नहीं, और यह आपके Chrome में पहले से लॉगिन खातों का सीधे उपयोग करता है।"
+  },
+  "guideWhoItsFor": {
+    "message": "किसके लिए है"
+  },
+  "guideWhoItsForBody": {
+    "message": "ब्राउज़र कार्यों के लिए Claude Code / Codex / Cursor उपयोग करने वाले डेवलपर; वे लोग जो AI से दोहराव वाले वेब कार्य (स्क्रैपिंग, फ़ॉर्म भरना, SaaS ऑपरेशन) बिना स्क्रिप्ट लिखे करवाना चाहते हैं; जिन्हें Browser Use या BrowseAI बहुत जटिल या महँगा लगा; वे टीमें जिन्हें AI को पहले से लॉगिन सत्रों के ज़रिए आंतरिक सिस्टम चलाने की ज़रूरत है।"
+  },
+  "guideQuickStart": {
+    "message": "3 चरणों में शुरू करें"
+  },
+  "guideStep1Title": {
+    "message": "प्रॉम्प्ट कॉपी करें"
+  },
+  "guideStep1Desc": {
+    "message": "ऊपर 📋 या निष्क्रिय स्क्रीन पर «प्रॉम्प्ट कॉपी करें» पर क्लिक करें — प्रॉम्प्ट सीधे क्लिपबोर्ड पर चला जाएगा।"
+  },
+  "guideStep2Title": {
+    "message": "AI टर्मिनल में पेस्ट करें"
+  },
+  "guideStep2Desc": {
+    "message": "Claude Code / Codex / Cursor खोलें और प्रॉम्प्ट पेस्ट करें। Bridge पृष्ठभूमि में स्वचालित शुरू हो जाता है — कोई टर्मिनल कमांड नहीं चाहिए।"
+  },
+  "guideStep3Title": {
+    "message": "AI को कार्य दें"
+  },
+  "guideStep3Desc": {
+    "message": "आप क्या चाहते हैं प्राकृतिक भाषा में बताइए। AI एक्सटेंशन के ज़रिए ब्राउज़र चलाता है, और साइड पैनल लाइव प्रगति दिखाता है।"
+  },
+  "guideMuscle": {
+    "message": "हर बार सस्ता: मसल मेमोरी"
+  },
+  "guideMuscleBody": {
+    "message": "पहली बार आने पर AI खोज करता और याद रखता है: कौन-सा बटन कहाँ है, फ़ॉर्म कैसे भरें, कौन-से जाल से बचें। ये नोट्स ~/Desktop/AgentLimb-muscle/ में JSON के रूप में सहेजे जाते हैं और अगले रन पर सीधे चलाए जाते हैं — खोज छोड़कर। असली परीक्षण: समान कार्य के लिए ~85% कम टोकन और मिनटों को सेकंडों में बदलना।"
+  },
+  "guideMultiProfile": {
+    "message": "कई ब्राउज़र प्रोफ़ाइल समानांतर में चलाएं"
+  },
+  "guideMultiProfileBody": {
+    "message": "एक ही मशीन पर दूसरा (या तीसरा) Chrome प्रोफ़ाइल खोलें और AI सभी को एक साथ चला सकता है। प्रत्येक पैनल शीर्ष पर अपना Profile-xxxxxx लेबल दिखाता है। ऊपर दाईं ओर स्थिति बिंदु तीन अवस्थाएं दिखाता है: 🟢 काम कर रहा / 🟡 निलंबित / 🔴 ऑफ़लाइन। पहचान के बगल में निलंबित करें बटन पर क्लिक करें ताकि प्रोफ़ाइल अस्थायी रूप से AI कमांड स्वीकार करना बंद कर दे — Bridge इसे छोड़ देता है, अन्य प्रोफ़ाइल काम करते रहते हैं (सबसे आखिरी सक्रिय प्रोफ़ाइल को निलंबित नहीं किया जा सकता, इसलिए हमेशा कोई न कोई ड्यूटी पर रहता है)। कार्य जीवनचक्र घटनाएं (plan → step_done → complete) स्वचालित रूप से प्रत्येक सक्रिय प्रोफ़ाइल को वितरित की जाती हैं, इसलिए प्रत्येक पैनल पूरी प्रगति देखता है — आधा-अधूरा दृश्य नहीं। सभी प्रोफ़ाइल एक ही डेस्कटॉप मसल लाइब्रेरी साझा करते हैं — किसी भी प्रोफ़ाइल द्वारा सीखा गया साइट ज्ञान तुरंत अन्य के लिए पुन: प्रयोज्य है।"
+  },
+  "guideSupportedTerminals": {
+    "message": "समर्थित AI टर्मिनल"
+  },
+  "guideSupportedTerminalsBody": {
+    "message": "Claude Code (Anthropic) · Codex (OpenAI) · Cursor · स्थानीय Ollama / LM Studio — कोई भी AI टर्मिनल जो टूल कॉल का समर्थन करता हो। एक ही एक्सटेंशन, AI स्वतंत्र रूप से बदलें।"
+  },
+  "guidePrivacy": {
+    "message": "डेटा और गोपनीयता"
+  },
+  "guidePrivacyBody": {
+    "message": "सारा डेटा स्थानीय रहता है। मसल डेटा ~/Desktop/AgentLimb-muscle/ में रहता है — आप कभी भी देख, बैकअप या स्थानांतरित कर सकते हैं। कोई टेलीमेट्री नहीं, कोई अपलोड नहीं, कोई तीसरे पक्ष का सर्वर नहीं।"
+  },
+  "guideTroubleshoot": {
+    "message": "समस्या निवारण"
+  },
+  "guideTroubleshootBody": {
+    "message": "Bridge लाल: ⚙️ खोलें और प्रॉम्प्ट को AI टर्मिनल में फिर से कॉपी-पेस्ट करें। AI जवाब नहीं देता: टर्मिनल की ओर से टूल कॉल सक्षम है की पुष्टि करें। क्रियाएँ काम नहीं करतीं: Bridge बंद करने के लिए ⏻ पर क्लिक करें, फिर पुनः आरंभ के लिए प्रॉम्प्ट पेस्ट करें। और प्रश्न → GitHub Issues।"
+  },
+  "aboutTagline": {
+    "message": "किसी भी AI टर्मिनल से अपने ब्राउज़र को सटीकता से नियंत्रित करें — न कोड, न क्लाउड शुल्क, जितना अधिक उपयोग उतना सस्ता।"
+  },
+  "aboutLinkStoreTitle": {
+    "message": "Chrome वेब स्टोर"
+  },
+  "aboutLinkStoreSub": {
+    "message": "इंस्टॉल, अपडेट, समीक्षा"
+  },
+  "aboutLinkWebsiteTitle": {
+    "message": "आधिकारिक वेबसाइट"
+  },
+  "aboutLinkGitHubTitle": {
+    "message": "GitHub रिपॉज़िटरी"
+  },
+  "aboutLegalLabel": {
+    "message": "कानूनी और संपर्क"
+  },
+  "aboutLinkLegal": {
+    "message": "कानूनी (लाइसेंस · शर्तें · गोपनीयता)"
+  },
+  "aboutLinkContact": {
+    "message": "संपर्क"
+  },
+  "idleStarText": {
+    "message": "GitHub पर हमें स्टार दें"
+  },
+  "idleLinkTutorial": {
+    "message": "ट्यूटोरियल"
+  },
+  "idleLinkWebsite": {
+    "message": "वेबसाइट"
+  },
+  "idleLinkContact": {
+    "message": "संपर्क"
+  },
+  "idleLinkLegal": {
+    "message": "कानूनी"
+  },
+  "aboutFooter": {
+    "message": "© 2026 AgentLimb · सावधानी से बनाया गया।"
+  },
+  "updateTitle": {
+    "message": "अपडेट जाँचें"
+  },
+  "updateSub": {
+    "message": "दो स्रोत: Chrome वेब स्टोर और GitHub Releases"
+  },
+  "updateCheck": {
+    "message": "अपडेट जाँचें"
+  },
+  "updateChecking": {
+    "message": "जाँच हो रही है…"
+  },
+  "updateUpToDate": {
+    "message": "आप नवीनतम संस्करण पर हैं"
+  },
+  "updateNewVersion": {
+    "message": "नया संस्करण v$version$ उपलब्ध",
+    "placeholders": {
+      "version": {
+        "content": "$1"
+      }
+    }
+  },
+  "updateOpenStore": {
+    "message": "Chrome वेब स्टोर पर अपडेट करें"
+  },
+  "updateOpenGitHub": {
+    "message": "GitHub पर रिलीज़ देखें"
+  },
+  "updateCheckFailed": {
+    "message": "जाँच असफल। बाद में पुनः प्रयास करें।"
+  },
+  "statusPromptCopied": {
+    "message": "✓ प्रॉम्प्ट कॉपी हो गया — AI टर्मिनल में पेस्ट करके शुरू करें"
+  },
+  "statusCopyFailed": {
+    "message": "कॉपी विफल: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "statusTerminalConnected": {
+    "message": "✓ टर्मिनल कनेक्टेड: $name$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "statusIdleHint": {
+    "message": "«प्रॉम्प्ट कॉपी» पर क्लिक करें और AI टर्मिनल में पेस्ट करें"
+  },
+  "statusTaskTimeout": {
+    "message": "कार्य का समय समाप्त"
+  },
+  "statusBridgeLost": {
+    "message": "Bridge डिस्कनेक्ट — कार्य निरस्त"
+  },
+  "statusTaskComplete": {
+    "message": "✓ कार्य पूर्ण"
+  },
+  "statusTaskCompleteWith": {
+    "message": "✓ कार्य पूर्ण: $summary$",
+    "placeholders": {
+      "summary": {
+        "content": "$1"
+      }
+    }
+  },
+  "statusTaskFailed": {
+    "message": "✗ कार्य विफल: $reason$",
+    "placeholders": {
+      "reason": {
+        "content": "$1"
+      }
+    }
+  },
+  "statusShutdownCopied": {
+    "message": "शटडाउन प्रॉम्प्ट कॉपी हो गया — चलाने के लिए AI में पेस्ट करें"
+  },
+  "statusShutdownCopyFailed": {
+    "message": "कॉपी विफल — AI को मैन्युअल रूप से भेजें: pkill -f \"run-server.js\""
+  },
+  "statusPathCopied": {
+    "message": "पथ क्लिपबोर्ड पर कॉपी हो गया"
+  },
+  "reasonUnknown": {
+    "message": "अज्ञात कारण"
+  },
+  "taskDefaultTitle": {
+    "message": "AI कार्य"
+  },
+  "taskAIRunning": {
+    "message": "AI चल रहा है…"
+  },
+  "badgeRunning": {
+    "message": "चल रहा है"
+  },
+  "badgeDone": {
+    "message": "पूर्ण"
+  },
+  "badgeFailed": {
+    "message": "विफल"
+  },
+  "badgeTimeout": {
+    "message": "समय समाप्त"
+  },
+  "progressStepsMeta": {
+    "message": "$done$ / $total$ चरण",
+    "placeholders": {
+      "done": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "progressCallsMeta": {
+    "message": "$count$ कॉल",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "toolSummaryNavigate": {
+    "message": "नेविगेट → $host$",
+    "placeholders": {
+      "host": {
+        "content": "$1"
+      }
+    }
+  },
+  "toolSummaryClick": {
+    "message": "क्लिक"
+  },
+  "toolSummaryType": {
+    "message": "टाइप: $text$",
+    "placeholders": {
+      "text": {
+        "content": "$1"
+      }
+    }
+  },
+  "toolSummaryScroll": {
+    "message": "स्क्रॉल $direction$",
+    "placeholders": {
+      "direction": {
+        "content": "$1"
+      }
+    }
+  },
+  "toolSummaryScreenshot": {
+    "message": "स्क्रीनशॉट"
+  },
+  "toolSummarySnapshot": {
+    "message": "पेज स्नैपशॉट"
+  },
+  "toolSummaryWait": {
+    "message": "प्रतीक्षा $condition$",
+    "placeholders": {
+      "condition": {
+        "content": "$1"
+      }
+    }
+  },
+  "toolSummaryEval": {
+    "message": "JS चलाएँ"
+  },
+  "toolSummarySelect": {
+    "message": "चुनें: $value$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "toolSummaryTabNew": {
+    "message": "नया टैब"
+  },
+  "toolSummaryTabClose": {
+    "message": "टैब बंद करें"
+  },
+  "muscleOpenFolderTitle": {
+    "message": "मसल फ़ोल्डर खोलें"
+  },
+  "muscleFolderNotCreatedTitle": {
+    "message": "मसल फ़ोल्डर अभी तक नहीं बना है (~/Desktop/AgentLimb-muscle/)"
+  },
+  "muscleReadFailed": {
+    "message": "पढ़ने में विफल: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "muscleCandidatesCaptured": {
+    "message": "$count$ उम्मीदवार कैप्चर (muscle_commit के लिए प्रतीक्षारत)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "muscleNoBridgeData": {
+    "message": "Bridge कनेक्ट नहीं है — कोई साइट डेटा नहीं"
+  }
+}

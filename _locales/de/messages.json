@@ -1,0 +1,1415 @@
+{
+  "extName": {
+    "message": "AgentLimb"
+  },
+  "extDesc": {
+    "message": "Universeller Browser-Arm — Lassen Sie Terminal-KI (Claude Code / Codex / Cursor) Ihren Chrome-Browser steuern"
+  },
+  "headerTitle": {
+    "message": "AgentLimb"
+  },
+  "bridgeNotConnected": {
+    "message": "Bridge nicht verbunden"
+  },
+  "bridgeConnected": {
+    "message": "Bridge verbunden"
+  },
+  "bridgeNotConnectedShort": {
+    "message": "Nicht verbunden"
+  },
+  "bridgeConnectedShort": {
+    "message": "Verbunden"
+  },
+  "bridgeSuspended": {
+    "message": "Bridge verbunden · dieses Panel pausiert"
+  },
+  "bridgeSuspendedShort": {
+    "message": "Pausiert"
+  },
+  "identityPrefix": {
+    "message": "Dieses Panel"
+  },
+  "suspendAction": {
+    "message": "Pausieren"
+  },
+  "resumeAction": {
+    "message": "Fortsetzen"
+  },
+  "suspendActionTitle": {
+    "message": "KI-Befehle für dieses Profil anhalten"
+  },
+  "resumeActionTitle": {
+    "message": "KI-Befehle für dieses Profil wieder aufnehmen"
+  },
+  "suspendBlockedLastWorker": {
+    "message": "Kann nicht pausieren — dies ist das einzige aktive Profil"
+  },
+  "suspendFailed": {
+    "message": "Pausierungsstatus konnte nicht aktualisiert werden"
+  },
+  "identityCopyHint": {
+    "message": "Klicken, um den Profilnamen zu kopieren"
+  },
+  "identityCopied": {
+    "message": "Kopiert"
+  },
+  "identityCopyFailed": {
+    "message": "Kopieren fehlgeschlagen"
+  },
+  "connectedIdleTitle": {
+    "message": "Verbunden"
+  },
+  "connectedIdleSubtitle": {
+    "message": "Bereit für eine Aufgabe. Beschreibe, was die KI tun soll."
+  },
+  "copyPromptTitle": {
+    "message": "Onboarding-Prompt kopieren"
+  },
+  "shutdownBtnTitle": {
+    "message": "Shutdown-Prompt in die Zwischenablage kopieren und in die KI einfügen zum Ausführen"
+  },
+  "settings": {
+    "message": "Einstellungen"
+  },
+  "copyPrompt": {
+    "message": "Onboard-Prompt kopieren"
+  },
+  "viewPrompt": {
+    "message": "Prompt anzeigen"
+  },
+  "about": {
+    "message": "Über"
+  },
+  "tabMonitor": {
+    "message": "Monitor"
+  },
+  "tabSkills": {
+    "message": "Lokale Muskeln"
+  },
+  "tabLogs": {
+    "message": "Protokolle"
+  },
+  "idleTitle": {
+    "message": "AgentLimb bereit"
+  },
+  "idleDesc": {
+    "message": "Kopieren Sie den Onboard-Prompt in eine beliebige Terminal-KI, um den Browser zu steuern"
+  },
+  "copyPromptBtn": {
+    "message": "📋 Onboard-Prompt kopieren"
+  },
+  "promptCopied": {
+    "message": "✓ Kopiert! In die KI einfügen, um zu starten"
+  },
+  "viewPromptContent": {
+    "message": "Prompt-Inhalt anzeigen ▾"
+  },
+  "connectedTerminals": {
+    "message": "Verbundene Terminals"
+  },
+  "debugInfo": {
+    "message": "⚠ Debug-Info"
+  },
+  "clear": {
+    "message": "Löschen"
+  },
+  "currentTask": {
+    "message": "Aktuelle Aufgabe"
+  },
+  "statusRunning": {
+    "message": "Läuft"
+  },
+  "statusDone": {
+    "message": "Fertig"
+  },
+  "statusError": {
+    "message": "Fehler"
+  },
+  "statusIdle": {
+    "message": "Inaktiv"
+  },
+  "closeTask": {
+    "message": "Aufgabe schließen"
+  },
+  "progress": {
+    "message": "Fortschritt"
+  },
+  "workProject": {
+    "message": "Arbeitsprojekt"
+  },
+  "notSet": {
+    "message": "Nicht festgelegt"
+  },
+  "projectNoneDesc": {
+    "message": "Wählen Sie einen lokalen Ordner als Arbeitsprojekt. KI kann Dokumente, Pläne und Aufzeichnungen für langfristige Zusammenarbeit lesen/schreiben."
+  },
+  "pickProjectFolder": {
+    "message": "📁 Projektordner auswählen"
+  },
+  "pastePath": {
+    "message": "Vollständigen Pfad einfügen (optional, für direkten KI-Terminal-Zugriff)"
+  },
+  "pastePathHint": {
+    "message": "KI kann in das Projektverzeichnis wechseln, wenn der Pfad gesetzt ist"
+  },
+  "needReauth": {
+    "message": "⚠ Erneute Autorisierung für Dateizugriff erforderlich"
+  },
+  "authAccess": {
+    "message": "🔓 Ordnerzugriff autorisieren"
+  },
+  "changeProject": {
+    "message": "📁 Ändern"
+  },
+  "removeProject": {
+    "message": "✕ Entfernen"
+  },
+  "projectReady": {
+    "message": "✓ Bereit"
+  },
+  "projectNeedAuth": {
+    "message": "Autorisierung nötig"
+  },
+  "createdAt": {
+    "message": "Erstellt am $date$",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
+  },
+  "globalSkillLib": {
+    "message": "Browser Muskel-Cache"
+  },
+  "skillCount": {
+    "message": "$count$ Muskeln",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "skillAutoSave": {
+    "message": "Automatisch gespeichert nach KI-Erkundung. ⚡ Muskeln werden ohne KI abgespielt — null Tokens."
+  },
+  "loading": {
+    "message": "Laden…"
+  },
+  "importMuscle": {
+    "message": "📥 Muskeln importieren"
+  },
+  "archiveFolderDesc": {
+    "message": "Lokaler Archivordner (jede Änderung schreibt eine neue Datei mit Zeitstempel)"
+  },
+  "archiveSelectFolder": {
+    "message": "Ordner auswählen"
+  },
+  "archiveChangeFolder": {
+    "message": "Ordner ändern"
+  },
+  "archiveNoFolder": {
+    "message": "Kein Archivordner ausgewählt"
+  },
+  "archiveSyncNow": {
+    "message": "Jetzt synchronisieren"
+  },
+  "archiveFolderSet": {
+    "message": "Ordner ausgewählt: $name$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "archiveSynced": {
+    "message": "Mit lokalem Archiv synchronisiert"
+  },
+  "restoreFromArchive": {
+    "message": "⏮ Aus neuestem Archiv wiederherstellen"
+  },
+  "archiveLatest": {
+    "message": "Neuestes Archiv"
+  },
+  "archiveNoFiles": {
+    "message": "Noch keine Archivdateien im Ordner"
+  },
+  "archiveCount": {
+    "message": "$count$ Archive",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "archiveRestored": {
+    "message": "$count$ Muskeln aus Archiv wiederhergestellt",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "archiveRestoreFailed": {
+    "message": "Wiederherstellung fehlgeschlagen: $msg$",
+    "placeholders": {
+      "msg": {
+        "content": "$1"
+      }
+    }
+  },
+  "exportSkills": {
+    "message": "📤 Exportieren"
+  },
+  "importSkills": {
+    "message": "📥 Importieren"
+  },
+  "noSkills": {
+    "message": "Noch keine Muskeln"
+  },
+  "noSkillsHint": {
+    "message": "Rufen Sie muscle(action:\"save\") nach erfolgreicher KI-Erkundung auf"
+  },
+  "deleteSkillConfirm": {
+    "message": "Muskel \"$name$\" löschen?",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "confidenceHigh": {
+    "message": "✓ Hoch"
+  },
+  "confidenceMedium": {
+    "message": "◑ Mittel"
+  },
+  "confidenceLow": {
+    "message": "○ Neu"
+  },
+  "successRuns": {
+    "message": "$count$ Ausführungen",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "activityLog": {
+    "message": "Aktivitätsprotokoll"
+  },
+  "logEmpty": {
+    "message": "Aktivitäten werden hier in Echtzeit angezeigt…"
+  },
+  "ready": {
+    "message": "Bereit"
+  },
+  "copied": {
+    "message": "✓ Kopiert!"
+  },
+  "copyFailed": {
+    "message": "Kopieren fehlgeschlagen: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "promptToast": {
+    "message": "Onboard-Prompt"
+  },
+  "bridgeConnectedWaiting": {
+    "message": "Bridge verbunden, warte auf KI…"
+  },
+  "bridgeConnectedLog": {
+    "message": "Bridge verbunden · Warte auf Terminal-KI"
+  },
+  "bridgeDisconnected": {
+    "message": "Bridge getrennt, Wiederverbindung in 30s…"
+  },
+  "connectionLost": {
+    "message": "Verbindung getrennt"
+  },
+  "terminalsConnected": {
+    "message": "⚡ $count$ Terminals verbunden",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "bridgeConnectedTerminals": {
+    "message": "Bridge verbunden — $count$ Terminals",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "readPageState": {
+    "message": "Seitenstatus lesen"
+  },
+  "readPageStateScreenshot": {
+    "message": "Seitenstatus + Screenshot lesen"
+  },
+  "navigateTo": {
+    "message": "Navigiere zu $url$",
+    "placeholders": {
+      "url": {
+        "content": "$1"
+      }
+    }
+  },
+  "arrivedAt": {
+    "message": "Angekommen bei $url$",
+    "placeholders": {
+      "url": {
+        "content": "$1"
+      }
+    }
+  },
+  "actionFailed": {
+    "message": "Aktion fehlgeschlagen: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "waiting": {
+    "message": "Warten: $condition$",
+    "placeholders": {
+      "condition": {
+        "content": "$1"
+      }
+    }
+  },
+  "executeJS": {
+    "message": "JS ausführen: $code$",
+    "placeholders": {
+      "code": {
+        "content": "$1"
+      }
+    }
+  },
+  "exception": {
+    "message": "Fehler: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "task": {
+    "message": "Aufgabe: $title$",
+    "placeholders": {
+      "title": {
+        "content": "$1"
+      }
+    }
+  },
+  "executing": {
+    "message": "Wird ausgeführt…"
+  },
+  "muscleReplay": {
+    "message": "Muskel-Wiedergabe: $name$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "muscleReplayDesc": {
+    "message": "Muskel-Wiedergabe · $count$ Schritte",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "muscleComplete": {
+    "message": "Muskel abgeschlossen: $name$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "muscleInvalid": {
+    "message": "Ungültiges Muskelformat"
+  },
+  "missingFields": {
+    "message": "Fehlende Felder: $fields$",
+    "placeholders": {
+      "fields": {
+        "content": "$1"
+      }
+    }
+  },
+  "stepOf": {
+    "message": "Schritt $current$/$total$: $desc$",
+    "placeholders": {
+      "current": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      },
+      "desc": {
+        "content": "$3"
+      }
+    }
+  },
+  "stepFailed": {
+    "message": "Schritt $step$ fehlgeschlagen: $error$",
+    "placeholders": {
+      "step": {
+        "content": "$1"
+      },
+      "error": {
+        "content": "$2"
+      }
+    }
+  },
+  "stepsComplete": {
+    "message": "$count$ Schritte abgeschlossen",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "detectedReusable": {
+    "message": "Wiederverwendbare Sequenz erkannt ($count$ Schritte)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "importComplete": {
+    "message": "Import abgeschlossen"
+  },
+  "importFailed": {
+    "message": "Import fehlgeschlagen: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "loadFailed": {
+    "message": "Laden fehlgeschlagen: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "manualClose": {
+    "message": "Manuell geschlossen"
+  },
+  "closeTaskConfirm": {
+    "message": "Aufgabe \"$title$\" schließen?",
+    "placeholders": {
+      "title": {
+        "content": "$1"
+      }
+    }
+  },
+  "projectSelected": {
+    "message": "Projekt: $name$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "listFiles": {
+    "message": "Dateien auflisten: $dir$",
+    "placeholders": {
+      "dir": {
+        "content": "$1"
+      }
+    }
+  },
+  "readFile": {
+    "message": "Lesen: $path$",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      }
+    }
+  },
+  "writeFile": {
+    "message": "Schreiben: $path$",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      }
+    }
+  },
+  "written": {
+    "message": "Geschrieben: $path$",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      }
+    }
+  },
+  "projectAccessRestored": {
+    "message": "Projektzugriff wiederhergestellt"
+  },
+  "authFailed": {
+    "message": "Autorisierung fehlgeschlagen: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "pickFolderFailed": {
+    "message": "Ordnerauswahl fehlgeschlagen: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "noProjectFolder": {
+    "message": "Kein Projektordner ausgewählt"
+  },
+  "noFolderPermission": {
+    "message": "Keine Ordnerberechtigung. Klicken Sie im Seitenpanel auf Autorisieren"
+  },
+  "pathTraversal": {
+    "message": "Pfadtraversierung: \"$path$\"",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      }
+    }
+  },
+  "fileNotFound": {
+    "message": "Datei nicht gefunden: \"$path$\"",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      }
+    }
+  },
+  "readFailed": {
+    "message": "Lesen fehlgeschlagen: \"$path$\" — $error$",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      },
+      "error": {
+        "content": "$2"
+      }
+    }
+  },
+  "writeFailed": {
+    "message": "Schreiben fehlgeschlagen: \"$path$\" — $error$",
+    "placeholders": {
+      "path": {
+        "content": "$1"
+      },
+      "error": {
+        "content": "$2"
+      }
+    }
+  },
+  "clickAction": {
+    "message": "Klick auf $target$",
+    "placeholders": {
+      "target": {
+        "content": "$1"
+      }
+    }
+  },
+  "typeAction": {
+    "message": "Eingabe \"$value$\" → $target$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      },
+      "target": {
+        "content": "$2"
+      }
+    }
+  },
+  "selectAction": {
+    "message": "Auswählen \"$value$\" @ $target$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      },
+      "target": {
+        "content": "$2"
+      }
+    }
+  },
+  "pressKeyAction": {
+    "message": "Taste $key$ drücken",
+    "placeholders": {
+      "key": {
+        "content": "$1"
+      }
+    }
+  },
+  "stepDefault": {
+    "message": "Schritt $num$",
+    "placeholders": {
+      "num": {
+        "content": "$1"
+      }
+    }
+  },
+  "navFailed": {
+    "message": "Navigation fehlgeschlagen: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "inputFailed": {
+    "message": "Eingabe fehlgeschlagen: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "clickFailed": {
+    "message": "Klick fehlgeschlagen: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "selectFailed": {
+    "message": "Auswahl fehlgeschlagen: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "keyFailed": {
+    "message": "Tastendruck fehlgeschlagen: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "waitUrlTimeout": {
+    "message": "URL-Wartezeit überschritten: $pattern$",
+    "placeholders": {
+      "pattern": {
+        "content": "$1"
+      }
+    }
+  },
+  "jsFailed": {
+    "message": "JS fehlgeschlagen: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "assertFailed": {
+    "message": "Assertion fehlgeschlagen: \"$text$\" nicht gefunden",
+    "placeholders": {
+      "text": {
+        "content": "$1"
+      }
+    }
+  },
+  "assertUrlFailed": {
+    "message": "Assertion fehlgeschlagen: URL stimmt nicht mit \"$pattern$\" überein",
+    "placeholders": {
+      "pattern": {
+        "content": "$1"
+      }
+    }
+  },
+  "assertSelectorFailed": {
+    "message": "Assertion fehlgeschlagen: $selector$ = $actual$, erwartet $expected$",
+    "placeholders": {
+      "selector": {
+        "content": "$1"
+      },
+      "actual": {
+        "content": "$2"
+      },
+      "expected": {
+        "content": "$3"
+      }
+    }
+  },
+  "textTimeout": {
+    "message": "Zeitüberschreitung: \"$text$\" nicht gefunden",
+    "placeholders": {
+      "text": {
+        "content": "$1"
+      }
+    }
+  },
+  "aboutTitle": {
+    "message": "AgentLimb - Über"
+  },
+  "aboutDesc": {
+    "message": "AgentLimb ist eine universelle Browser-Automatisierungserweiterung, die Terminal-KI (Claude Code, Cursor, Codex, etc.) Chrome über MCP-Tools steuern lässt und KI in Ihren \"mechanischen Arm\" verwandelt."
+  },
+  "featureAI": {
+    "message": "KI erkundet Seitenstruktur und identifiziert automatisch interaktive Elemente"
+  },
+  "featureSkills": {
+    "message": "Muskelgedächtnis: Nach Erkundung speichern, nächstes Mal ohne Tokens abspielen"
+  },
+  "featureSchedule": {
+    "message": "Geplante Aufgaben: Browser läuft automatisch, auch wenn KI offline ist"
+  },
+  "featureMCP": {
+    "message": "Jedes KI-Tool mit MCP- oder HTTP-Unterstützung kann sich verbinden"
+  },
+  "versionInfo": {
+    "message": "Versionsinformationen"
+  },
+  "extensionVersion": {
+    "message": "Erweiterungsversion"
+  },
+  "architecture": {
+    "message": "Architektur"
+  },
+  "architectureValue": {
+    "message": "MCP-first v6 (Universeller Arm)"
+  },
+  "bridgePort": {
+    "message": "Bridge-Port"
+  },
+  "skillStorage": {
+    "message": "Fähigkeitenspeicher"
+  },
+  "skillStorageValue": {
+    "message": "chrome.storage.local (projektübergreifend persistent)"
+  },
+  "settingsTitle": {
+    "message": "Einstellungen"
+  },
+  "settingsBack": {
+    "message": "Zurück"
+  },
+  "menuPrompt": {
+    "message": "📋 Onboard-Prompt"
+  },
+  "menuPromptDesc": {
+    "message": "Prompt an Terminal-KI kopieren, um zu starten"
+  },
+  "menuLanguage": {
+    "message": "🌐 Sprache"
+  },
+  "menuLanguageDesc": {
+    "message": "Anzeigesprache wechseln"
+  },
+  "menuGuide": {
+    "message": "📖 Benutzerhandbuch"
+  },
+  "menuGuideDesc": {
+    "message": "Muskelgedächtnis, Token-Einsparung, Best Practices"
+  },
+  "menuAbout": {
+    "message": "ℹ️ Über AgentLimb"
+  },
+  "menuAboutDesc": {
+    "message": "Version · Architektur · Open Source"
+  },
+  "communityTitle": {
+    "message": "Mehr Muskeln finden"
+  },
+  "communityDesc": {
+    "message": "Community-Muskelbibliothek durchsuchen — herunterladen und importieren für tokenfreie Wiedergabe"
+  },
+  "starTitle": {
+    "message": "⭐ Gib uns einen Stern auf GitHub"
+  },
+  "starDesc": {
+    "message": "AgentLimb ist Open Source und kostenlos. Wenn es dir hilft, gib uns bitte einen Stern!"
+  },
+  "langCurrent": {
+    "message": "Aktuelle Sprache"
+  },
+  "langZhCN": {
+    "message": "简体中文"
+  },
+  "langAuto": {
+    "message": "Auto (Browser folgen)"
+  },
+  "langEn": {
+    "message": "English"
+  },
+  "langRestart": {
+    "message": "Seitenpanel nach Sprachwechsel erneut öffnen"
+  },
+  "guideTitle": {
+    "message": "Benutzerhandbuch"
+  },
+  "guideWhatIsMuscle": {
+    "message": "Was ist Muskelgedächtnis?"
+  },
+  "guideWhatIsMuscleBody": {
+    "message": "Muskelgedächtnis ist der zentrale Token-Sparmechanismus von AgentLimb. Wenn KI erstmals eine Operation auf einer Plattform abschließt (z.B. Veröffentlichen), speichert AgentLimb die Aktionssequenz automatisch als \"Muskel\". Beim nächsten Mal einfach den Muskel abspielen — keine KI-Erkundung nötig."
+  },
+  "guideSaveToken": {
+    "message": "Token-Einsparung — Reale Testdaten"
+  },
+  "guideSaveTokenBody": {
+    "message": "Zwei Vergleiche aus der Praxis, klares Ergebnis:"
+  },
+  "guideExploreLabel": {
+    "message": "Erste Erkundung"
+  },
+  "guideExploreValue": {
+    "message": "~30 API-Aufrufe, ~5000 Tokens"
+  },
+  "guideMuscleLabel": {
+    "message": "Muskel-Wiedergabe"
+  },
+  "guideMuscleValue": {
+    "message": "1 Aufruf, ~300 Tokens, 0 Fehler"
+  },
+  "guideSavings": {
+    "message": "~16x Effizienzsteigerung"
+  },
+  "guideSaveTokenTip": {
+    "message": "Jede Plattform braucht nur eine Erkundung, eine Speicherung — dann permanente Wiederverwendung. Je mehr Sie auf einer Plattform arbeiten, desto mehr sparen Sie."
+  },
+  "guideWorkflow": {
+    "message": "Empfohlener Arbeitsablauf"
+  },
+  "guideWorkflowBody": {
+    "message": "1. Zuerst mit KI planen — Ziele, Plattformliste, Inhaltsvorlagen im Projektordner organisieren\n2. Arbeitsprojekt festlegen — lokalen Ordner auswählen, KI kann langfristig Planungsdokumente lesen/schreiben\n3. KI erkundet zum ersten Mal — observe + act auf der Zielplattform verwenden\n4. Als Muskel speichern — KI ruft muscle(action:\"save\") auf, um Aktionssequenz zu speichern\n5. Ein-Klick-Wiederverwendung — muscle(action:\"run\") spielt ohne Token-Kosten ab\n6. Planen/Stapelverarbeitung — Muskeln können für vollautomatische Ausführung geplant werden"
+  },
+  "guideConnect": {
+    "message": "Wie man KI verbindet"
+  },
+  "guideConnectBody": {
+    "message": "1. Klicken Sie auf \"Onboard-Prompt kopieren\" auf der Startseite\n2. Fügen Sie es in Ihre Terminal-KI ein (Claude Code / Cursor / Codex, etc.)\n3. KI erkennt automatisch Tools und beginnt, den Browser zu steuern\n\nTipp: Legen Sie einen \"Arbeitsprojekt\"-Ordner fest, damit KI Ihre Planungsdokumente für langfristige sitzungsübergreifende Zusammenarbeit lesen/schreiben kann."
+  },
+  "promptPageTitle": {
+    "message": "Onboard-Prompt"
+  },
+  "promptPageDesc": {
+    "message": "Kopieren Sie den Prompt unten und fügen Sie ihn in eine beliebige Terminal-KI ein, um zu starten"
+  },
+  "checkUpdate": {
+    "message": "Nach Updates suchen"
+  },
+  "checking": {
+    "message": "Überprüfe…"
+  },
+  "upToDate": {
+    "message": "Sie sind auf dem neuesten Stand"
+  },
+  "newVersion": {
+    "message": "Neue Version v$version$ verfügbar",
+    "placeholders": {
+      "version": {
+        "content": "$1"
+      }
+    }
+  },
+  "downloadUpdate": {
+    "message": "Herunterladen"
+  },
+  "checkFailed": {
+    "message": "Überprüfung fehlgeschlagen, bitte später erneut versuchen"
+  },
+  "updateNote": {
+    "message": "Updates beeinträchtigen weder Ihre Muskeln noch Ihre Projekteinstellungen"
+  },
+  "linkWebsite": {
+    "message": "Website agentlimb.com"
+  },
+  "linkGitHub": {
+    "message": "GitHub-Repository"
+  },
+  "linkPrivacy": {
+    "message": "Datenschutzrichtlinie"
+  },
+  "linkLicense": {
+    "message": "Lizenz (BSL 1.1)"
+  },
+  "linkTerms": {
+    "message": "Nutzungsbedingungen"
+  },
+  "linkChromeStore": {
+    "message": "Chrome Web Store"
+  },
+  "goToUpdate": {
+    "message": "Zum Update"
+  },
+  "menuInterface": {
+    "message": "🎨 Oberfläche"
+  },
+  "menuInterfaceDesc": {
+    "message": "Design, Sprache und Erscheinung"
+  },
+  "themeLabel": {
+    "message": "Design"
+  },
+  "themeAuto": {
+    "message": "System"
+  },
+  "themeDark": {
+    "message": "Dunkel"
+  },
+  "themeLight": {
+    "message": "Hell"
+  },
+  "langJa": {
+    "message": "日本語"
+  },
+  "langKo": {
+    "message": "한국어"
+  },
+  "langEs": {
+    "message": "Español"
+  },
+  "langFr": {
+    "message": "Français"
+  },
+  "langDe": {
+    "message": "Deutsch"
+  },
+  "langPtBR": {
+    "message": "Português"
+  },
+  "langRu": {
+    "message": "Русский"
+  },
+  "langAr": {
+    "message": "العربية"
+  },
+  "langIt": {
+    "message": "Italiano"
+  },
+  "langHi": {
+    "message": "हिन्दी"
+  },
+  "aiOperating": {
+    "message": "KI arbeitet"
+  },
+  "confirmNeeded": {
+    "message": "Bestätigung erforderlich"
+  },
+  "confirmApprove": {
+    "message": "✓ Genehmigen"
+  },
+  "confirmDeny": {
+    "message": "✗ Ablehnen"
+  },
+  "userApproved": {
+    "message": "Benutzer hat genehmigt"
+  },
+  "userDenied": {
+    "message": "Benutzer hat abgelehnt"
+  },
+  "saveAsMuscle": {
+    "message": "💪 Als Muskelgedächtnis speichern?"
+  },
+  "saveAsMuscleDesc": {
+    "message": "Speichere diesen Ablauf zum späteren Abspielen ohne KI-Tokens"
+  },
+  "muscleNamePlaceholder": {
+    "message": "Namen vergeben, z.B. Tweet posten"
+  },
+  "saveMuscleBtn": {
+    "message": "💪 Speichern"
+  },
+  "muscleSaved": {
+    "message": "Muskel gespeichert"
+  },
+  "noActionsToSave": {
+    "message": "Keine Aktionen zum Speichern"
+  },
+  "dismiss": {
+    "message": "Überspringen"
+  },
+  "phaseNavigate": {
+    "message": "$host$ öffnen",
+    "placeholders": {
+      "host": {
+        "content": "$1"
+      }
+    }
+  },
+  "phaseInput": {
+    "message": "Inhalt bearbeiten"
+  },
+  "phaseAction": {
+    "message": "Aktion ausführen"
+  },
+  "phaseConfirm": {
+    "message": "Aktion bestätigen"
+  },
+  "phaseVerify": {
+    "message": "Ergebnis überprüfen"
+  },
+  "phaseReview": {
+    "message": "Abschluss prüfen"
+  },
+  "taskReviewDesc": {
+    "message": "Aufgabe abgeschlossen, Überprüfung ausstehend"
+  },
+  "reviewConfirm": {
+    "message": "Bestätigt"
+  },
+  "reviewReject": {
+    "message": "Nicht erledigt"
+  },
+  "muscleStatus": {
+    "message": "Muscle-Status"
+  },
+  "muscleStoragePath": {
+    "message": "Speicherort:"
+  },
+  "openFolder": {
+    "message": "Ordner öffnen"
+  },
+  "learnedSites": {
+    "message": "Gelernte Seiten"
+  },
+  "muscleNoSites": {
+    "message": "Noch keine Lernaufzeichnungen"
+  },
+  "currentSession": {
+    "message": "Aktuelle Sitzung"
+  },
+  "guideHeroTitle": {
+    "message": "AgentLimb — jedes KI-Terminal steuert deinen Browser präzise"
+  },
+  "guideHeroDesc": {
+    "message": "Eine Chrome-Erweiterung + ein Prompt machen Claude Code, Codex oder Cursor zum zuverlässigen Browser-Operator. Kein Code, keine Cloud-Kosten, wird mit jeder Nutzung günstiger."
+  },
+  "guideWhatItIs": {
+    "message": "Was ist das?"
+  },
+  "guideWhatItIsBody": {
+    "message": "AgentLimb ist eine Chrome-Erweiterung kombiniert mit einer lokalen Bridge. Sie übersetzt Tool-Aufrufe deines KI-Terminals in Chrome-Debugger-Protocol-Befehle, sodass die KI DOM lesen, klicken, tippen, Screenshots erstellen und navigieren kann — wie ein präziser Roboterarm. Kein Raten per Screenshot, keine Drittanbieter-Cloud, und deine bereits in Chrome angemeldeten Konten werden direkt genutzt."
+  },
+  "guideWhoItsFor": {
+    "message": "Für wen ist das?"
+  },
+  "guideWhoItsForBody": {
+    "message": "Entwickler, die Claude Code / Codex / Cursor für Browser-Aufgaben nutzen; Leute, die KI für repetitive Web-Arbeit (Scraping, Formulare, SaaS-Bedienung) ohne Skripte einsetzen wollen; Nutzer, denen Browser Use oder BrowseAI zu komplex oder zu teuer waren; Teams, die KI interne Systeme mit angemeldeten Sessions bedienen lassen müssen."
+  },
+  "guideQuickStart": {
+    "message": "In 3 Schritten starten"
+  },
+  "guideStep1Title": {
+    "message": "Prompt kopieren"
+  },
+  "guideStep1Desc": {
+    "message": "Klicke auf 📋 oben oder auf „Prompt kopieren\" im Leerlaufbildschirm — der Prompt landet direkt in der Zwischenablage."
+  },
+  "guideStep2Title": {
+    "message": "In dein KI-Terminal einfügen"
+  },
+  "guideStep2Desc": {
+    "message": "Öffne Claude Code / Codex / Cursor und füge den Prompt ein. Die Bridge startet automatisch im Hintergrund — keine Terminal-Befehle nötig."
+  },
+  "guideStep3Title": {
+    "message": "Gib der KI eine Aufgabe"
+  },
+  "guideStep3Desc": {
+    "message": "Beschreibe einfach in natürlicher Sprache, was du willst. Die KI steuert den Browser über die Erweiterung, und das Seitenpanel zeigt den Fortschritt live."
+  },
+  "guideMuscle": {
+    "message": "Mit jeder Nutzung günstiger: Muscle Memory"
+  },
+  "guideMuscleBody": {
+    "message": "Beim ersten Besuch erkundet und merkt sich die KI: Welcher Button wo ist, wie das Formular ausgefüllt wird, welche Fallstricke es gibt. Diese Notizen liegen als JSON in ~/Desktop/AgentLimb-muscle/ und werden beim nächsten Lauf direkt abgespielt — keine Exploration nötig. In echten Tests: ca. 85 % weniger Tokens und Minuten werden zu Sekunden für dieselbe Aufgabe."
+  },
+  "guideMultiProfile": {
+    "message": "Mehrere Browser-Profile parallel betreiben"
+  },
+  "guideMultiProfileBody": {
+    "message": "Öffne ein zweites (oder drittes) Chrome-Profil auf derselben Maschine und die KI kann alle gleichzeitig steuern. Jedes Panel zeigt oben seinen eigenen Profile-xxxxxx-Label. Der Statuspunkt oben rechts hat drei Zustände: 🟢 arbeitet / 🟡 pausiert / 🔴 offline. Klicke auf Pausieren neben der Identität, damit ein Profil vorübergehend keine KI-Befehle mehr annimmt — Bridge überspringt es, die anderen Profile laufen weiter (das allerletzte aktive Profil kann nicht pausiert werden, also ist immer jemand im Dienst). Lebenszyklus-Ereignisse einer Aufgabe (Plan → step_done → complete) werden automatisch an jedes aktive Profil verteilt, sodass jedes Panel den vollständigen Fortschritt sieht — keine halbierte Ansicht. Alle Profile teilen sich dieselbe Muscle-Bibliothek auf dem Desktop — Website-Wissen, das ein Profil lernt, ist sofort für die anderen nutzbar."
+  },
+  "guideSupportedTerminals": {
+    "message": "Unterstützte KI-Terminals"
+  },
+  "guideSupportedTerminalsBody": {
+    "message": "Claude Code (Anthropic) · Codex (OpenAI) · Cursor · lokal betriebenes Ollama / LM Studio — jedes KI-Terminal, das Tool-Aufrufe unterstützt. Dieselbe Erweiterung, KIs beliebig wechselbar."
+  },
+  "guidePrivacy": {
+    "message": "Daten & Datenschutz"
+  },
+  "guidePrivacyBody": {
+    "message": "Alle Daten bleiben lokal. Muscle-Daten liegen in ~/Desktop/AgentLimb-muscle/ — jederzeit einsehbar, sicherbar, verschiebbar. Keine Telemetrie, kein Upload, keine Drittserver."
+  },
+  "guideTroubleshoot": {
+    "message": "Problembehandlung"
+  },
+  "guideTroubleshootBody": {
+    "message": "Bridge-Status rot: ⚙️ öffnen und den Prompt erneut in dein KI-Terminal kopieren. KI antwortet nicht: Prüfe, ob Tool-Aufrufe im Terminal aktiviert sind. Aktionen wirken nicht: Mit ⏻ die Bridge stoppen, dann den Prompt erneut einfügen, um neu zu starten. Weitere Fragen → GitHub Issues."
+  },
+  "aboutTagline": {
+    "message": "Jedes KI-Terminal steuert deinen Browser präzise — kein Code, keine Cloud-Gebühren, wird mit jeder Nutzung günstiger."
+  },
+  "aboutLinkStoreTitle": {
+    "message": "Chrome Web Store"
+  },
+  "aboutLinkStoreSub": {
+    "message": "Installieren, aktualisieren, bewerten"
+  },
+  "aboutLinkWebsiteTitle": {
+    "message": "Offizielle Website"
+  },
+  "aboutLinkGitHubTitle": {
+    "message": "GitHub-Repository"
+  },
+  "aboutLegalLabel": {
+    "message": "Rechtliches & Kontakt"
+  },
+  "aboutLinkLegal": {
+    "message": "Rechtliches (Lizenz · AGB · Datenschutz)"
+  },
+  "aboutLinkContact": {
+    "message": "Kontakt"
+  },
+  "idleStarText": {
+    "message": "Auf GitHub einen Stern geben"
+  },
+  "idleLinkTutorial": {
+    "message": "Tutorial"
+  },
+  "idleLinkWebsite": {
+    "message": "Website"
+  },
+  "idleLinkContact": {
+    "message": "Kontakt"
+  },
+  "idleLinkLegal": {
+    "message": "Rechtliches"
+  },
+  "aboutFooter": {
+    "message": "© 2026 AgentLimb · Mit Sorgfalt gemacht."
+  },
+  "updateTitle": {
+    "message": "Auf Updates prüfen"
+  },
+  "updateSub": {
+    "message": "Zwei Quellen: Chrome Web Store und GitHub Releases"
+  },
+  "updateCheck": {
+    "message": "Auf Updates prüfen"
+  },
+  "updateChecking": {
+    "message": "Prüfe…"
+  },
+  "updateUpToDate": {
+    "message": "Du nutzt die neueste Version"
+  },
+  "updateNewVersion": {
+    "message": "Neue Version v$version$ verfügbar",
+    "placeholders": {
+      "version": {
+        "content": "$1"
+      }
+    }
+  },
+  "updateOpenStore": {
+    "message": "Im Chrome Web Store aktualisieren"
+  },
+  "updateOpenGitHub": {
+    "message": "Release auf GitHub ansehen"
+  },
+  "updateCheckFailed": {
+    "message": "Prüfung fehlgeschlagen. Bitte später erneut versuchen."
+  },
+  "statusPromptCopied": {
+    "message": "✓ Prompt kopiert — füge ihn in dein KI-Terminal ein"
+  },
+  "statusCopyFailed": {
+    "message": "Kopieren fehlgeschlagen: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "statusTerminalConnected": {
+    "message": "✓ Terminal verbunden: $name$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "statusIdleHint": {
+    "message": "Klicke auf „Prompt kopieren\" und füge ihn in ein KI-Terminal ein"
+  },
+  "statusTaskTimeout": {
+    "message": "Aufgabe ist abgelaufen"
+  },
+  "statusBridgeLost": {
+    "message": "Bridge getrennt — Aufgabe abgebrochen"
+  },
+  "statusTaskComplete": {
+    "message": "✓ Aufgabe abgeschlossen"
+  },
+  "statusTaskCompleteWith": {
+    "message": "✓ Aufgabe abgeschlossen: $summary$",
+    "placeholders": {
+      "summary": {
+        "content": "$1"
+      }
+    }
+  },
+  "statusTaskFailed": {
+    "message": "✗ Aufgabe fehlgeschlagen: $reason$",
+    "placeholders": {
+      "reason": {
+        "content": "$1"
+      }
+    }
+  },
+  "statusShutdownCopied": {
+    "message": "Shutdown-Prompt kopiert — füge ihn zur Ausführung in die KI ein"
+  },
+  "statusShutdownCopyFailed": {
+    "message": "Kopieren fehlgeschlagen — sende manuell an die KI: pkill -f \"run-server.js\""
+  },
+  "statusPathCopied": {
+    "message": "Pfad in die Zwischenablage kopiert"
+  },
+  "reasonUnknown": {
+    "message": "Unbekannter Grund"
+  },
+  "taskDefaultTitle": {
+    "message": "KI-Aufgabe"
+  },
+  "taskAIRunning": {
+    "message": "KI läuft…"
+  },
+  "badgeRunning": {
+    "message": "Läuft"
+  },
+  "badgeDone": {
+    "message": "Fertig"
+  },
+  "badgeFailed": {
+    "message": "Fehlgeschlagen"
+  },
+  "badgeTimeout": {
+    "message": "Zeitüberschreitung"
+  },
+  "progressStepsMeta": {
+    "message": "$done$ / $total$ Schritte",
+    "placeholders": {
+      "done": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "progressCallsMeta": {
+    "message": "$count$ Tool-Aufrufe",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "toolSummaryNavigate": {
+    "message": "Navigieren → $host$",
+    "placeholders": {
+      "host": {
+        "content": "$1"
+      }
+    }
+  },
+  "toolSummaryClick": {
+    "message": "Klicken"
+  },
+  "toolSummaryType": {
+    "message": "Eingabe: $text$",
+    "placeholders": {
+      "text": {
+        "content": "$1"
+      }
+    }
+  },
+  "toolSummaryScroll": {
+    "message": "Scrollen $direction$",
+    "placeholders": {
+      "direction": {
+        "content": "$1"
+      }
+    }
+  },
+  "toolSummaryScreenshot": {
+    "message": "Screenshot"
+  },
+  "toolSummarySnapshot": {
+    "message": "Seitenschnappschuss"
+  },
+  "toolSummaryWait": {
+    "message": "Warten $condition$",
+    "placeholders": {
+      "condition": {
+        "content": "$1"
+      }
+    }
+  },
+  "toolSummaryEval": {
+    "message": "JS ausführen"
+  },
+  "toolSummarySelect": {
+    "message": "Auswahl: $value$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "toolSummaryTabNew": {
+    "message": "Neuer Tab"
+  },
+  "toolSummaryTabClose": {
+    "message": "Tab schließen"
+  },
+  "muscleOpenFolderTitle": {
+    "message": "Muscle-Ordner öffnen"
+  },
+  "muscleFolderNotCreatedTitle": {
+    "message": "Muscle-Ordner noch nicht erstellt (~/Desktop/AgentLimb-muscle/)"
+  },
+  "muscleReadFailed": {
+    "message": "Lesen fehlgeschlagen: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "muscleCandidatesCaptured": {
+    "message": "$count$ Kandidaten erfasst (wartet auf muscle_commit)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "muscleNoBridgeData": {
+    "message": "Bridge nicht verbunden — keine Site-Daten"
+  }
+}
