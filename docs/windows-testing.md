@@ -1,14 +1,14 @@
-# Windows 0.2.1-b3 GitHub Runtime Checklist
+# Windows 0.2.1-b5 GitHub Runtime Checklist
 
-Use a normal, non-administrator Windows account with Node.js 18 or later and Edge, Chrome, Brave, Vivaldi, Chromium, or another Chromium browser. This validates the same first-run path for Chrome Web Store and offline extension installs: the extension supplies its ID, and an approved terminal agent downloads the small matching Runtime from the fixed location in the official GitHub version tag.
+Use a normal, non-administrator Windows account with Node.js 18 or later and Edge, Chrome, Brave, Vivaldi, Chromium, or another Chromium browser. This validates the same first-run path for Chrome Web Store and offline extension installs: the extension supplies its ID, and an approved terminal agent downloads the small matching Runtime from the fixed official GitHub Release asset URL.
 
 ## First install through the onboarding prompt
 
-1. Install AgentLimb from the Chrome Web Store, or load the released `agentlimb-chrome-v0.2.1-b3.zip` as an unpacked extension.
+1. Install AgentLimb from the Chrome Web Store, or load the released `agentlimb-chrome-v0.2.1-b5.zip` as an unpacked extension.
 2. Open the AgentLimb side panel and copy the onboarding prompt into Codex, Claude Code, WorkBuddy, or another terminal-capable agent.
 3. Confirm the agent performs only the loopback health check before approval.
 4. Approve the requested local Runtime setup.
-5. Confirm the agent downloads only the exact `runtime/agentlimb-bootstrap.zip` and `.sha256` URLs included in the prompt, verifies the checksum, extracts into a temporary directory, and runs `scripts\install.ps1 -ExtensionId <current ID>`.
+5. Confirm the agent downloads only the exact `agentlimb-runtime-v<version>-<bN>.zip` and `SHA256SUMS.txt` Release URLs included in the prompt (both on the `github.com` domain), verifies the checksum, extracts into a temporary directory, and runs `scripts\install.ps1 -ExtensionId <current ID>`.
 
 Expected: the agent does not scan Desktop, Downloads, browser Profiles, extension directories, source repositories, or network shares. It does not use npm, download a separate Runtime zip, or substitute another download URL.
 

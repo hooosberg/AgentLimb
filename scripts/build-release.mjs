@@ -119,6 +119,9 @@ fs.rmSync(path.join(extensionDir, 'kernel', '.mvp-terminal-session.json'), { for
 zip(extensionBase, extensionAsset, { contentsOnly: true });
 
 const bootstrapName = 'agentlimb-bootstrap.zip';
+// The same payload ships twice: embedded in the repo for source-tag mirrors, and as a
+// build-named (immutable) GitHub Release asset that first-run bootstrap URLs point to.
+const runtimeAsset = `agentlimb-runtime-v${releaseVersion}.zip`;
 const bootstrapPath = path.join(rootDir, 'runtime', bootstrapName);
 const bootstrapChecksumPath = `${bootstrapPath}.sha256`;
 const bootstrapDir = path.join(distDir, 'agentlimb-bootstrap');
@@ -140,11 +143,12 @@ fs.rmSync(bootstrapPath, { force: true });
 fs.renameSync(path.join(distDir, bootstrapName), bootstrapPath);
 const bootstrapDigest = createHash('sha256').update(fs.readFileSync(bootstrapPath)).digest('hex');
 fs.writeFileSync(bootstrapChecksumPath, `${bootstrapDigest}  ${bootstrapName}\n`);
+fs.copyFileSync(bootstrapPath, path.join(distDir, runtimeAsset));
 
 fs.rmSync(extensionDir, { recursive: true, force: true });
 fs.rmSync(bootstrapDir, { recursive: true, force: true });
 
-const checksumLines = [extensionAsset].map((name) => {
+const checksumLines = [extensionAsset, runtimeAsset].map((name) => {
   const digest = createHash('sha256').update(fs.readFileSync(path.join(distDir, name))).digest('hex');
   return `${digest}  ${name}`;
 });
@@ -152,4 +156,5 @@ fs.writeFileSync(path.join(distDir, 'SHA256SUMS.txt'), `${checksumLines.join('\n
 
 console.log(`[release] AgentLimb v${releaseVersion}`);
 console.log(`[release] ${path.relative(rootDir, path.join(distDir, extensionAsset))}`);
+console.log(`[release] ${path.relative(rootDir, path.join(distDir, runtimeAsset))}`);
 console.log('[release] 忽略上传/dist/SHA256SUMS.txt');

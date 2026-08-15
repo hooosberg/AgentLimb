@@ -5,7 +5,8 @@ import test from 'node:test';
 import { buildIdentitySection } from '../kernel/prompt/identity.js';
 
 const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
-const runtimeUrl = `https://raw.githubusercontent.com/hooosberg/AgentLimb/v${pkg.version}/runtime/agentlimb-bootstrap.zip`;
+const runtimeUrl = `https://github\\.com/hooosberg/AgentLimb/releases/download/v${pkg.version}/agentlimb-runtime-v${pkg.version}-${pkg.agentlimbBuild}\\.zip`;
+const checksumUrl = `https://github\\.com/hooosberg/AgentLimb/releases/download/v${pkg.version}/SHA256SUMS\\.txt`;
 
 test('offline Windows prompt uses the fixed small GitHub Runtime file', () => {
   const prompt = buildIdentitySection({
@@ -17,12 +18,12 @@ test('offline Windows prompt uses the fixed small GitHub Runtime file', () => {
   });
 
   assert.match(prompt, new RegExp(runtimeUrl));
-  assert.match(prompt, new RegExp(`${runtimeUrl.replaceAll('.', '\\.')}\\.sha256`));
+  assert.match(prompt, new RegExp(checksumUrl));
   assert.match(prompt, /scripts\\install\.ps1 -ExtensionId abcdefghijklmnopabcdefghijklmnop/);
   assert.match(prompt, /Invoke-WebRequest/);
   assert.match(prompt, /Do not scan browser profiles, desktop folders, zip files, or source directories/);
   assert.match(prompt, /- Browser:\s+Microsoft Edge/);
-  assert.doesNotMatch(prompt, /@agentlimb\/mcp|npx --yes|archive\/refs\/tags|agentlimb-runtime-v|Preferences|findExtensionSource|find_extension_source|C:\\Mac/);
+  assert.doesNotMatch(prompt, /@agentlimb\/mcp|npx --yes|archive\/refs\/tags|raw\.githubusercontent|Preferences|findExtensionSource|find_extension_source|C:\\Mac/);
 });
 
 test('online runtime without a Mission waits without creating a task', () => {
@@ -48,5 +49,5 @@ test('offline macOS prompt uses the matching small GitHub Runtime file', () => {
   assert.match(prompt, new RegExp(runtimeUrl));
   assert.match(prompt, /scripts\/install\.sh --extension-id abcdefghijklmnopabcdefghijklmnop/);
   assert.match(prompt, /curl -sf/);
-  assert.doesNotMatch(prompt, /Application Support|\$HOME\/Desktop|@agentlimb\/mcp|archive\/refs\/tags/);
+  assert.doesNotMatch(prompt, /Application Support|\$HOME\/Desktop|@agentlimb\/mcp|archive\/refs\/tags|raw\.githubusercontent/);
 });

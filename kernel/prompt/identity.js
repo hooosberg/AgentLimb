@@ -1,4 +1,4 @@
-import { APP_NAME, APP_VERSION } from '../shared/constants.js';
+import { APP_BUILD, APP_NAME, APP_VERSION } from '../shared/constants.js';
 
 /**
  * The onboarding prompt is independent from extension installation paths.
@@ -19,8 +19,11 @@ export function buildIdentitySection(ctx = {}) {
   const statusCommand = isWindows
     ? `Invoke-WebRequest "${hostUrl}/api/mvp/status" -UseBasicParsing`
     : `curl -sf ${hostUrl}/api/mvp/status`;
-  const runtimeUrl = `https://raw.githubusercontent.com/hooosberg/AgentLimb/v${version}/runtime/agentlimb-bootstrap.zip`;
-  const checksumUrl = `${runtimeUrl}.sha256`;
+  // Keep every bootstrap URL on the github.com domain: raw.githubusercontent.com and
+  // codeload.github.com are unreliable or unreachable in many regions (notably mainland China),
+  // which previously deadlocked first-run setup on real Windows machines.
+  const runtimeUrl = `https://github.com/hooosberg/AgentLimb/releases/download/v${version}/agentlimb-runtime-v${version}-${APP_BUILD}.zip`;
+  const checksumUrl = `https://github.com/hooosberg/AgentLimb/releases/download/v${version}/SHA256SUMS.txt`;
 
   const lines = [
     `# ${name} v${version} - Browser Automation Runtime`,

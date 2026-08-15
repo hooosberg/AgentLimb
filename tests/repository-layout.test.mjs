@@ -40,13 +40,15 @@ test('website does not publish local muscle execution records', async () => {
   await assert.rejects(access(new URL('website/content/muscles', root)), { code: 'ENOENT' });
 });
 
-test('release builder publishes one extension asset and embeds the small Runtime in source', async () => {
+test('release builder publishes the extension and the build-named Runtime asset', async () => {
   const builder = await read('scripts/build-release.mjs');
   assert.match(builder, /normalizeBuildLabel/);
   assert.match(builder, /const releaseVersion = `\$\{version\}-\$\{buildLabel\}`/);
   assert.match(builder, /const bootstrapName = 'agentlimb-bootstrap\.zip'/);
-  assert.match(builder, /const checksumLines = \[extensionAsset\]/);
+  // The Runtime payload ships as an immutable, build-named GitHub Release asset and is
+  // also embedded in the source tree; both share one checksum table.
+  assert.match(builder, /const runtimeAsset = `agentlimb-runtime-v\$\{releaseVersion\}\.zip`/);
+  assert.match(builder, /const checksumLines = \[extensionAsset, runtimeAsset\]/);
   assert.match(builder, /\.mvp-terminal-session\.json/);
-  assert.doesNotMatch(builder, /agentlimb-runtime-v/);
   assert.doesNotMatch(builder, /agentlimb-windows-v/);
 });
