@@ -1,6 +1,7 @@
 import readline from 'node:readline';
 
 import { HOST_TOOLS } from '../kernel/control/host/tools.js';
+import { APP_BUILD, APP_VERSION } from '../kernel/shared/constants.js';
 import { createMvpHttpClient } from '../kernel/bridge/mvp/client.js';
 
 const PROTOCOL_VERSION = '2025-03-26';
@@ -33,7 +34,7 @@ async function handleRequest(request, client) {
     return success(request.id, {
       protocolVersion: PROTOCOL_VERSION,
       capabilities: { tools: {} },
-      serverInfo: { name: 'agentlimb', version: '0.2.1-b2' },
+      serverInfo: { name: 'agentlimb', version: `${APP_VERSION}-${APP_BUILD}` },
     });
   }
   if (request.method === 'tools/list') {

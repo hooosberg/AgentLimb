@@ -22,8 +22,16 @@ try {
     case 'serve':
       await import('../runtime/mcp-server.mjs').then(({ runMcpServer }) => runMcpServer({ host }));
       break;
+    case 'service':
+      await service(args[0] || 'status', host);
+      break;
     case 'start':
-      await start(host);
+    case 'connect':
+    case 'claim':
+    case 'task':
+    case 'call':
+    case 'complete':
+      await runTerminalCommand(command, args);
       break;
     default:
       printHelp();
@@ -42,11 +50,11 @@ async function setup(id) {
   const script = isWindows ? resolve(root, 'scripts', 'install.ps1') : resolve(root, 'scripts', 'install.sh');
   if (!existsSync(script)) throw new Error(`AgentLimb setup script is missing: ${script}`);
 
-  const command = isWindows ? 'powershell.exe' : 'bash';
+  const program = isWindows ? 'powershell.exe' : 'bash';
   const scriptArgs = isWindows
     ? ['-NoLogo', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', script, '-ExtensionId', id]
     : [script, '--extension-id', id];
-  await run(command, scriptArgs);
+  await run(program, scriptArgs);
 }
 
 async function status(baseUrl) {
@@ -55,13 +63,19 @@ async function status(baseUrl) {
   console.log(JSON.stringify(await response.json(), null, 2));
 }
 
-async function start(baseUrl) {
+async function service(action, baseUrl) {
+  if (action === 'status') {
+    await status(baseUrl);
+    return;
+  }
+  if (action !== 'start') {
+    throw new Error('service accepts only start or status.');
+  }
+
   try {
     await status(baseUrl);
     return;
   } catch {
-    // The platform installers keep the Bridge alive. Starting their service is intentionally
-    // delegated to the same platform runtime rather than creating another server process here.
     if (process.platform === 'win32') {
       await run('powershell.exe', ['-NoProfile', '-Command', 'Start-ScheduledTask -TaskName "AgentLimb Bridge"']);
     } else if (process.platform === 'darwin') {
@@ -74,18 +88,24 @@ async function start(baseUrl) {
   }
 }
 
+async function runTerminalCommand(subcommand, values) {
+  const client = resolve(root, 'kernel', 'bridge', 'mvp', 'terminal-client.mjs');
+  if (!existsSync(client)) throw new Error(`AgentLimb terminal client is missing: ${client}`);
+  await run(process.execPath, [client, subcommand, ...values]);
+}
+
 function readOption(values, name) {
   const index = values.indexOf(name);
   return index >= 0 ? values[index + 1] : '';
 }
 
-function run(command, args) {
+function run(program, programArgs) {
   return new Promise((resolveRun, rejectRun) => {
-    const child = spawn(command, args, { stdio: 'inherit' });
+    const child = spawn(program, programArgs, { stdio: 'inherit' });
     child.once('error', rejectRun);
     child.once('exit', (code) => code === 0
       ? resolveRun()
-      : rejectRun(new Error(`${command} exited with code ${code ?? 'unknown'}.`)));
+      : rejectRun(new Error(`${program} exited with code ${code ?? 'unknown'}.`)));
   });
 }
 
@@ -95,7 +115,10 @@ function printHelp() {
     '',
     '  agentlimb setup --extension-id <id>  Install or upgrade the local Runtime',
     '  agentlimb status                     Check the local Bridge',
-    '  agentlimb start                      Start the installed Bridge service',
+    '  agentlimb service start              Start the installed Bridge service',
+    '  agentlimb start [--task-id <id>]     Connect, claim a task, and fetch browser context',
+    '  agentlimb call --tool <name> --params <JSON>',
+    '  agentlimb complete --ok true --output <summary>',
     '  agentlimb mcp                        Serve AgentLimb through MCP stdio',
   ].join('\n'));
 }
