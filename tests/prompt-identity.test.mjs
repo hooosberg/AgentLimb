@@ -5,9 +5,9 @@ import test from 'node:test';
 import { buildIdentitySection } from '../kernel/prompt/identity.js';
 
 const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
-const sourceUrl = `https://github.com/hooosberg/AgentLimb/archive/refs/tags/v${pkg.version}.zip`;
+const runtimeUrl = `https://raw.githubusercontent.com/hooosberg/AgentLimb/v${pkg.version}/runtime/agentlimb-bootstrap.zip`;
 
-test('offline Windows prompt uses the fixed GitHub tag source archive', () => {
+test('offline Windows prompt uses the fixed small GitHub Runtime file', () => {
   const prompt = buildIdentitySection({
     platform: 'Windows',
     extensionOnline: true,
@@ -16,13 +16,13 @@ test('offline Windows prompt uses the fixed GitHub tag source archive', () => {
     browserName: 'Microsoft Edge',
   });
 
-  assert.match(prompt, new RegExp(sourceUrl));
+  assert.match(prompt, new RegExp(runtimeUrl));
+  assert.match(prompt, new RegExp(`${runtimeUrl.replaceAll('.', '\\.')}\\.sha256`));
   assert.match(prompt, /scripts\\install\.ps1 -ExtensionId abcdefghijklmnopabcdefghijklmnop/);
   assert.match(prompt, /Invoke-WebRequest/);
-  assert.match(prompt, /Use the known repository root after extraction/);
   assert.match(prompt, /Do not scan browser profiles, desktop folders, zip files, or source directories/);
   assert.match(prompt, /- Browser:\s+Microsoft Edge/);
-  assert.doesNotMatch(prompt, /@agentlimb\/mcp|npx --yes|SHA256SUMS|agentlimb-runtime-v|Preferences|findExtensionSource|find_extension_source|C:\\Mac/);
+  assert.doesNotMatch(prompt, /@agentlimb\/mcp|npx --yes|archive\/refs\/tags|agentlimb-runtime-v|Preferences|findExtensionSource|find_extension_source|C:\\Mac/);
 });
 
 test('online runtime without a Mission waits without creating a task', () => {
@@ -37,7 +37,7 @@ test('online runtime without a Mission waits without creating a task', () => {
   assert.doesNotMatch(prompt, /start the Bridge|task_plan/);
 });
 
-test('offline macOS prompt uses the matching GitHub tag source archive', () => {
+test('offline macOS prompt uses the matching small GitHub Runtime file', () => {
   const prompt = buildIdentitySection({
     platform: 'macOS',
     extensionOnline: true,
@@ -45,8 +45,8 @@ test('offline macOS prompt uses the matching GitHub tag source archive', () => {
     extensionId: 'abcdefghijklmnopabcdefghijklmnop',
   });
 
-  assert.match(prompt, new RegExp(sourceUrl));
+  assert.match(prompt, new RegExp(runtimeUrl));
   assert.match(prompt, /scripts\/install\.sh --extension-id abcdefghijklmnopabcdefghijklmnop/);
   assert.match(prompt, /curl -sf/);
-  assert.doesNotMatch(prompt, /Application Support|\$HOME\/Desktop|@agentlimb\/mcp|SHA256SUMS/);
+  assert.doesNotMatch(prompt, /Application Support|\$HOME\/Desktop|@agentlimb\/mcp|archive\/refs\/tags/);
 });

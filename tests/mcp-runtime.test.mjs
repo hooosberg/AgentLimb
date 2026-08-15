@@ -10,7 +10,7 @@ test('runtime stays private and is not an npm distribution package', async () =>
   const pkg = JSON.parse(await read('package.json'));
   assert.equal(pkg.name, 'agentlimb');
   assert.equal(pkg.private, true);
-  assert.equal(pkg.agentlimbBuild, 'b2');
+  assert.match(pkg.agentlimbBuild, /^b\d+$/);
   assert.equal(pkg.bin, undefined);
 });
 

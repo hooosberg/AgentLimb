@@ -1,8 +1,8 @@
 import { APP_NAME, APP_VERSION } from '../shared/constants.js';
 
 /**
- * The onboarding prompt is intentionally independent from extension source files.
- * The browser supplies identity metadata; the official GitHub tag owns setup.
+ * The onboarding prompt is independent from extension installation paths.
+ * The browser supplies identity metadata; GitHub hosts the small companion payload.
  */
 export function buildIdentitySection(ctx = {}) {
   const name = ctx.appName || APP_NAME;
@@ -19,7 +19,8 @@ export function buildIdentitySection(ctx = {}) {
   const statusCommand = isWindows
     ? `Invoke-WebRequest "${hostUrl}/api/mvp/status" -UseBasicParsing`
     : `curl -sf ${hostUrl}/api/mvp/status`;
-  const sourceUrl = `https://github.com/hooosberg/AgentLimb/archive/refs/tags/v${version}.zip`;
+  const runtimeUrl = `https://raw.githubusercontent.com/hooosberg/AgentLimb/v${version}/runtime/agentlimb-bootstrap.zip`;
+  const checksumUrl = `${runtimeUrl}.sha256`;
 
   const lines = [
     `# ${name} v${version} - Browser Automation Runtime`,
@@ -48,13 +49,14 @@ export function buildIdentitySection(ctx = {}) {
     lines.push(
       `Verify: \`${statusCommand}\``,
       '',
-      'If the Runtime is offline, request explicit approval before setup. Download the matching AgentLimb source archive only from the official GitHub version tag, extract it to a temporary directory, then run its platform installer with the Extension ID.',
+      'If the Runtime is offline, request explicit approval before setup. Download the small matching Runtime only from the fixed official GitHub source URL, verify its SHA-256 file, extract it to a temporary directory, then run its platform installer with the Extension ID.',
       '',
-      `- Source archive: ${sourceUrl}`,
+      `- Runtime: ${runtimeUrl}`,
+      `- SHA-256: ${checksumUrl}`,
       `- Windows installer: \`scripts\\install.ps1 -ExtensionId ${extensionId || '<extension-id>'}\``,
       `- macOS installer: \`scripts/install.sh --extension-id ${extensionId || '<extension-id>'}\``,
       '',
-      'Use the known repository root after extraction. Do not scan browser profiles, desktop folders, zip files, or source directories. Do not substitute another download source or version.',
+      'Do not scan browser profiles, desktop folders, zip files, or source directories. Do not substitute another download source or version.',
       '',
       `Then re-verify: \`${statusCommand}\`.`,
     );

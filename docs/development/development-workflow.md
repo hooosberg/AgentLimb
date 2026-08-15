@@ -34,7 +34,7 @@ node scripts/build-release.mjs 0.2.1
 git diff --check
 ```
 
-The release builder creates the extension package and `SHA256SUMS.txt` under `忽略上传/dist/`. The extension remains the single user-facing artifact; after explicit approval, the onboarding prompt downloads the matching GitHub tag source archive into a temporary directory. Inspect the extension archive after packaging or installation changes. It must not contain `website/`, `忽略上传/`, local archives, terminal sessions, or development-only files.
+The release builder creates the extension package and `SHA256SUMS.txt` under `忽略上传/dist/`, plus the small source-hosted Runtime and SHA-256 file under `runtime/`. The extension remains the single user-facing artifact; after explicit approval, the onboarding prompt downloads that fixed Runtime file into a temporary directory. Inspect the extension archive and source-hosted Runtime after packaging or installation changes. Neither may contain `website/`, `忽略上传/`, local archives, terminal sessions, or development-only files.
 
 ## 4. Validate the browser and runtime boundary
 

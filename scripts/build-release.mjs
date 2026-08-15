@@ -118,7 +118,31 @@ copy(path.join(rootDir, 'scripts', 'windows'), path.join(extensionScriptsDir, 'w
 fs.rmSync(path.join(extensionDir, 'kernel', '.mvp-terminal-session.json'), { force: true });
 zip(extensionBase, extensionAsset, { contentsOnly: true });
 
+const bootstrapName = 'agentlimb-bootstrap.zip';
+const bootstrapPath = path.join(rootDir, 'runtime', bootstrapName);
+const bootstrapChecksumPath = `${bootstrapPath}.sha256`;
+const bootstrapDir = path.join(distDir, 'agentlimb-bootstrap');
+fs.mkdirSync(bootstrapDir);
+for (const name of ['bin', 'runtime', 'kernel', 'package.json']) {
+  copy(path.join(rootDir, name), path.join(bootstrapDir, name));
+}
+fs.rmSync(path.join(bootstrapDir, 'runtime', bootstrapName), { force: true });
+fs.rmSync(path.join(bootstrapDir, 'runtime', `${bootstrapName}.sha256`), { force: true });
+const bootstrapScriptsDir = path.join(bootstrapDir, 'scripts');
+fs.mkdirSync(bootstrapScriptsDir);
+for (const name of ['install.ps1', 'install.sh', 'native-host.mjs']) {
+  copy(path.join(rootDir, 'scripts', name), path.join(bootstrapScriptsDir, name));
+}
+copy(path.join(rootDir, 'scripts', 'windows'), path.join(bootstrapScriptsDir, 'windows'));
+fs.rmSync(path.join(bootstrapDir, 'kernel', '.mvp-terminal-session.json'), { force: true });
+zip('agentlimb-bootstrap', bootstrapName, { contentsOnly: true });
+fs.rmSync(bootstrapPath, { force: true });
+fs.renameSync(path.join(distDir, bootstrapName), bootstrapPath);
+const bootstrapDigest = createHash('sha256').update(fs.readFileSync(bootstrapPath)).digest('hex');
+fs.writeFileSync(bootstrapChecksumPath, `${bootstrapDigest}  ${bootstrapName}\n`);
+
 fs.rmSync(extensionDir, { recursive: true, force: true });
+fs.rmSync(bootstrapDir, { recursive: true, force: true });
 
 const checksumLines = [extensionAsset].map((name) => {
   const digest = createHash('sha256').update(fs.readFileSync(path.join(distDir, name))).digest('hex');

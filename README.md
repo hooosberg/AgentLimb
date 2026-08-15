@@ -124,9 +124,9 @@ Your Browser  (logged in, with cookies, your real sessions)
 
 1. **Install the extension in your Chromium browser**:
    - **Chrome Web Store** (recommended): [Install AgentLimb](https://chromewebstore.google.com/detail/agentlimb/hldldfepjhljhbcneojddjkkodkjglof). The same extension can be used in Edge, Brave, Vivaldi, Chromium, and other browsers that support Chrome extensions.
-   - **Manual build**: [download `agentlimb-chrome-v0.2.1-b2.zip`](https://github.com/hooosberg/AgentLimb/releases/download/v0.2.1/agentlimb-chrome-v0.2.1-b2.zip), extract it, then load the extracted folder from your browser's extensions page with Developer Mode enabled.
+   - **Manual build**: [download `agentlimb-chrome-v0.2.1-b3.zip`](https://github.com/hooosberg/AgentLimb/releases/download/v0.2.1/agentlimb-chrome-v0.2.1-b3.zip), extract it, then load the extracted folder from your browser's extensions page with Developer Mode enabled.
 2. **Copy the onboarding prompt** — Open the side panel and click "Copy Onboard Prompt". Node.js 18 or later is required for the one-time local runtime setup.
-3. **Paste it into your AI terminal** — Any agent that can run local commands follows the same Windows or macOS protocol. After your explicit approval, it downloads the matching AgentLimb version tag from GitHub, extracts it to a temporary directory, installs the local Bridge and Native Messaging host, then verifies the health check. It does not scan browser profiles, folders, or extension sources.
+3. **Paste it into your AI terminal** — Any agent that can run local commands follows the same Windows or macOS protocol. After your explicit approval, it downloads the small Runtime at a fixed path in the matching GitHub version tag, verifies its SHA-256 file, installs the local Bridge and Native Messaging host, then verifies the health check. It does not scan browser profiles, folders, or extension sources.
 4. **Use the browser** — Once the health check passes, the same prompt connects through the local Bridge and discovers tool schemas on demand.
 
    The Runtime download and installer are intentionally handled by a terminal-capable agent. A browser extension alone cannot register Native Messaging, write system configuration, or start a local service.
