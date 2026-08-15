@@ -52,17 +52,36 @@ export function buildIdentitySection(ctx = {}) {
     lines.push(
       `Verify: \`${statusCommand}\``,
       '',
-      'If the Runtime is offline, request explicit approval before setup. Download the small matching Runtime only from the fixed official GitHub source URL, verify its SHA-256 file, extract it to a temporary directory, then run its platform installer with the Extension ID.',
-      '',
-      `- Runtime: ${runtimeUrl}`,
-      `- SHA-256: ${checksumUrl}`,
-      `- Windows installer: \`scripts\\install.ps1 -ExtensionId ${extensionId || '<extension-id>'}\``,
-      `- macOS installer: \`scripts/install.sh --extension-id ${extensionId || '<extension-id>'}\``,
-      '',
-      'Do not scan browser profiles, desktop folders, zip files, or source directories. Do not substitute another download source or version.',
-      '',
-      `Then re-verify: \`${statusCommand}\`.`,
     );
+    if (isWindows) {
+      lines.push(
+        'If the Runtime is offline, request explicit approval before setup. Download the small matching Runtime only from the fixed official GitHub source URL, verify its SHA-256 file, extract it to a temporary directory, then run its platform installer with the Extension ID.',
+        '',
+        `- Runtime: ${runtimeUrl}`,
+        `- SHA-256: ${checksumUrl}`,
+        `- Windows installer: \`scripts\\install.ps1 -ExtensionId ${extensionId || '<extension-id>'}\``,
+        '',
+        'Do not scan browser profiles, desktop folders, zip files, or source directories. Do not substitute another download source or version.',
+        '',
+        `Then re-verify: \`${statusCommand}\`.`,
+      );
+    } else {
+      lines.push(
+        'If the Runtime is offline on macOS, follow the platform path in order — starting an already-installed Runtime needs no download and no approval:',
+        '',
+        '1. Start the installed Runtime service directly:',
+        '   `launchctl kickstart -k gui/$(id -u)/com.agentlimb.bridge 2>/dev/null || (cd ~/.agentlimb/runtime && nohup "$(command -v node)" kernel/bridge/mvp/run-server.js >> /tmp/agentlimb-bridge.log 2>&1 &)`',
+        '   A direct start is the normal fallback when launchd registration is unavailable (agent terminals outside the GUI session).',
+        '2. Only if `~/.agentlimb` does not exist (first run): request explicit approval, download the small matching Runtime from the fixed official GitHub source URL, verify its SHA-256 file, extract it to a temporary directory, then run the installer with the Extension ID.',
+        `- Runtime: ${runtimeUrl}`,
+        `- SHA-256: ${checksumUrl}`,
+        `- macOS installer: \`scripts/install.sh --extension-id ${extensionId || '<extension-id>'}\``,
+        '',
+        'Do not scan browser profiles, desktop folders, zip files, or source directories. Do not substitute another download source or version.',
+        '',
+        `Then re-verify: \`${statusCommand}\`.`,
+      );
+    }
   }
 
   lines.push(

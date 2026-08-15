@@ -38,7 +38,7 @@ test('online runtime without a Mission waits without creating a task', () => {
   assert.doesNotMatch(prompt, /start the Bridge|task_plan/);
 });
 
-test('offline macOS prompt uses the matching small GitHub Runtime file', () => {
+test('offline macOS prompt starts the installed Runtime before any download', () => {
   const prompt = buildIdentitySection({
     platform: 'macOS',
     extensionOnline: true,
@@ -46,8 +46,23 @@ test('offline macOS prompt uses the matching small GitHub Runtime file', () => {
     extensionId: 'abcdefghijklmnopabcdefghijklmnop',
   });
 
-  assert.match(prompt, new RegExp(runtimeUrl));
+  assert.match(prompt, /launchctl kickstart -k gui\/\$\(id -u\)\/com\.agentlimb\.bridge/);
+  assert.match(prompt, /nohup "\$\(command -v node\)" kernel\/bridge\/mvp\/run-server\.js/);
+  assert.match(prompt, /Only if `~\/\.agentlimb` does not exist \(first run\)/);
   assert.match(prompt, /scripts\/install\.sh --extension-id abcdefghijklmnopabcdefghijklmnop/);
+  assert.match(prompt, new RegExp(runtimeUrl));
   assert.match(prompt, /curl -sf/);
   assert.doesNotMatch(prompt, /Application Support|\$HOME\/Desktop|@agentlimb\/mcp|archive\/refs\/tags|raw\.githubusercontent/);
+});
+
+test('offline Windows prompt does not offer the macOS start path', () => {
+  const prompt = buildIdentitySection({
+    platform: 'Windows',
+    extensionOnline: true,
+    bridgeOnline: false,
+    extensionId: 'abcdefghijklmnopabcdefghijklmnop',
+  });
+
+  assert.doesNotMatch(prompt, /launchctl kickstart/);
+  assert.doesNotMatch(prompt, /install\.sh/);
 });

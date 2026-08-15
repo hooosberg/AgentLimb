@@ -73,7 +73,12 @@ cat > "$PLIST_PATH" <<EOF
 </dict></plist>
 EOF
 launchctl bootout "gui/$(id -u)" "$PLIST_PATH" 2>/dev/null || true
-launchctl bootstrap "gui/$(id -u)" "$PLIST_PATH"
+if ! launchctl bootstrap "gui/$(id -u)" "$PLIST_PATH" 2>/dev/null; then
+  # launchd registration fails with EIO from non-GUI contexts (agent terminals, daemons).
+  # The LaunchAgent stays on disk for the next real login; start the Bridge directly now.
+  echo "Note: launchd registration unavailable from this terminal; starting the Bridge directly for this session." >&2
+  (cd "$INSTALL_ROOT" && nohup "$NODE_BIN" "$INSTALL_ROOT/kernel/bridge/mvp/run-server.js" >> /tmp/agentlimb-bridge.log 2>> /tmp/agentlimb-bridge.error.log &)
+fi
 
 HOST_LAUNCHER="$INSTALL_ROOT/scripts/agentlimb-native-host"
 cat > "$HOST_LAUNCHER" <<EOF
