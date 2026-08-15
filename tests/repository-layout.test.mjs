@@ -40,12 +40,12 @@ test('website does not publish local muscle execution records', async () => {
   await assert.rejects(access(new URL('website/content/muscles', root)), { code: 'ENOENT' });
 });
 
-test('release builder publishes extension and GitHub-bootstrap Runtime assets', async () => {
+test('release builder publishes one extension asset and excludes terminal sessions', async () => {
   const builder = await read('scripts/build-release.mjs');
   assert.match(builder, /normalizeBuildLabel/);
   assert.match(builder, /const releaseVersion = `\$\{version\}-\$\{buildLabel\}`/);
-  assert.match(builder, /const runtimeBase = `agentlimb-runtime-v\$\{releaseVersion\}`/);
-  assert.match(builder, /const checksumLines = \[extensionAsset, runtimeAsset\]/);
+  assert.match(builder, /const checksumLines = \[extensionAsset\]/);
   assert.match(builder, /\.mvp-terminal-session\.json/);
+  assert.doesNotMatch(builder, /agentlimb-runtime-v/);
   assert.doesNotMatch(builder, /agentlimb-windows-v/);
 });

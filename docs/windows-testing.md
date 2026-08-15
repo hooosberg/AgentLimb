@@ -1,6 +1,6 @@
 # Windows 0.2.1-b2 GitHub Runtime Checklist
 
-Use a normal, non-administrator Windows account with Node.js 18 or later and Edge, Chrome, Brave, Vivaldi, Chromium, or another Chromium browser. This validates the same first-run path for Chrome Web Store and offline extension installs: the extension supplies its ID, and an approved terminal agent downloads the matching Runtime from the official GitHub Release.
+Use a normal, non-administrator Windows account with Node.js 18 or later and Edge, Chrome, Brave, Vivaldi, Chromium, or another Chromium browser. This validates the same first-run path for Chrome Web Store and offline extension installs: the extension supplies its ID, and an approved terminal agent downloads the matching AgentLimb source archive from the official GitHub version tag.
 
 ## First install through the onboarding prompt
 
@@ -8,9 +8,9 @@ Use a normal, non-administrator Windows account with Node.js 18 or later and Edg
 2. Open the AgentLimb side panel and copy the onboarding prompt into Codex, Claude Code, WorkBuddy, or another terminal-capable agent.
 3. Confirm the agent performs only the loopback health check before approval.
 4. Approve the requested local Runtime setup.
-5. Confirm the agent downloads `agentlimb-runtime-v0.2.1-b2.zip` and `SHA256SUMS.txt` only from the exact GitHub Release URL included in the prompt, verifies the checksum, extracts into a temporary directory, and runs `scripts\install.ps1 -ExtensionId <current ID>`.
+5. Confirm the agent downloads only the exact `v0.2.1` GitHub source archive URL included in the prompt, extracts it into a temporary directory, and runs `scripts\install.ps1 -ExtensionId <current ID>` from the known repository root.
 
-Expected: the agent does not scan Desktop, Downloads, browser Profiles, extension directories, source repositories, or network shares. It does not use npm or substitute another download URL.
+Expected: the agent does not scan Desktop, Downloads, browser Profiles, extension directories, source repositories, or network shares. It does not use npm, download a separate Runtime zip, or substitute another download URL.
 
 ## Runtime verification
 

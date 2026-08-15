@@ -6,9 +6,9 @@ import test from 'node:test';
 const root = new URL('../', import.meta.url);
 const read = (path) => readFile(new URL(path, root), 'utf8');
 
-test('runtime stays local to the GitHub Release archive', async () => {
+test('runtime stays private and is not an npm distribution package', async () => {
   const pkg = JSON.parse(await read('package.json'));
-  assert.equal(pkg.name, 'agentlimb-runtime');
+  assert.equal(pkg.name, 'agentlimb');
   assert.equal(pkg.private, true);
   assert.equal(pkg.agentlimbBuild, 'b2');
   assert.equal(pkg.bin, undefined);

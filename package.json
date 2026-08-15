@@ -1,5 +1,5 @@
 {
-  "name": "agentlimb-runtime",
+  "name": "agentlimb",
   "version": "0.2.1",
   "agentlimbBuild": "b2",
   "private": true,

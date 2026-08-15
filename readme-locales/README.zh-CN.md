@@ -115,7 +115,7 @@ AgentLimb 扩展  (Chrome MV3 · 侧边栏 UI · 任务/肌肉/日志三 Tab)
 
 1. **在你的 Chromium 浏览器中安装扩展**：推荐从 [Chrome 应用商店安装](https://chromewebstore.google.com/detail/agentlimb/hldldfepjhljhbcneojddjkkodkjglof)。同一个扩展也可用于 Edge、Brave、Vivaldi、Chromium 及其他支持 Chrome 扩展的浏览器；也可以[下载 `agentlimb-chrome-v0.2.1-b2.zip`](https://github.com/hooosberg/AgentLimb/releases/download/v0.2.1/agentlimb-chrome-v0.2.1-b2.zip)，解压后在浏览器的扩展管理页开启开发者模式并加载。
 2. **复制接入提示词** — 打开侧边栏，点击“复制接入提示词”。一次性配置本地运行时需要 Node.js 18 或更高版本。
-3. **粘贴给你的 AI 终端** — 任何能执行本机终端命令的 agent 都遵循同一套 Windows 或 macOS 协议：先征得你的明确安装授权，再从官方 GitHub Release 下载与扩展版本匹配的 Runtime，校验 SHA-256，完成 Bridge 与 Native Messaging 配置并验证健康检查。它不会扫描浏览器 Profile、目录或扩展源码。
+3. **粘贴给你的 AI 终端** — 任何能执行本机终端命令的 agent 都遵循同一套 Windows 或 macOS 协议：先征得你的明确安装授权，再从 GitHub 下载与扩展版本匹配的 AgentLimb tag 源码归档，在临时目录解压后完成 Bridge 与 Native Messaging 配置并验证健康检查。它不会扫描浏览器 Profile、目录或扩展源码。
 4. **开始使用浏览器** — 健康检查通过后，同一段提示词会通过本地 Bridge 连接，并按需获取工具 Schema。
 
    Runtime 的下载和安装特意交由有终端能力的 agent 完成。浏览器扩展自身不能注册 Native Messaging、修改系统配置或启动本地服务。

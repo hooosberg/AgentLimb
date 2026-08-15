@@ -1,13 +1,12 @@
-import { APP_BUILD, APP_NAME, APP_VERSION } from '../shared/constants.js';
+import { APP_NAME, APP_VERSION } from '../shared/constants.js';
 
 /**
  * The onboarding prompt is intentionally independent from extension source files.
- * The browser supplies identity metadata; the official Runtime release owns setup.
+ * The browser supplies identity metadata; the official GitHub tag owns setup.
  */
 export function buildIdentitySection(ctx = {}) {
   const name = ctx.appName || APP_NAME;
   const version = ctx.appVersion || APP_VERSION;
-  const build = ctx.appBuild || APP_BUILD;
   const hostUrl = ctx.hostBaseUrl || 'http://127.0.0.1:7791';
   const clientCmd = ctx.clientCommand || 'agentlimb';
   const platform = ctx.platform || '';
@@ -20,10 +19,7 @@ export function buildIdentitySection(ctx = {}) {
   const statusCommand = isWindows
     ? `Invoke-WebRequest "${hostUrl}/api/mvp/status" -UseBasicParsing`
     : `curl -sf ${hostUrl}/api/mvp/status`;
-  const runtimeAsset = `agentlimb-runtime-v${version}-${build}.zip`;
-  const releaseBase = `https://github.com/hooosberg/AgentLimb/releases/download/v${version}`;
-  const runtimeUrl = `${releaseBase}/${runtimeAsset}`;
-  const checksumUrl = `${releaseBase}/SHA256SUMS.txt`;
+  const sourceUrl = `https://github.com/hooosberg/AgentLimb/archive/refs/tags/v${version}.zip`;
 
   const lines = [
     `# ${name} v${version} - Browser Automation Runtime`,
@@ -52,14 +48,13 @@ export function buildIdentitySection(ctx = {}) {
     lines.push(
       `Verify: \`${statusCommand}\``,
       '',
-      'If the Runtime is offline, request explicit approval before setup. Download the matching Runtime only from the official GitHub Release, verify its SHA-256 entry in SHA256SUMS.txt, extract it to a temporary directory, then run its platform installer with the Extension ID.',
+      'If the Runtime is offline, request explicit approval before setup. Download the matching AgentLimb source archive only from the official GitHub version tag, extract it to a temporary directory, then run its platform installer with the Extension ID.',
       '',
-      `- Runtime: ${runtimeUrl}`,
-      `- Checksums: ${checksumUrl}`,
+      `- Source archive: ${sourceUrl}`,
       `- Windows installer: \`scripts\\install.ps1 -ExtensionId ${extensionId || '<extension-id>'}\``,
       `- macOS installer: \`scripts/install.sh --extension-id ${extensionId || '<extension-id>'}\``,
       '',
-      'Do not scan browser profiles, desktop folders, zip files, or source directories. Do not substitute another download source or a different Runtime version.',
+      'Use the known repository root after extraction. Do not scan browser profiles, desktop folders, zip files, or source directories. Do not substitute another download source or version.',
       '',
       `Then re-verify: \`${statusCommand}\`.`,
     );

@@ -118,26 +118,9 @@ copy(path.join(rootDir, 'scripts', 'windows'), path.join(extensionScriptsDir, 'w
 fs.rmSync(path.join(extensionDir, 'kernel', '.mvp-terminal-session.json'), { force: true });
 zip(extensionBase, extensionAsset, { contentsOnly: true });
 
-const runtimeBase = `agentlimb-runtime-v${releaseVersion}`;
-const runtimeAsset = `${runtimeBase}.zip`;
-const runtimeDir = path.join(distDir, runtimeBase);
-fs.mkdirSync(runtimeDir);
-for (const name of ['bin', 'runtime', 'kernel', 'package.json']) {
-  copy(path.join(rootDir, name), path.join(runtimeDir, name));
-}
-const runtimeScriptsDir = path.join(runtimeDir, 'scripts');
-fs.mkdirSync(runtimeScriptsDir);
-for (const name of ['install.ps1', 'install.sh', 'native-host.mjs']) {
-  copy(path.join(rootDir, 'scripts', name), path.join(runtimeScriptsDir, name));
-}
-copy(path.join(rootDir, 'scripts', 'windows'), path.join(runtimeScriptsDir, 'windows'));
-fs.rmSync(path.join(runtimeDir, 'kernel', '.mvp-terminal-session.json'), { force: true });
-zip(runtimeBase, runtimeAsset, { contentsOnly: true });
-
 fs.rmSync(extensionDir, { recursive: true, force: true });
-fs.rmSync(runtimeDir, { recursive: true, force: true });
 
-const checksumLines = [extensionAsset, runtimeAsset].map((name) => {
+const checksumLines = [extensionAsset].map((name) => {
   const digest = createHash('sha256').update(fs.readFileSync(path.join(distDir, name))).digest('hex');
   return `${digest}  ${name}`;
 });
@@ -145,5 +128,4 @@ fs.writeFileSync(path.join(distDir, 'SHA256SUMS.txt'), `${checksumLines.join('\n
 
 console.log(`[release] AgentLimb v${releaseVersion}`);
 console.log(`[release] ${path.relative(rootDir, path.join(distDir, extensionAsset))}`);
-console.log(`[release] ${path.relative(rootDir, path.join(distDir, runtimeAsset))}`);
 console.log('[release] 忽略上传/dist/SHA256SUMS.txt');
