@@ -1197,3 +1197,65 @@ a:hover { color: var(--accent2); }
   .arch-node { min-width: auto; flex-direction: column; gap: 4px; }
   .store-preview > div { grid-template-columns: 1fr !important; }
 }
+
+/* ===== Chinese AI Terminals section ===== */
+.cn-agents-section {
+  padding: 64px 24px 72px;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+}
+.cn-agents-head { max-width: var(--max-w); margin: 0 auto 36px; text-align: center; }
+.cn-agents-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 14px; margin-bottom: 18px;
+  font-size: 13px; font-weight: 600;
+  color: var(--accent2);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  border-radius: 999px;
+}
+.cn-agents-head h2 {
+  font-size: clamp(24px, 4vw, 38px);
+  letter-spacing: -0.02em;
+  margin: 0 0 14px;
+  color: var(--text);
+}
+.cn-agents-desc { font-size: 16px; color: var(--muted); max-width: 640px; margin: 0 auto; line-height: 1.6; }
+.cn-agents-grid {
+  max-width: var(--max-w); margin: 0 auto;
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px;
+}
+.cn-agent-card {
+  position: relative;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px 16px 22px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.cn-agent-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+}
+.cn-agent-rank {
+  position: absolute; top: 12px; left: 12px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+  color: var(--muted);
+}
+.cn-agent-card img { width: 56px; height: 56px; margin-bottom: 12px; border-radius: 12px; }
+.cn-agent-name { font-size: 15px; font-weight: 650; color: var(--text); margin-bottom: 4px; }
+.cn-agent-vendor { font-size: 12px; font-weight: 600; color: var(--accent2); margin-bottom: 10px; }
+.cn-agent-card p { font-size: 13px; color: var(--muted); line-height: 1.55; margin: 0; }
+.cn-agents-foot {
+  max-width: var(--max-w); margin: 28px auto 0; text-align: center;
+  font-size: 13px; color: var(--muted); line-height: 1.7;
+}
+@media (max-width: 960px) { .cn-agents-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 768px) {
+  .cn-agents-section { padding: 56px 20px 60px; }
+  .cn-agents-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) { .cn-agents-grid { grid-template-columns: 1fr; } }
