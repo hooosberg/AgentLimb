@@ -16,7 +16,12 @@ Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction Silent
 
 foreach ($registryKey in @(
   'HKCU:\Software\Google\Chrome\NativeMessagingHosts\com.agentlimb.bridge',
-  'HKCU:\Software\Microsoft\Edge\NativeMessagingHosts\com.agentlimb.bridge'
+  'HKCU:\Software\Microsoft\Edge\NativeMessagingHosts\com.agentlimb.bridge',
+  'HKCU:\Software\BraveSoftware\Brave-Browser\NativeMessagingHosts\com.agentlimb.bridge',
+  'HKCU:\Software\Chromium\NativeMessagingHosts\com.agentlimb.bridge',
+  'HKCU:\Software\Vivaldi\NativeMessagingHosts\com.agentlimb.bridge',
+  'HKCU:\Software\Opera Software\NativeMessagingHosts\com.agentlimb.bridge',
+  'HKCU:\Software\Yandex\YandexBrowser\NativeMessagingHosts\com.agentlimb.bridge'
 )) {
   Remove-Item -LiteralPath $registryKey -Recurse -Force -ErrorAction SilentlyContinue
 }

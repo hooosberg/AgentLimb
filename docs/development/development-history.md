@@ -28,7 +28,7 @@ The project later made Chrome-profile participation, targeting, suspension, and 
 
 ## 7. Preparing a reproducible public release
 
-The public repository was consolidated around the complete extension, Bridge, CLI, scripts, tests, and documentation. The release path builds one Chrome package with checksums; the first-connection prompt bootstraps the platform runtime from a fixed public source tag after explicit approval. CI covers PowerShell parsing and the Native Messaging executable source. Private worktrees, generated artifacts, operating records, and credentials remain under an ignored local archive.
+The public repository was consolidated around the complete extension, Bridge, CLI, scripts, tests, and documentation. The release path builds a user-facing extension archive plus a matching machine-consumed Runtime archive with checksums; after explicit approval, the first-connection prompt downloads and verifies that Runtime from the official GitHub Release without scanning local folders or browser profiles. CI covers PowerShell parsing and the Native Messaging executable source. Private worktrees, generated artifacts, operating records, and credentials remain under an ignored local archive.
 
 ## What this history is for
 

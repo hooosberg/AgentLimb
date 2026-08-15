@@ -122,23 +122,14 @@ Your Browser  (logged in, with cookies, your real sessions)
 
 ## Quick Start
 
-1. **Install the extension**:
-   - **Chrome Web Store** (recommended): [Install AgentLimb](https://chromewebstore.google.com/detail/agentlimb/hldldfepjhljhbcneojddjkkodkjglof)
-   - **Manual build**: [download `agentlimb-chrome-v0.2.1.zip`](https://github.com/hooosberg/AgentLimb/releases/download/v0.2.1/agentlimb-chrome-v0.2.1.zip), extract it, then load the extracted folder from `chrome://extensions` with Developer Mode enabled.
+1. **Install the extension in your Chromium browser**:
+   - **Chrome Web Store** (recommended): [Install AgentLimb](https://chromewebstore.google.com/detail/agentlimb/hldldfepjhljhbcneojddjkkodkjglof). The same extension can be used in Edge, Brave, Vivaldi, Chromium, and other browsers that support Chrome extensions.
+   - **Manual build**: [download `agentlimb-chrome-v0.2.1-b2.zip`](https://github.com/hooosberg/AgentLimb/releases/download/v0.2.1/agentlimb-chrome-v0.2.1-b2.zip), extract it, then load the extracted folder from your browser's extensions page with Developer Mode enabled.
 2. **Copy the onboarding prompt** — Open the side panel and click "Copy Onboard Prompt". Node.js 18 or later is required for the one-time local runtime setup.
-3. **Paste it into your AI terminal** — Any agent that can run local terminal commands can follow the platform-specific bootstrap protocol. It asks for approval, uses the current extracted package when available, or downloads the fixed public source tag, then validates the Bridge and Native Messaging setup.
+3. **Paste it into your AI terminal** — Any agent that can run local commands follows the same Windows or macOS protocol. After your explicit approval, it downloads the Runtime matching this extension version from the official GitHub Release, verifies its SHA-256 checksum, installs the local Bridge and Native Messaging host, then verifies the health check. It does not scan browser profiles, folders, or extension sources.
 4. **Use the browser** — Once the health check passes, the same prompt connects through the local Bridge and discovers tool schemas on demand.
 
-   If your AI cannot execute terminal commands, run the installer from an extracted extension package instead:
-
-   ```powershell
-   Set-ExecutionPolicy -Scope Process Bypass
-   .\scripts\install.ps1 -ChromeExtensionId <id-from-chrome://extensions>
-   ```
-
-   ```bash
-   chmod +x scripts/install.sh && ./scripts/install.sh --extension-id <id-from-chrome://extensions>
-   ```
+   The Runtime download and installer are intentionally handled by a terminal-capable agent. A browser extension alone cannot register Native Messaging, write system configuration, or start a local service.
 
 ## Toolset — 16 Tools
 

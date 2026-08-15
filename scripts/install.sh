@@ -5,9 +5,22 @@ EXTENSION_ID="hldldfepjhljhbcneojddjkkodkjglof"
 if [[ "${1:-}" == "--extension-id" && -n "${2:-}" ]]; then
   EXTENSION_ID="$2"
 fi
+if [[ ! "$EXTENSION_ID" =~ ^[a-p]{32}$ ]]; then
+  echo "Extension ID must be the 32-character ID shown on your Chromium browser extensions page." >&2
+  exit 1
+fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SOURCE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+SOURCE_PACKAGE="$SOURCE_ROOT/package.json"
+if [[ ! -f "$SOURCE_ROOT/kernel/bridge/mvp/run-server.js" || ! -f "$SOURCE_ROOT/bin/agentlimb.mjs" || ! -f "$SOURCE_ROOT/runtime/mcp-server.mjs" || ! -f "$SOURCE_PACKAGE" ]]; then
+  echo "The AgentLimb Runtime archive is incomplete; download the matching asset from the official GitHub Release." >&2
+  exit 1
+fi
+SOURCE_VERSION="$(node -e 'const fs=require("fs"); const pkg=JSON.parse(fs.readFileSync(process.argv[1])); if (!/^\d+\.\d+\.\d+$/.test(pkg.version)) process.exit(1); process.stdout.write(pkg.version)' "$SOURCE_PACKAGE")" || {
+  echo "The AgentLimb Runtime package metadata is invalid; installation was not started." >&2
+  exit 1
+}
 INSTALL_ROOT="$HOME/.agentlimb/runtime"
 BIN_DIR="$HOME/.agentlimb/bin"
 NODE_BIN="$(command -v node || true)"
@@ -27,15 +40,18 @@ if [[ "$(uname -s)" != "Darwin" ]]; then
 fi
 
 mkdir -p "$INSTALL_ROOT" "$BIN_DIR"
-rm -rf "$INSTALL_ROOT/kernel"
+rm -rf "$INSTALL_ROOT/kernel" "$INSTALL_ROOT/bin" "$INSTALL_ROOT/runtime"
 cp -R "$SOURCE_ROOT/kernel" "$INSTALL_ROOT/kernel"
-cp "$SOURCE_ROOT/package.json" "$INSTALL_ROOT/package.json"
+cp -R "$SOURCE_ROOT/bin" "$INSTALL_ROOT/bin"
+cp -R "$SOURCE_ROOT/runtime" "$INSTALL_ROOT/runtime"
+rm -f "$INSTALL_ROOT/kernel/.mvp-terminal-session.json"
+cp "$SOURCE_PACKAGE" "$INSTALL_ROOT/package.json"
 mkdir -p "$INSTALL_ROOT/scripts"
 cp "$SOURCE_ROOT/scripts/native-host.mjs" "$INSTALL_ROOT/scripts/native-host.mjs"
 
 cat > "$BIN_DIR/agentlimb" <<EOF
 #!/usr/bin/env bash
-exec "$NODE_BIN" "$INSTALL_ROOT/kernel/bridge/mvp/terminal-client.mjs" "\$@"
+exec "$NODE_BIN" "$INSTALL_ROOT/bin/agentlimb.mjs" "\$@"
 EOF
 chmod +x "$BIN_DIR/agentlimb"
 
@@ -59,15 +75,31 @@ EOF
 launchctl bootout "gui/$(id -u)" "$PLIST_PATH" 2>/dev/null || true
 launchctl bootstrap "gui/$(id -u)" "$PLIST_PATH"
 
-HOST_DIR="$HOME/Library/Application Support/Google/Chrome/NativeMessagingHosts"
 HOST_LAUNCHER="$INSTALL_ROOT/scripts/agentlimb-native-host"
-mkdir -p "$HOST_DIR"
 cat > "$HOST_LAUNCHER" <<EOF
 #!/usr/bin/env bash
 exec "$NODE_BIN" "$INSTALL_ROOT/scripts/native-host.mjs" "$INSTALL_ROOT"
 EOF
 chmod +x "$HOST_LAUNCHER"
-cat > "$HOST_DIR/com.agentlimb.bridge.json" <<EOF
+
+# Chromium browsers keep Native Messaging manifests in vendor-specific locations.
+# Writing the same host manifest to each supported location keeps onboarding browser-agnostic.
+HOST_DIRS=(
+  "$HOME/Library/Application Support/Google/Chrome/NativeMessagingHosts"
+  "$HOME/Library/Application Support/Google/Chrome Beta/NativeMessagingHosts"
+  "$HOME/Library/Application Support/Google/Chrome Canary/NativeMessagingHosts"
+  "$HOME/Library/Application Support/Microsoft Edge/NativeMessagingHosts"
+  "$HOME/Library/Application Support/Microsoft Edge Beta/NativeMessagingHosts"
+  "$HOME/Library/Application Support/Microsoft Edge Canary/NativeMessagingHosts"
+  "$HOME/Library/Application Support/BraveSoftware/Brave-Browser/NativeMessagingHosts"
+  "$HOME/Library/Application Support/Chromium/NativeMessagingHosts"
+  "$HOME/Library/Application Support/Vivaldi/NativeMessagingHosts"
+  "$HOME/Library/Application Support/Arc/NativeMessagingHosts"
+  "$HOME/Library/Application Support/com.operasoftware.Opera/NativeMessagingHosts"
+)
+for host_dir in "${HOST_DIRS[@]}"; do
+  mkdir -p "$host_dir"
+  cat > "$host_dir/com.agentlimb.bridge.json" <<EOF
 {
   "name": "com.agentlimb.bridge",
   "description": "AgentLimb Bridge runtime locator",
@@ -76,6 +108,7 @@ cat > "$HOST_DIR/com.agentlimb.bridge.json" <<EOF
   "allowed_origins": ["chrome-extension://$EXTENSION_ID/"]
 }
 EOF
+done
 
 for _ in {1..10}; do
   if curl -sf http://127.0.0.1:7791/api/mvp/status >/dev/null; then

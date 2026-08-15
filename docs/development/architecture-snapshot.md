@@ -60,7 +60,7 @@ A completed HTTP request is not evidence that a user task succeeded. The protoco
 
 ### Local runtime rather than a remote service
 
-The extension uses the user's existing Chrome profile and local login state. The Bridge binds to loopback and is installed as a local runtime on supported platforms. Release artifacts package this runtime separately from the Chrome extension.
+The extension uses the user's existing Chromium profile and local login state. The Bridge binds to loopback and is installed as a local runtime on supported platforms. The extension supplies the current ID and version; after explicit approval, onboarding downloads the matching Runtime from the official GitHub Release, verifies its checksum, and installs it without scanning local folders or browser profiles.
 
 ### Public source and private artifacts stay separate
 

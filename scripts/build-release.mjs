@@ -34,6 +34,14 @@ function normalizeVersion(value) {
   return version;
 }
 
+function normalizeBuildLabel(value) {
+  const build = String(value || '').trim().toLowerCase();
+  if (!/^b\d+$/.test(build)) {
+    fail(`Invalid build label "${value}". Expected b<number>, such as b1.`);
+  }
+  return build;
+}
+
 function replaceOrFail(file, pattern, replacement) {
   const input = fs.readFileSync(file, 'utf8');
   if (!pattern.test(input)) fail(`Expected version marker was not found in ${path.relative(rootDir, file)}.`);
@@ -70,15 +78,19 @@ function zip(directoryName, outputName, { contentsOnly = false } = {}) {
 
 const currentPackage = readJson(packagePath);
 const version = normalizeVersion(process.argv[2] || currentPackage.version);
-const extensionBase = `agentlimb-chrome-v${version}`;
+const buildLabel = normalizeBuildLabel(process.argv[3] || currentPackage.agentlimbBuild);
+const releaseVersion = `${version}-${buildLabel}`;
+const extensionBase = `agentlimb-chrome-v${releaseVersion}`;
 const extensionAsset = `${extensionBase}.zip`;
 
 currentPackage.version = version;
+currentPackage.agentlimbBuild = buildLabel;
 writeJson(packagePath, currentPackage);
 const manifest = readJson(manifestPath);
 manifest.version = version;
 writeJson(manifestPath, manifest);
 replaceOrFail(constantsPath, /export const APP_VERSION = '[^']+';/, `export const APP_VERSION = '${version}';`);
+replaceOrFail(constantsPath, /export const APP_BUILD = '[^']+';/, `export const APP_BUILD = '${buildLabel}';`);
 
 for (const file of [
   path.join(rootDir, 'README.md'),
@@ -86,7 +98,7 @@ for (const file of [
   path.join(websiteDir, 'index.html'),
 ]) {
   replaceIfPresent(file, /releases\/download\/v\d+\.\d+\.\d+\//g, `releases/download/v${version}/`);
-  replaceIfPresent(file, /agentlimb-chrome-v\d+\.\d+\.\d+\.zip/g, extensionAsset);
+  replaceIfPresent(file, /agentlimb-chrome-v\d+\.\d+\.\d+(?:-b\d+)?\.zip/g, extensionAsset);
 }
 
 fs.rmSync(distDir, { recursive: true, force: true });
@@ -103,16 +115,35 @@ for (const name of ['install.ps1', 'install.sh', 'native-host.mjs']) {
   copy(path.join(rootDir, 'scripts', name), path.join(extensionScriptsDir, name));
 }
 copy(path.join(rootDir, 'scripts', 'windows'), path.join(extensionScriptsDir, 'windows'));
+fs.rmSync(path.join(extensionDir, 'kernel', '.mvp-terminal-session.json'), { force: true });
 zip(extensionBase, extensionAsset, { contentsOnly: true });
 
-fs.rmSync(extensionDir, { recursive: true, force: true });
+const runtimeBase = `agentlimb-runtime-v${releaseVersion}`;
+const runtimeAsset = `${runtimeBase}.zip`;
+const runtimeDir = path.join(distDir, runtimeBase);
+fs.mkdirSync(runtimeDir);
+for (const name of ['bin', 'runtime', 'kernel', 'package.json']) {
+  copy(path.join(rootDir, name), path.join(runtimeDir, name));
+}
+const runtimeScriptsDir = path.join(runtimeDir, 'scripts');
+fs.mkdirSync(runtimeScriptsDir);
+for (const name of ['install.ps1', 'install.sh', 'native-host.mjs']) {
+  copy(path.join(rootDir, 'scripts', name), path.join(runtimeScriptsDir, name));
+}
+copy(path.join(rootDir, 'scripts', 'windows'), path.join(runtimeScriptsDir, 'windows'));
+fs.rmSync(path.join(runtimeDir, 'kernel', '.mvp-terminal-session.json'), { force: true });
+zip(runtimeBase, runtimeAsset, { contentsOnly: true });
 
-const checksumLines = [extensionAsset].map((name) => {
+fs.rmSync(extensionDir, { recursive: true, force: true });
+fs.rmSync(runtimeDir, { recursive: true, force: true });
+
+const checksumLines = [extensionAsset, runtimeAsset].map((name) => {
   const digest = createHash('sha256').update(fs.readFileSync(path.join(distDir, name))).digest('hex');
   return `${digest}  ${name}`;
 });
 fs.writeFileSync(path.join(distDir, 'SHA256SUMS.txt'), `${checksumLines.join('\n')}\n`);
 
-console.log(`[release] AgentLimb v${version}`);
+console.log(`[release] AgentLimb v${releaseVersion}`);
 console.log(`[release] ${path.relative(rootDir, path.join(distDir, extensionAsset))}`);
+console.log(`[release] ${path.relative(rootDir, path.join(distDir, runtimeAsset))}`);
 console.log('[release] 忽略上传/dist/SHA256SUMS.txt');

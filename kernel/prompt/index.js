@@ -43,7 +43,8 @@ import { buildMinimalPrompt } from './minimal.js';
  * @param {string}  [ctx.platformArch]    — CPU architecture (e.g. "arm64", "x86-64")
  * @param {string}  [ctx.platformVersion] — OS version string (e.g. "14.5")
  * @param {string}  [ctx.languages]       — Browser language preferences (e.g. "zh-CN / en-US")
- * @param {string}  [ctx.extensionId]     — Chrome extension ID
+ * @param {string}  [ctx.extensionId]     — Chromium extension ID
+ * @param {string}  [ctx.browserName]     — Browser brand detected at copy-time
  * @param {number}  [ctx.muscleCount]     — Number of learned site profiles
  * @param {'full'|'minimal'} [ctx.mode]   — Prompt verbosity. 'minimal' ~45 lines (Bridge online); 'full' complete (default)
  * @returns {string} Complete markdown prompt
@@ -85,6 +86,10 @@ function buildCallToAction(ctx) {
   const cmd = ctx.clientCommand || 'terminal-client';
   const bridgeOnline    = Boolean(ctx.bridgeOnline);
   const extensionOnline = Boolean(ctx.extensionOnline);
+
+  if (!ctx.mission) {
+    return `---\n**Startup-only instruction**: execute Step 0's local status check now. This is permitted without a Mission and must not use browser tools or create a task. If the Bridge is offline, request explicit approval for the local installer; if it is online, report readiness and wait. Do not run \`${cmd} start\` until the user supplies a Mission.`;
+  }
 
   if (bridgeOnline && extensionOnline) {
     return `---\n**Start now**: the Bridge and extension are both ready — run \`${cmd} start\` directly, then operate the browser according to the mission. No user confirmation needed, just execute.`;

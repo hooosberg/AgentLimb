@@ -321,16 +321,9 @@ function saveProjectPath(path) {
 }
 
 function getClientCommand() {
-  if (projectPath) {
-    return `node "${projectPath}/kernel/bridge/mvp/terminal-client.mjs"`;
-  }
-  if (/win/i.test(navigator.userAgentData?.platform || navigator.platform || '')) {
-    // Windows setup puts the CLI here. Use an absolute path so the terminal that
-    // ran the installer does not need to be restarted before it can use the CLI.
-    return '& "$env:LOCALAPPDATA\\AgentLimb\\bin\\agentlimb.cmd"';
-  }
-  // Fallback: companion installed by install.sh (production / store install)
-  return `~/.agentlimb/bin/agentlimb`;
+  // The Runtime owns its installation path on every platform. Prompts only expose
+  // the stable MCP command and never depend on an extension source directory.
+  return 'agentlimb';
 }
 
 async function collectEnvironmentMetadata() {
@@ -345,8 +338,17 @@ async function collectEnvironmentMetadata() {
     }
   } catch (_) {}
 
-  // Extension ID (sync)
+  // Extension ID and browser brand are injected into the bootstrap discovery
+  // commands so they can target this exact local package instead of guessing.
   try { meta.extensionId = chrome.runtime.id; } catch (_) {}
+  try {
+    const brands = navigator.userAgentData?.brands || [];
+    const knownBrand = brands.find(({ brand }) => !/Not.A.Brand|Chromium/i.test(brand))
+      || brands.find(({ brand }) => /Chromium/i.test(brand));
+    meta.browserName = knownBrand?.brand || extractBrowserName(navigator.userAgent || '');
+  } catch (_) {
+    meta.browserName = extractBrowserName(navigator.userAgent || '');
+  }
 
   // Platform OS + arch — Chrome API is most authoritative
   try {
@@ -387,6 +389,16 @@ async function collectEnvironmentMetadata() {
   }
 
   return meta;
+}
+
+function extractBrowserName(userAgent) {
+  if (/Edg\//.test(userAgent)) return 'Microsoft Edge';
+  if (/OPR\//.test(userAgent)) return 'Opera';
+  if (/Vivaldi\//.test(userAgent)) return 'Vivaldi';
+  if (/Brave/i.test(userAgent)) return 'Brave';
+  if (/Chrome\//.test(userAgent)) return 'Google Chrome';
+  if (/Chromium\//.test(userAgent)) return 'Chromium';
+  return 'Chromium browser';
 }
 
 async function getPrompt() {

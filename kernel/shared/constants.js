@@ -1,6 +1,7 @@
 export const APP_ID = 'agentlimb.chrome_claudecode';
 export const APP_NAME = 'AgentLimb Chrome ClaudeCode';
 export const APP_VERSION = '0.2.1';
+export const APP_BUILD = 'b2';
 
 export const MESSAGE_TYPES = {
   // SW ← extension pages

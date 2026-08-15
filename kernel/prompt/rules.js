@@ -77,8 +77,10 @@ export function buildRulesSection() {
     '### Bootstrap discipline — no task without a mission',
     '',
     '22. **Bootstrap boundary** — when the prompt has no `## Mission` section:',
-    '    - Do **not** call `task_plan`, `task_complete`, or `task_fail`. Those tools are for real user work only.',
-    '    - Do **not** navigate, snapshot, or probe "to confirm the setup works". The sidepanel already shows "Connected — ready for mission"; a fake task renders a red Failed card the user did not ask for.',
+    '    - Step 0 is an explicit exception: run only its local Bridge status command (`GET /api/mvp/status`). This is required to determine whether runtime installation approval is needed. It does not create a browser task or sidepanel card.',
+    '    - If the status check is offline, ask the user for explicit approval before the installer makes any system change. After approval, run the local installer and repeat only the status check.',
+    '    - If the status check is online, report that AgentLimb is ready and wait for a mission. Do **not** run `terminal-client start` because it claims or creates a terminal task.',
+    '    - Do **not** call `task_plan`, `task_complete`, or `task_fail`; do not navigate, snapshot, or call any browser tool. Those operations are for a real mission only.',
     '    - No inactivity timeout risk: the timeout rule (Rule 10) only fires after a `task_plan` is issued.',
   ].join('\n');
 }

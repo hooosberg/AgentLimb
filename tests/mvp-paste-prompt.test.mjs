@@ -87,4 +87,22 @@ test('buildPrompt omits mission and changes when not provided', () => {
   // Bootstrap discipline rules that refer to it by name) is allowed.
   assert.doesNotMatch(prompt, /^## Mission$/m);
   assert.doesNotMatch(prompt, /Changes in this round/);
+  assert.match(prompt, /Startup-only instruction/);
+  assert.match(prompt, /execute Step 0's local status check now/);
+  assert.match(prompt, /Do not run `client start` until the user supplies a Mission/);
+  assert.match(prompt, /Step 0 is an explicit exception/);
+  assert.match(prompt, /do not navigate, snapshot, or call any browser tool/);
+});
+
+test('buildPrompt directs a real mission to start only after Step 0', () => {
+  const prompt = buildPrompt({
+    hostBaseUrl: 'http://127.0.0.1:7791',
+    clientCommand: 'client',
+    extensionOnline: true,
+    bridgeOnline: false,
+    mission: 'Open the example page and read its title.',
+  });
+
+  assert.match(prompt, /\*\*Start now\*\*: follow Step 0/);
+  assert.doesNotMatch(prompt, /Startup-only instruction/);
 });

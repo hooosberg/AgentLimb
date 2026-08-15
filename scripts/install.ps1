@@ -1,9 +1,10 @@
 [CmdletBinding()]
 param(
   [string]$InstallRoot = (Join-Path $env:LOCALAPPDATA 'AgentLimb'),
-  [string]$ChromeExtensionId = 'hldldfepjhljhbcneojddjkkodkjglof'
+  [Alias('ChromeExtensionId')]
+  [string]$ExtensionId = 'hldldfepjhljhbcneojddjkkodkjglof'
 )
 
 $installer = Join-Path $PSScriptRoot 'windows\install.ps1'
-& $installer -InstallRoot $InstallRoot -ChromeExtensionId $ChromeExtensionId
+& $installer -InstallRoot $InstallRoot -ExtensionId $ExtensionId
 exit $LASTEXITCODE

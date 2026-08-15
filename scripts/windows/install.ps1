@@ -1,7 +1,8 @@
 [CmdletBinding()]
 param(
   [string]$InstallRoot = (Join-Path $env:LOCALAPPDATA 'AgentLimb'),
-  [string]$ChromeExtensionId = 'hldldfepjhljhbcneojddjkkodkjglof'
+  [Alias('ChromeExtensionId')]
+  [string]$ExtensionId = 'hldldfepjhljhbcneojddjkkodkjglof'
 )
 
 Set-StrictMode -Version Latest
@@ -35,16 +36,24 @@ function Write-Utf8NoBom([string]$Path, [string]$Content) {
   [System.IO.File]::WriteAllText($Path, $Content, $encoding)
 }
 
-if ($ChromeExtensionId -notmatch '^[a-p]{32}$') {
-  throw 'ChromeExtensionId must be the 32-character extension ID shown on chrome://extensions.'
+if ($ExtensionId -notmatch '^[a-p]{32}$') {
+  throw 'ExtensionId must be the 32-character ID shown on your Chromium browser extensions page.'
 }
 
 $nodePath = Get-NodeCommand
 $sourceRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 $sourceKernel = Join-Path $sourceRoot 'kernel'
+$sourceBin = Join-Path $sourceRoot 'bin'
+$sourceRuntime = Join-Path $sourceRoot 'runtime'
 $sourcePackage = Join-Path $sourceRoot 'package.json'
-if (-not (Test-Path (Join-Path $sourceKernel 'bridge\mvp\run-server.js')) -or -not (Test-Path $sourcePackage)) {
-  throw 'Run this installer from the extracted AgentLimb Windows package or the AgentLimb source repository.'
+if (-not (Test-Path (Join-Path $sourceKernel 'bridge\mvp\run-server.js')) -or -not (Test-Path (Join-Path $sourceBin 'agentlimb.mjs')) -or -not (Test-Path (Join-Path $sourceRuntime 'mcp-server.mjs')) -or -not (Test-Path $sourcePackage)) {
+  throw 'The AgentLimb Runtime archive is incomplete; download the matching asset from the official GitHub Release.'
+}
+try {
+  $sourceVersion = (Get-Content $sourcePackage -Raw | ConvertFrom-Json).version
+  if ($sourceVersion -notmatch '^\d+\.\d+\.\d+$') { throw 'invalid version' }
+} catch {
+  throw 'The AgentLimb Runtime package metadata is invalid; installation was not started.'
 }
 
 $taskName = 'AgentLimb Bridge'
@@ -67,10 +76,17 @@ if (Test-BridgeHealth) {
 
 New-Item -ItemType Directory -Force -Path $InstallRoot | Out-Null
 $installedKernel = Join-Path $InstallRoot 'kernel'
-if (Test-Path -LiteralPath $installedKernel) {
-  Remove-Item -LiteralPath $installedKernel -Recurse -Force
+$installedBin = Join-Path $InstallRoot 'bin'
+$installedRuntime = Join-Path $InstallRoot 'runtime'
+foreach ($path in @($installedKernel, $installedBin, $installedRuntime)) {
+  if (Test-Path -LiteralPath $path) {
+    Remove-Item -LiteralPath $path -Recurse -Force
+  }
 }
 Copy-Item -LiteralPath $sourceKernel -Destination $installedKernel -Recurse -Force
+Copy-Item -LiteralPath $sourceBin -Destination $installedBin -Recurse -Force
+Copy-Item -LiteralPath $sourceRuntime -Destination $installedRuntime -Recurse -Force
+Remove-Item -LiteralPath (Join-Path $installedKernel '.mvp-terminal-session.json') -Force -ErrorAction SilentlyContinue
 Copy-Item -LiteralPath $sourcePackage -Destination (Join-Path $InstallRoot 'package.json') -Force
 
 $installedScripts = Join-Path $InstallRoot 'scripts\windows'
@@ -84,7 +100,7 @@ $nativeHostDir = Join-Path $InstallRoot 'native-host'
 New-Item -ItemType Directory -Force -Path $binPath, $nativeHostDir | Out-Null
 
 $cliPath = Join-Path $binPath 'agentlimb.cmd'
-$cli = "@echo off`r`n`"$nodePath`" `"%~dp0..\kernel\bridge\mvp\terminal-client.mjs`" %*`r`n"
+$cli = "@echo off`r`n`"$nodePath`" `"%~dp0..\bin\agentlimb.mjs`" %*`r`n"
 [System.IO.File]::WriteAllText($cliPath, $cli, [System.Text.Encoding]::ASCII)
 
 $nativeHostSource = Join-Path $installedScripts 'AgentLimbNativeHost.cs'
@@ -111,13 +127,20 @@ $nativeManifest = @{
   description = 'AgentLimb Bridge runtime locator'
   path = $nativeHostCommand
   type = 'stdio'
-  allowed_origins = @("chrome-extension://$ChromeExtensionId/")
+  allowed_origins = @("chrome-extension://$ExtensionId/")
 } | ConvertTo-Json -Depth 3
 Write-Utf8NoBom -Path $nativeManifestPath -Content $nativeManifest
 
+# Chromium vendors use separate registry roots for Native Messaging. Register each
+# supported root so the same extension package works in the user's chosen browser.
 foreach ($registryKey in @(
   'HKCU:\Software\Google\Chrome\NativeMessagingHosts\com.agentlimb.bridge',
-  'HKCU:\Software\Microsoft\Edge\NativeMessagingHosts\com.agentlimb.bridge'
+  'HKCU:\Software\Microsoft\Edge\NativeMessagingHosts\com.agentlimb.bridge',
+  'HKCU:\Software\BraveSoftware\Brave-Browser\NativeMessagingHosts\com.agentlimb.bridge',
+  'HKCU:\Software\Chromium\NativeMessagingHosts\com.agentlimb.bridge',
+  'HKCU:\Software\Vivaldi\NativeMessagingHosts\com.agentlimb.bridge',
+  'HKCU:\Software\Opera Software\NativeMessagingHosts\com.agentlimb.bridge',
+  'HKCU:\Software\Yandex\YandexBrowser\NativeMessagingHosts\com.agentlimb.bridge'
 )) {
   New-Item -Path $registryKey -Force | Out-Null
   Set-Item -Path $registryKey -Value $nativeManifestPath
