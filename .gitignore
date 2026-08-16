@@ -21,3 +21,4 @@ credentials/
 # Runtime state
 .muscle/
 **/.mvp-terminal-session.json
+/.workbuddy/
