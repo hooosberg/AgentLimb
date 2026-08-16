@@ -146,7 +146,7 @@ Every GitHub Release ships **two packages** — make sure you grab the right one
 
 | Package | What it is | Who installs it |
 |---|---|---|
-| `agentlimb-chrome-v0.2.1-b7.zip` | **Browser extension** | **You** — install it into your Chromium browser |
+| `agentlimb-chrome-v0.2.2-b8.zip` | **Browser extension** | **You** — install it into your Chromium browser |
 | `agentlimb-runtime-v0.2.1-b7.zip` | **Local Runtime** (Bridge + CLI) | **Your AI agent** — downloaded automatically after your approval |
 
 > You normally never need to touch the Runtime zip manually. The onboarding prompt lets your AI download, verify (SHA-256), and install it for you.
@@ -154,7 +154,7 @@ Every GitHub Release ships **two packages** — make sure you grab the right one
 ### Step 1 — Install the extension (Windows & macOS, identical)
 
 - **Chrome Web Store** (recommended): [Install AgentLimb](https://chromewebstore.google.com/detail/agentlimb/hldldfepjhljhbcneojddjkkodkjglof). Works in Chrome, Edge, Brave, Vivaldi, Chromium, and any other Chromium-based browser.
-- **Manual install**: download [`agentlimb-chrome-v0.2.1-b7.zip`](https://github.com/hooosberg/AgentLimb/releases/download/v0.2.1/agentlimb-chrome-v0.2.1-b7.zip) from the [Releases](https://github.com/hooosberg/AgentLimb/releases) page, unzip it, then load the extracted folder on your browser's extensions page with Developer Mode enabled.
+- **Manual install**: download [`agentlimb-chrome-v0.2.2-b8.zip`](https://github.com/hooosberg/AgentLimb/releases/download/v0.2.2/agentlimb-chrome-v0.2.2-b8.zip) from the [Releases](https://github.com/hooosberg/AgentLimb/releases) page, unzip it, then load the extracted folder on your browser's extensions page with Developer Mode enabled.
 
 ### Step 2 — Copy the onboarding prompt
 

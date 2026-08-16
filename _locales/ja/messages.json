@@ -62,6 +62,27 @@
   "connectedIdleSubtitle": {
     "message": "ミッション待機中。AIに何をさせたいか指示してください。"
   },
+  "bridgeWorking": {
+    "message": "AIエージェントがブラウザを操作中です"
+  },
+  "bridgeWorkingShort": {
+    "message": "操作中"
+  },
+  "agentStateOperating": {
+    "message": "操作中"
+  },
+  "agentStateOperatingSubtitle": {
+    "message": "AIエージェントがブラウザを操作しています…"
+  },
+  "agentStateDone": {
+    "message": "完了"
+  },
+  "agentStateDoneSubtitle": {
+    "message": "操作が終了しました"
+  },
+  "idleSupportedAgents": {
+    "message": "Claude Code・Codex・Cursor・Gemini CLI・Ollama・LM Studio など、ツール呼び出しに対応するあらゆるAIターミナルで利用できます"
+  },
   "copyPromptTitle": {
     "message": "オンボードプロンプトをコピー"
   },

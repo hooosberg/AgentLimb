@@ -62,6 +62,27 @@
   "connectedIdleSubtitle": {
     "message": "Bereit für eine Aufgabe. Beschreibe, was die KI tun soll."
   },
+  "bridgeWorking": {
+    "message": "Der KI-Agent steuert den Browser"
+  },
+  "bridgeWorkingShort": {
+    "message": "Aktiv"
+  },
+  "agentStateOperating": {
+    "message": "Aktiv"
+  },
+  "agentStateOperatingSubtitle": {
+    "message": "Der KI-Agent steuert den Browser…"
+  },
+  "agentStateDone": {
+    "message": "Fertig"
+  },
+  "agentStateDoneSubtitle": {
+    "message": "Vorgänge abgeschlossen"
+  },
+  "idleSupportedAgents": {
+    "message": "Kompatibel mit Claude Code, Codex, Cursor, Gemini CLI, Ollama, LM Studio und jedem KI-Terminal mit Tool-Aufrufen"
+  },
   "copyPromptTitle": {
     "message": "Onboarding-Prompt kopieren"
   },

@@ -144,6 +144,12 @@ html, body {
 .status-dot.status-ok        { background: var(--success); box-shadow: 0 0 6px var(--success); }
 .status-dot.status-suspended { background: #e5a60e; box-shadow: 0 0 6px #e5a60e; }
 .status-dot.status-error     { background: var(--danger); }
+.status-dot.status-working   { background: var(--accent); box-shadow: 0 0 6px var(--accent); animation: status-dot-pulse 1.2s ease-in-out infinite; }
+
+@keyframes status-dot-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.35; }
+}
 
 .bridge-status-label {
   font-size: 10px;
@@ -223,6 +229,26 @@ html, body {
   font-size: 11px;
   color: var(--text-muted);
   margin-top: 3px;
+}
+
+/* ── Four-state status panel (direct calls without a mission) ── */
+/* data-phase: 'idle' (green ✓) | 'operating' (hourglass flip) | 'done' (green ✓) */
+.connected-idle-card[data-phase="operating"] {
+  border-color: var(--accent);
+}
+.connected-idle-card[data-phase="operating"] .ci-icon {
+  background: var(--accent);
+  font-size: 14px;
+  animation: hourglass-flip 1.6s ease-in-out infinite;
+}
+.connected-idle-card[data-phase="done"] .ci-icon {
+  background: var(--success);
+}
+
+@keyframes hourglass-flip {
+  0%, 40%  { transform: rotate(0deg); }
+  50%, 90% { transform: rotate(180deg); }
+  100%     { transform: rotate(360deg); }
 }
 
 /* ── Tab Bar ── */
@@ -334,6 +360,7 @@ html, body {
 .idle-logo-img { width: 52px; height: 52px; }
 .idle-title { font-weight: 700; font-size: 15px; color: var(--text); letter-spacing: -0.2px; }
 .idle-desc { font-size: 12px; color: var(--muted); line-height: 1.7; margin-top: 6px; }
+.idle-agents { font-size: 11px; color: var(--text-muted); line-height: 1.6; margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border); }
 
 .idle-copy-btn { font-size: 13px; padding: 11px 16px; font-weight: 600; }
 

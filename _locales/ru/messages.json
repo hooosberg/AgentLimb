@@ -62,6 +62,27 @@
   "connectedIdleSubtitle": {
     "message": "Готов к заданию. Опишите, что ИИ должен сделать."
   },
+  "bridgeWorking": {
+    "message": "ИИ-агент управляет браузером"
+  },
+  "bridgeWorkingShort": {
+    "message": "Выполняется"
+  },
+  "agentStateOperating": {
+    "message": "Выполняется"
+  },
+  "agentStateOperatingSubtitle": {
+    "message": "ИИ-агент управляет браузером…"
+  },
+  "agentStateDone": {
+    "message": "Готово"
+  },
+  "agentStateDoneSubtitle": {
+    "message": "Операции завершены"
+  },
+  "idleSupportedAgents": {
+    "message": "Совместим с Claude Code, Codex, Cursor, Gemini CLI, Ollama, LM Studio и любым ИИ-терминалом с поддержкой вызова инструментов"
+  },
   "copyPromptTitle": {
     "message": "Скопировать промпт подключения"
   },

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "AgentLimb",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Let your terminal AI control your browser. Muscle memory cuts repeat-task tokens by 85%. 100% local — no cloud, no tracking.",
   "minimum_chrome_version": "116",
   "default_locale": "en",

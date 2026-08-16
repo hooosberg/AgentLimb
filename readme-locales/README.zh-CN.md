@@ -137,7 +137,7 @@ AgentLimb 天生与 Agent 无关：只要你的 AI 能发 HTTP 请求或执行�
 
 | 安装包 | 是什么 | 谁来安装 |
 |---|---|---|
-| `agentlimb-chrome-v0.2.1-b7.zip` | **浏览器扩展** | **你本人** — 安装到你的 Chromium 浏览器 |
+| `agentlimb-chrome-v0.2.2-b8.zip` | **浏览器扩展** | **你本人** — 安装到你的 Chromium 浏览器 |
 | `agentlimb-runtime-v0.2.1-b7.zip` | **本地 Runtime**（Bridge + CLI） | **你的 AI agent** — 经你授权后自动下载 |
 
 > 一般情况下你完全不需要手动碰 Runtime 包。接入提示词会让你的 AI 自动完成下载、SHA-256 校验和安装。
@@ -145,7 +145,7 @@ AgentLimb 天生与 Agent 无关：只要你的 AI 能发 HTTP 请求或执行�
 ### 第 1 步 — 安装扩展（Windows 和 macOS 操作相同）
 
 - **Chrome 应用商店**（推荐）：[安装 AgentLimb](https://chromewebstore.google.com/detail/agentlimb/hldldfepjhljhbcneojddjkkodkjglof)。Chrome、Edge、Brave、Vivaldi、Chromium 等所有谷歌内核浏览器均可使用。
-- **手动安装**：从 [Releases](https://github.com/hooosberg/AgentLimb/releases) 页面下载 [`agentlimb-chrome-v0.2.1-b7.zip`](https://github.com/hooosberg/AgentLimb/releases/download/v0.2.1/agentlimb-chrome-v0.2.1-b7.zip)，解压后在浏览器的扩展管理页开启开发者模式并加载解压后的文件夹。
+- **手动安装**：从 [Releases](https://github.com/hooosberg/AgentLimb/releases) 页面下载 [`agentlimb-chrome-v0.2.2-b8.zip`](https://github.com/hooosberg/AgentLimb/releases/download/v0.2.2/agentlimb-chrome-v0.2.2-b8.zip)，解压后在浏览器的扩展管理页开启开发者模式并加载解压后的文件夹。
 
 ### 第 2 步 — 复制接入提示词
 

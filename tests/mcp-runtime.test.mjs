@@ -38,7 +38,12 @@ test('stable CLI delegates tool calls to the terminal client', () => {
   assert.match(result.stderr, /--tool is required/);
 });
 
-test('MCP runtime serves initialize and tools/list over stdio', () => {
+test('MCP runtime serves initialize and tools/list over stdio', async () => {
+  // Version is asserted against package.json so bumps don't break this test.
+  const pkg = JSON.parse(await read('package.json'));
+  const versionPattern = new RegExp(
+    `^${pkg.version.replaceAll('.', '\\.')}-${pkg.agentlimbBuild}$`,
+  );
   const input = [
     JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'initialize', params: {} }),
     JSON.stringify({ jsonrpc: '2.0', id: 2, method: 'tools/list', params: {} }),
@@ -52,6 +57,6 @@ test('MCP runtime serves initialize and tools/list over stdio', () => {
   assert.equal(result.status, 0, result.stderr);
   const replies = result.stdout.trim().split('\n').map((line) => JSON.parse(line));
   assert.equal(replies[0].result.protocolVersion, '2025-03-26');
-  assert.match(replies[0].result.serverInfo.version, /^0\.2\.1-b\d+$/);
+  assert.match(replies[0].result.serverInfo.version, versionPattern);
   assert.ok(replies[1].result.tools.some((tool) => tool.name === 'page_snapshot'));
 });

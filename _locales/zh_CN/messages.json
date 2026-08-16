@@ -62,6 +62,27 @@
   "connectedIdleSubtitle": {
     "message": "请继续操作：把你想让 AI 做的任务告诉它即可。"
   },
+  "bridgeWorking": {
+    "message": "AI 代理正在操作浏览器"
+  },
+  "bridgeWorkingShort": {
+    "message": "操作中"
+  },
+  "agentStateOperating": {
+    "message": "正在操作中"
+  },
+  "agentStateOperatingSubtitle": {
+    "message": "AI 代理正在操作浏览器…"
+  },
+  "agentStateDone": {
+    "message": "已完成"
+  },
+  "agentStateDoneSubtitle": {
+    "message": "本轮操作已结束"
+  },
+  "idleSupportedAgents": {
+    "message": "支持 Claude Code · Codex · Cursor · Gemini CLI · Ollama · LM Studio 等任何支持工具调用的 AI 终端"
+  },
   "copyPromptTitle": {
     "message": "复制接入提示词"
   },

@@ -120,6 +120,7 @@ async function applyLanguage(lang) {
   langOverride = { lang, messages };
   try { localStorage.setItem(LANG_KEY, lang); } catch (_) {}
   localizeDOM();
+  renderAgentActivity();
   refreshLangPicker();
   return true;
 }
@@ -136,6 +137,7 @@ async function applyAutoLanguage() {
   langOverride = { lang: detected, messages, auto: true };
   try { localStorage.removeItem(LANG_KEY); } catch (_) {}
   localizeDOM();
+  renderAgentActivity();
   refreshLangPicker();
   return true;
 }
@@ -549,7 +551,11 @@ function updateBridgeStatusDot() {
   let tipKey = 'bridgeNotConnected';
   let shortKey = 'bridgeNotConnectedShort';
   if (bridgeOnline) {
-    if (selfSuspended) {
+    if (agentActivity.phase === 'operating' && !task.active) {
+      cls = 'status-working';
+      tipKey = 'bridgeWorking';
+      shortKey = 'bridgeWorkingShort';
+    } else if (selfSuspended) {
       cls = 'status-suspended';
       tipKey = 'bridgeSuspended';
       shortKey = 'bridgeSuspendedShort';
@@ -665,6 +671,9 @@ function setBridgeStatus(online, data) {
   prevTerminalCount = newCount;
 
   if (!online) {
+    // Bridge gone — clear any pending operating/done state so the panel
+    // doesn't show a stale "Done" card when it comes back online.
+    resetAgentActivity('idle');
     setStatus(t('statusIdleHint'));
     // Bridge went offline — start bridge-down timer only once (poll runs every 5s;
     // using a dedicated variable prevents each poll from resetting the countdown).
@@ -713,6 +722,73 @@ function updateMonitorLayout() {
   connectedIdle?.classList.toggle('hidden', mode !== 'connected-idle');
   taskCard?.classList.toggle('hidden', mode !== 'task');
   progressCard?.classList.toggle('hidden', mode !== 'task');
+}
+
+// ── Agent activity state machine (four-state status panel) ───────────────────
+// Direct CLI tool calls (no task_plan mission) drive a lightweight status panel:
+//   idle ──tool call──▶ operating ──(quiet 10s)──▶ done ──(30s)──▶ idle
+// This keeps the speed of direct calls while giving the user a clear
+// connected / operating / done signal in the Monitor tab, without the
+// complexity or overhead of synthesizing a full mission lifecycle.
+const OPERATING_SETTLE_MS = 10_000;  // quiet period before "operating" → "done"
+const DONE_FADE_MS        = 30_000;  // how long "done" stays before returning to idle
+const agentActivity = { phase: 'idle', timer: null };  // idle | operating | done
+
+function clearAgentActivityTimer() {
+  if (agentActivity.timer) {
+    clearTimeout(agentActivity.timer);
+    agentActivity.timer = null;
+  }
+}
+
+function resetAgentActivity(phase = 'idle') {
+  clearAgentActivityTimer();
+  agentActivity.phase = phase;
+  renderAgentActivity();
+  updateBridgeStatusDot();
+}
+
+function markAgentActivity() {
+  // Any tool call/result keeps the panel in "operating" and restarts the settle timer.
+  clearAgentActivityTimer();
+  if (agentActivity.phase !== 'operating') {
+    agentActivity.phase = 'operating';
+    renderAgentActivity();
+    updateBridgeStatusDot();
+  }
+  agentActivity.timer = setTimeout(() => {
+    agentActivity.phase = 'done';
+    renderAgentActivity();
+    updateBridgeStatusDot();
+    agentActivity.timer = setTimeout(() => {
+      agentActivity.timer = null;
+      resetAgentActivity('idle');
+    }, DONE_FADE_MS);
+  }, OPERATING_SETTLE_MS);
+}
+
+// Render the four-state card. Also runs after every localizeDOM(), since
+// localizeDOM resets the title/subtitle back to the connectedIdle* strings.
+function renderAgentActivity() {
+  const card = $('connected-idle');
+  if (!card) return;
+  const icon = $('ci-icon');
+  const title = $('ci-title');
+  const sub = $('ci-subtitle');
+  const phase = agentActivity.phase;
+  card.dataset.phase = phase;
+  if (icon) icon.textContent = phase === 'operating' ? '⏳' : '✓';
+  if (!title || !sub) return;
+  if (phase === 'operating') {
+    title.textContent = t('agentStateOperating');
+    sub.textContent = t('agentStateOperatingSubtitle');
+  } else if (phase === 'done') {
+    title.textContent = t('agentStateDone');
+    sub.textContent = t('agentStateDoneSubtitle');
+  } else {
+    title.textContent = t('connectedIdleTitle');
+    sub.textContent = t('connectedIdleSubtitle');
+  }
 }
 
 // Defense-in-depth against AI ignoring the "no task without a mission" prompt rule.
@@ -868,7 +944,11 @@ function onToolActivity(entry) {
     // Bootstrap / self-verification calls without a plan stay silent — their
     // details are still visible in the Logs tab; we just don't pollute the
     // Monitor tab with a synthesized "AI running…" card.
-    if (!task.active) return;
+    if (!task.active) {
+      // No mission — still surface the activity on the four-state status panel.
+      markAgentActivity();
+      return;
+    }
 
     task.steps.push({ id: callId, text: toolToStep(tool, params), status: 'active' });
     task.lastActivityAt = Date.now();
@@ -878,6 +958,7 @@ function onToolActivity(entry) {
     task.timer = setTimeout(onTaskTimeout, INACTIVITY_MS);
 
   } else if (kind === 'result') {
+    if (!task.active) markAgentActivity();
     task.lastActivityAt = Date.now();
     const step = task.steps.find((s) => s.id === entry.callId);
     if (step) {
@@ -1004,6 +1085,9 @@ function onTaskPlan(planData) {
   task.steps     = [];
   task.startedAt = Date.now();
   task.lastActivityAt = Date.now();
+  // A real mission takes over the Monitor tab — clear the four-state panel so
+  // the header dot and card don't keep showing "operating" after the task ends.
+  resetAgentActivity('idle');
   task.plan      = {
     title: planData.title,
     steps: (planData.steps || []).map((s, i) => ({
@@ -1439,6 +1523,7 @@ async function init() {
 
   await initLanguage();
   localizeDOM();
+  renderAgentActivity();
   applyTheme(localStorage.getItem(THEME_KEY) || 'dark');
   await loadProjectPath();
   initTabs();

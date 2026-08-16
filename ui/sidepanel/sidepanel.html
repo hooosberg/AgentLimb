@@ -43,12 +43,12 @@
     </button>
   </div>
 
-  <!-- ── 已连接占位（Bridge 在线 + 无真实任务时显示） ── -->
-  <div id="connected-idle" class="connected-idle-card hidden">
-    <div class="ci-icon">✓</div>
+  <!-- ── 已连接占位（Bridge 在线 + 无真实任务时显示；data-phase 驱动四态：idle/operating/done） ── -->
+  <div id="connected-idle" class="connected-idle-card hidden" data-phase="idle">
+    <div class="ci-icon" id="ci-icon">✓</div>
     <div class="ci-content">
-      <div class="ci-title" data-i18n="connectedIdleTitle">Connected</div>
-      <div class="ci-subtitle" data-i18n="connectedIdleSubtitle">Ready for a mission.</div>
+      <div class="ci-title" id="ci-title" data-i18n="connectedIdleTitle">Connected</div>
+      <div class="ci-subtitle" id="ci-subtitle" data-i18n="connectedIdleSubtitle">Ready for a mission.</div>
     </div>
   </div>
 
@@ -59,6 +59,7 @@
       <div class="idle-icon"><img src="../../icons/icon.svg" class="idle-logo-img" alt=""></div>
       <div class="idle-title" data-i18n="idleTitle"></div>
       <div class="idle-desc" data-i18n="idleDesc"></div>
+      <div class="idle-agents" data-i18n="idleSupportedAgents"></div>
     </div>
 
     <!-- 复制按钮 -->

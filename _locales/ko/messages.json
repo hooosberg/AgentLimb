@@ -62,6 +62,27 @@
   "connectedIdleSubtitle": {
     "message": "미션 대기 중입니다. AI가 무엇을 하길 원하는지 알려주세요."
   },
+  "bridgeWorking": {
+    "message": "AI 에이전트가 브라우저를 조작하는 중입니다"
+  },
+  "bridgeWorkingShort": {
+    "message": "작동 중"
+  },
+  "agentStateOperating": {
+    "message": "작동 중"
+  },
+  "agentStateOperatingSubtitle": {
+    "message": "AI 에이전트가 브라우저를 조작하는 중…"
+  },
+  "agentStateDone": {
+    "message": "완료"
+  },
+  "agentStateDoneSubtitle": {
+    "message": "작업이 종료되었습니다"
+  },
+  "idleSupportedAgents": {
+    "message": "Claude Code · Codex · Cursor · Gemini CLI · Ollama · LM Studio 등 도구 호출을 지원하는 모든 AI 터미널과 호환됩니다"
+  },
   "copyPromptTitle": {
     "message": "온보딩 프롬프트 복사"
   },

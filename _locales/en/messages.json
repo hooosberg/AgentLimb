@@ -62,6 +62,27 @@
   "connectedIdleSubtitle": {
     "message": "Ready for a mission. Describe what you want the AI to do."
   },
+  "bridgeWorking": {
+    "message": "AI agent is operating the browser"
+  },
+  "bridgeWorkingShort": {
+    "message": "Operating"
+  },
+  "agentStateOperating": {
+    "message": "Operating"
+  },
+  "agentStateOperatingSubtitle": {
+    "message": "AI agent is controlling the browser…"
+  },
+  "agentStateDone": {
+    "message": "Done"
+  },
+  "agentStateDoneSubtitle": {
+    "message": "Operations finished"
+  },
+  "idleSupportedAgents": {
+    "message": "Works with Claude Code · Codex · Cursor · Gemini CLI · Ollama · LM Studio — any AI terminal that supports tool calls"
+  },
   "copyPromptTitle": {
     "message": "Copy onboard prompt"
   },

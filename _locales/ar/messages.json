@@ -62,6 +62,27 @@
   "connectedIdleSubtitle": {
     "message": "جاهز لمهمة. صف ما تريد من الذكاء الاصطناعي فعله."
   },
+  "bridgeWorking": {
+    "message": "وكيل الذكاء الاصطناعي يتحكم في المتصفح"
+  },
+  "bridgeWorkingShort": {
+    "message": "قيد التشغيل"
+  },
+  "agentStateOperating": {
+    "message": "قيد التشغيل"
+  },
+  "agentStateOperatingSubtitle": {
+    "message": "وكيل الذكاء الاصطناعي يتحكم في المتصفح…"
+  },
+  "agentStateDone": {
+    "message": "مكتمل"
+  },
+  "agentStateDoneSubtitle": {
+    "message": "انتهت العمليات"
+  },
+  "idleSupportedAgents": {
+    "message": "متوافق مع Claude Code وCodex وCursor وGemini CLI وOllama وLM Studio وأي طرفية ذكاء اصطناعي تدعم استدعاء الأدوات"
+  },
   "copyPromptTitle": {
     "message": "نسخ موجه الإدماج"
   },

@@ -62,6 +62,27 @@
   "connectedIdleSubtitle": {
     "message": "Listo para una misión. Describe lo que quieres que haga la IA."
   },
+  "bridgeWorking": {
+    "message": "El agente de IA está controlando el navegador"
+  },
+  "bridgeWorkingShort": {
+    "message": "En operación"
+  },
+  "agentStateOperating": {
+    "message": "En operación"
+  },
+  "agentStateOperatingSubtitle": {
+    "message": "El agente de IA está controlando el navegador…"
+  },
+  "agentStateDone": {
+    "message": "Completado"
+  },
+  "agentStateDoneSubtitle": {
+    "message": "Operaciones finalizadas"
+  },
+  "idleSupportedAgents": {
+    "message": "Compatible con Claude Code, Codex, Cursor, Gemini CLI, Ollama, LM Studio y cualquier terminal de IA con llamadas a herramientas"
+  },
   "copyPromptTitle": {
     "message": "Copiar prompt de incorporación"
   },

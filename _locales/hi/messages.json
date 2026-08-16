@@ -62,6 +62,27 @@
   "connectedIdleSubtitle": {
     "message": "मिशन के लिए तैयार। बताएं कि AI को क्या करना है।"
   },
+  "bridgeWorking": {
+    "message": "AI एजेंट ब्राउज़र को नियंत्रित कर रहा है"
+  },
+  "bridgeWorkingShort": {
+    "message": "कार्यरत"
+  },
+  "agentStateOperating": {
+    "message": "कार्यरत"
+  },
+  "agentStateOperatingSubtitle": {
+    "message": "AI एजेंट ब्राउज़र को नियंत्रित कर रहा है…"
+  },
+  "agentStateDone": {
+    "message": "पूर्ण"
+  },
+  "agentStateDoneSubtitle": {
+    "message": "परिचालन समाप्त"
+  },
+  "idleSupportedAgents": {
+    "message": "Claude Code, Codex, Cursor, Gemini CLI, Ollama, LM Studio और टूल-कॉलिंग का समर्थन करने वाले किसी भी AI टर्मिनल के साथ संगत"
+  },
   "copyPromptTitle": {
     "message": "ऑनबोर्ड प्रॉम्प्ट कॉपी करें"
   },
