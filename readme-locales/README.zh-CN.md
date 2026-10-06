@@ -226,25 +226,25 @@ AgentLimb 天生与 Agent 无关：只要你的 AI 能发 HTTP 请求或执行�
 <table>
   <tr>
     <td align="center">
-      <a href="https://hooosberg.github.io/WitNote/">
+      <a href="https://hooosberg.com/apps/witnote/">
         <b>✍️ WitNote</b><br>
         <sub>AI 写作伙伴</sub>
       </a>
     </td>
     <td align="center">
-      <a href="https://hooosberg.github.io/DOMPrompter/">
+      <a href="https://hooosberg.com/apps/domprompter/">
         <b>🎯 DOMPrompter</b><br>
         <sub>可视化 AI 提示词生成器</sub>
       </a>
     </td>
     <td align="center">
-      <a href="https://hooosberg.github.io/GlotShot/">
+      <a href="https://hooosberg.com/apps/glotshot/">
         <b>📸 GlotShot</b><br>
         <sub>应用商店截图工具</sub>
       </a>
     </td>
     <td align="center">
-      <a href="https://hooosberg.github.io/TrekReel/">
+      <a href="https://hooosberg.com/apps/trekreel/">
         <b>🏔️ TrekReel</b><br>
         <sub>3D 路线故事</sub>
       </a>

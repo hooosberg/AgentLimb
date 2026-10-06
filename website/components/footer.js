@@ -12,28 +12,28 @@ export function renderFooter(style = 'full') {
         <h3 class="footer-more-works-title">More Works</h3>
         <p class="footer-more-works-sub">Creative tools from the same developer</p>
         <div class="footer-more-works-grid">
-          <a href="https://hooosberg.github.io/BeRaw/" target="_blank" rel="noopener" class="footer-more-works-card">
-            <img src="https://hooosberg.github.io/BeRaw/assets/icon-128.png" alt="BeRaw" loading="lazy">
+          <a href="https://hooosberg.com/apps/beraw/" target="_blank" rel="noopener" class="footer-more-works-card">
+            <img src="https://hooosberg.com/apps/beraw/assets/icon-128.png" alt="BeRaw" loading="lazy">
             <span>BeRaw</span>
           </a>
-          <a href="https://hooosberg.github.io/Packpour/" target="_blank" rel="noopener" class="footer-more-works-card">
-            <img src="https://hooosberg.github.io/Packpour/assets/icon-128.png" alt="Packpour" loading="lazy">
+          <a href="https://hooosberg.com/apps/packpour/" target="_blank" rel="noopener" class="footer-more-works-card">
+            <img src="https://hooosberg.com/apps/packpour/assets/icon-128.png" alt="Packpour" loading="lazy">
             <span>Packpour</span>
           </a>
-          <a href="https://hooosberg.github.io/WitNote/" target="_blank" rel="noopener" class="footer-more-works-card">
-            <img src="https://hooosberg.github.io/WitNote/assets/icon.png" alt="WitNote" loading="lazy">
+          <a href="https://hooosberg.com/apps/witnote/" target="_blank" rel="noopener" class="footer-more-works-card">
+            <img src="https://hooosberg.com/apps/witnote/assets/icon.png" alt="WitNote" loading="lazy">
             <span>WitNote</span>
           </a>
-          <a href="https://hooosberg.github.io/GlotShot/" target="_blank" rel="noopener" class="footer-more-works-card">
-            <img src="https://hooosberg.github.io/GlotShot/public/icon/icon-128.png" alt="GlotShot" loading="lazy">
+          <a href="https://hooosberg.com/apps/glotshot/" target="_blank" rel="noopener" class="footer-more-works-card">
+            <img src="https://hooosberg.com/apps/glotshot/public/icon/icon-128.png" alt="GlotShot" loading="lazy">
             <span>GlotShot</span>
           </a>
-          <a href="https://hooosberg.github.io/TrekReel/" target="_blank" rel="noopener" class="footer-more-works-card">
-            <img src="https://hooosberg.github.io/TrekReel/Apple/icon-128.png" alt="TrekReel" loading="lazy">
+          <a href="https://hooosberg.com/apps/trekreel/" target="_blank" rel="noopener" class="footer-more-works-card">
+            <img src="https://hooosberg.com/apps/trekreel/Apple/icon-128.png" alt="TrekReel" loading="lazy">
             <span>TrekReel</span>
           </a>
-          <a href="https://hooosberg.github.io/DOMPrompter/" target="_blank" rel="noopener" class="footer-more-works-card">
-            <img src="https://hooosberg.github.io/DOMPrompter/pages/img/icon-128.png" alt="DOMPrompter" loading="lazy">
+          <a href="https://hooosberg.com/apps/domprompter/" target="_blank" rel="noopener" class="footer-more-works-card">
+            <img src="https://hooosberg.com/apps/domprompter/pages/img/icon-128.png" alt="DOMPrompter" loading="lazy">
             <span>DOMPrompter</span>
           </a>
           <a href="https://uixskills.com" target="_blank" rel="noopener" class="footer-more-works-card">

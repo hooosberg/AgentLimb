@@ -24,4 +24,4 @@ Your writing is personal. Journals, drafts, research notes — these shouldn't l
 
 Both WitNote and AgentLimb share the same design philosophy: **local-first, privacy by architecture, no cloud dependency**. They're built by the same developer with the same values — your tools should work for you, not harvest your data.
 
-**Links:** [WitNote Website](https://hooosberg.github.io/WitNote/) · [GitHub](https://github.com/hooosberg/WitNote) · [Mac App Store](https://apps.apple.com/app/witnote/id6738538846)
+**Links:** [WitNote Website](https://hooosberg.com/apps/witnote/) · [GitHub](https://github.com/hooosberg/WitNote) · [Mac App Store](https://apps.apple.com/app/witnote/id6738538846)

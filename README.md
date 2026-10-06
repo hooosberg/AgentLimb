@@ -262,12 +262,12 @@ Cloudflare Pages should use the repository root as its root directory and `websi
 
 Built by [hooosberg](https://github.com/hooosberg):
 
-- [BeRaw](https://hooosberg.github.io/BeRaw/) — Behance raw-image grabber
-- [Packpour](https://hooosberg.github.io/Packpour/) — App Store Connect locale filler
-- [WitNote](https://hooosberg.github.io/WitNote/) — local-first AI writing companion
-- [GlotShot](https://hooosberg.github.io/GlotShot/) — perfect App Store preview images
-- [TrekReel](https://hooosberg.github.io/TrekReel/) — outdoor trails, cinematic reels
-- [DOMPrompter](https://hooosberg.github.io/DOMPrompter/) — visualize DOM for AI code
+- [BeRaw](https://hooosberg.com/apps/beraw/) — Behance raw-image grabber
+- [Packpour](https://hooosberg.com/apps/packpour/) — App Store Connect locale filler
+- [WitNote](https://hooosberg.com/apps/witnote/) — local-first AI writing companion
+- [GlotShot](https://hooosberg.com/apps/glotshot/) — perfect App Store preview images
+- [TrekReel](https://hooosberg.com/apps/trekreel/) — outdoor trails, cinematic reels
+- [DOMPrompter](https://hooosberg.com/apps/domprompter/) — visualize DOM for AI code
 - [UIXskills](https://uixskills.com) — AI → JSON → Whiteboard → UI
 
 ## License

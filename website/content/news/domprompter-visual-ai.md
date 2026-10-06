@@ -26,4 +26,4 @@ Paste the generated prompt into Claude Code, Cursor, Windsurf, or any AI coding 
 
 DOMPrompter generates prompts for **code changes**. AgentLimb drives browsers for **automation**. Together, they cover the full spectrum: design your changes with DOMPrompter, automate your workflows with AgentLimb.
 
-**Links:** [DOMPrompter Website](https://hooosberg.github.io/DOMPrompter/) · [GitHub](https://github.com/hooosberg/DOMPrompter)
+**Links:** [DOMPrompter Website](https://hooosberg.com/apps/domprompter/) · [GitHub](https://github.com/hooosberg/DOMPrompter)

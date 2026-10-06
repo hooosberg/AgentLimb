@@ -25,4 +25,4 @@ TrekReel is a macOS app for hikers, runners, and cyclists who want to share thei
 
 Like all hooosberg products, TrekReel is local-first. Your GPS data, photos, and routes never leave your device. The same philosophy drives AgentLimb: **your data is your data**.
 
-**Links:** [TrekReel Website](https://hooosberg.github.io/TrekReel/) · [GitHub](https://github.com/hooosberg/TrekReel) · [Mac App Store](https://apps.apple.com/app/trekreel/id6739383858)
+**Links:** [TrekReel Website](https://hooosberg.com/apps/trekreel/) · [GitHub](https://github.com/hooosberg/TrekReel) · [Mac App Store](https://apps.apple.com/app/trekreel/id6739383858)

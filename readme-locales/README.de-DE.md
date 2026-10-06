@@ -176,25 +176,25 @@ Jeder bestehende Ansatz zur Browser-Automatisierung hat reale Kosten. Hier der e
 <table>
   <tr>
     <td align="center">
-      <a href="https://hooosberg.github.io/WitNote/">
+      <a href="https://hooosberg.com/apps/witnote/">
         <b>✍️ WitNote</b><br>
         <sub>KI-Schreibbegleiter</sub>
       </a>
     </td>
     <td align="center">
-      <a href="https://hooosberg.github.io/DOMPrompter/">
+      <a href="https://hooosberg.com/apps/domprompter/">
         <b>🎯 DOMPrompter</b><br>
         <sub>Visueller KI-Prompt-Generator</sub>
       </a>
     </td>
     <td align="center">
-      <a href="https://hooosberg.github.io/GlotShot/">
+      <a href="https://hooosberg.com/apps/glotshot/">
         <b>📸 GlotShot</b><br>
         <sub>App-Store-Screenshots</sub>
       </a>
     </td>
     <td align="center">
-      <a href="https://hooosberg.github.io/TrekReel/">
+      <a href="https://hooosberg.com/apps/trekreel/">
         <b>🏔️ TrekReel</b><br>
         <sub>3D-Trail-Geschichten</sub>
       </a>

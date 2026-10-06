@@ -21,4 +21,4 @@ Designing App Store preview images is tedious. You need different sizes for diff
 
 GlotShot handles your store assets. AgentLimb can automate the upload process — navigating App Store Connect, Google Play Console, and Steam partner sites to submit screenshots using your real login sessions.
 
-**Links:** [GlotShot Website](https://hooosberg.github.io/GlotShot/) · [GitHub](https://github.com/hooosberg/GlotShot)
+**Links:** [GlotShot Website](https://hooosberg.com/apps/glotshot/) · [GitHub](https://github.com/hooosberg/GlotShot)

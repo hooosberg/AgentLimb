@@ -176,25 +176,25 @@ AgentLimb Extension  (Chrome MV3 · サイドパネルUI · タスク/マッス�
 <table>
   <tr>
     <td align="center">
-      <a href="https://hooosberg.github.io/WitNote/">
+      <a href="https://hooosberg.com/apps/witnote/">
         <b>✍️ WitNote</b><br>
         <sub>AI ライティングコンパニオン</sub>
       </a>
     </td>
     <td align="center">
-      <a href="https://hooosberg.github.io/DOMPrompter/">
+      <a href="https://hooosberg.com/apps/domprompter/">
         <b>🎯 DOMPrompter</b><br>
         <sub>ビジュアルAIプロンプトジェネレーター</sub>
       </a>
     </td>
     <td align="center">
-      <a href="https://hooosberg.github.io/GlotShot/">
+      <a href="https://hooosberg.com/apps/glotshot/">
         <b>📸 GlotShot</b><br>
         <sub>App Storeスクリーンショット</sub>
       </a>
     </td>
     <td align="center">
-      <a href="https://hooosberg.github.io/TrekReel/">
+      <a href="https://hooosberg.com/apps/trekreel/">
         <b>🏔️ TrekReel</b><br>
         <sub>3Dトレイルストーリー</sub>
       </a>

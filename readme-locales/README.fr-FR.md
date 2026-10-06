@@ -176,25 +176,25 @@ Chaque approche existante d'automatisation du navigateur a un coût réel. Voici
 <table>
   <tr>
     <td align="center">
-      <a href="https://hooosberg.github.io/WitNote/">
+      <a href="https://hooosberg.com/apps/witnote/">
         <b>✍️ WitNote</b><br>
         <sub>Compagnon d'écriture IA</sub>
       </a>
     </td>
     <td align="center">
-      <a href="https://hooosberg.github.io/DOMPrompter/">
+      <a href="https://hooosberg.com/apps/domprompter/">
         <b>🎯 DOMPrompter</b><br>
         <sub>Générateur visuel de prompts IA</sub>
       </a>
     </td>
     <td align="center">
-      <a href="https://hooosberg.github.io/GlotShot/">
+      <a href="https://hooosberg.com/apps/glotshot/">
         <b>📸 GlotShot</b><br>
         <sub>Captures pour App Store</sub>
       </a>
     </td>
     <td align="center">
-      <a href="https://hooosberg.github.io/TrekReel/">
+      <a href="https://hooosberg.com/apps/trekreel/">
         <b>🏔️ TrekReel</b><br>
         <sub>Histoires de sentiers 3D</sub>
       </a>
