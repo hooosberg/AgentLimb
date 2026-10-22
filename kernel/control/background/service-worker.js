@@ -23,13 +23,19 @@ function bootstrap() {
     onStatus: (snapshot) => {
       runtime.lastStatus = snapshot;
     },
-    onToolCall: ({ tool, args, timeoutMs }) =>
-      Promise.race([
-        router.execute(tool, args),
-        new Promise((_, reject) =>
-          setTimeout(() => reject(new Error(`tool ${tool} timed out after ${timeoutMs}ms`)), timeoutMs),
-        ),
-      ]),
+    onToolCall: async ({ tool, args, timeoutMs }) => {
+      setBusy(true);
+      try {
+        return await Promise.race([
+          router.execute(tool, args),
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error(`tool ${tool} timed out after ${timeoutMs}ms`)), timeoutMs),
+          ),
+        ]);
+      } finally {
+        setBusy(false);
+      }
+    },
     onPairingRequest: () => {},
   });
 
@@ -66,8 +72,18 @@ function bootstrap() {
     });
   });
 
-  function setPanelBehavior() {
-    chrome.sidePanel?.setPanelBehavior?.({ openPanelOnActionClick: false }).catch(() => {});
+  /** Toolbar badge = "the agent is doing something right now". */
+  function setBusy(on) {
+    try {
+      if (!chrome.action?.setBadgeText) return;
+      Promise.resolve(chrome.action.setBadgeText({ text: on ? '…' : '' })).catch(() => {});
+      if (on && chrome.action.setBadgeBackgroundColor) {
+        Promise.resolve(chrome.action.setBadgeBackgroundColor({ color: '#d97757' })).catch(() => {});
+      }
+    } catch (_) { /* badge unavailable */ }
+  }
+
+  function setPanelBehavior() {    chrome.sidePanel?.setPanelBehavior?.({ openPanelOnActionClick: false }).catch(() => {});
   }
 
   async function toggleSidePanel(tab) {
