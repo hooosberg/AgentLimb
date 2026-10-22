@@ -120,10 +120,16 @@ export function createBridgeClient({ onStatus, onToolCall, onPairingRequest, onA
   }
 
   // ── storage: paired clients ────────────────────────────────────────────────
+  // Single-tenant by design: one browser is driven by one AI client. A new
+  // pairing replaces the previous one, so switching from software A to B leaves
+  // a clean panel instead of a growing stack of "正在与 … 驱动浏览器" chips.
   async function loadPaired() {
     try {
       const store = await chrome.storage.local.get(STORAGE_KEYS.pairedClients);
       const map = store[STORAGE_KEYS.pairedClients] || {};
+      // Load everything we remember: pruning happens when a client actually
+      // shows up (HELLO) or when a new pairing is confirmed, never on load —
+      // dropping a trusted id here would force a needless re-pair.
       for (const [id, info] of Object.entries(map)) {
         clients.set(id, { ...info, id, paired: true });
       }
@@ -134,6 +140,18 @@ export function createBridgeClient({ onStatus, onToolCall, onPairingRequest, onA
     const map = {};
     for (const c of clients.values()) if (c.paired) map[c.id] = c;
     await chrome.storage.local.set({ [STORAGE_KEYS.pairedClients]: map });
+  }
+
+  /** Forget every trusted client except `keepId`. */
+  async function keepOnlyPaired(keepId) {
+    let changed = false;
+    for (const [id, c] of [...clients.entries()]) {
+      if (id !== keepId && c.paired) {
+        clients.delete(id);
+        changed = true;
+      }
+    }
+    if (changed) await persistPaired();
   }
 
   // ── HTTP ───────────────────────────────────────────────────────────────────
@@ -238,7 +256,11 @@ export function createBridgeClient({ onStatus, onToolCall, onPairingRequest, onA
           name: client.name || 'AI Agent',
           kind: client.kind || 'generic',
           paired: known ? known.paired : false,
+          pairedAt: known?.pairedAt,
         });
+        // Whoever is actually connected and trusted wins; stale pairings from
+        // earlier software get dropped here.
+        if (clients.get(client.id).paired) await keepOnlyPaired(client.id);
         broadcast();
         // Report our paired-client view so the host can auto-confirm.
         const pairedIds = [...clients.values()].filter((c) => c.paired).map((c) => c.id);
@@ -366,9 +388,12 @@ export function createBridgeClient({ onStatus, onToolCall, onPairingRequest, onA
     const client = clients.get(entry.client.id) || entry.client;
     if (ok) {
       client.paired = true;
+      client.pairedAt = new Date().toISOString();
       if (name && name.trim()) client.name = name.trim();
       clients.set(client.id, client);
       await persistPaired();
+      // A newly confirmed client takes the browser over — drop the previous one.
+      await keepOnlyPaired(client.id);
     }
     await post({
       t: WIRE.PAIRING_RESPONSE,
@@ -450,5 +475,6 @@ export function createBridgeClient({ onStatus, onToolCall, onPairingRequest, onA
     stopAgent,
     disconnectClient,
     queueUserMessage,
+    keepOnlyPaired, // exposed for the single-tenant invariant test
   };
 }

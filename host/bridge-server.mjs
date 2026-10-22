@@ -81,14 +81,15 @@ export function createBridge({ clientId, clientName = 'AI Agent', clientKind = '
   }
 
   function markPaired(name) {
-    const clients = pairedClients();
-    clients[clientId] = {
+    // Single tenant: a new pairing replaces the previous client so the registry
+    // never grows into a list of every agent the user ever tried.
+    const entry = {
       id: clientId,
       name: name || effectiveClientName,
       kind: clientKind,
       pairedAt: new Date().toISOString(),
     };
-    writeJson(pairedFile, clients);
+    writeJson(pairedFile, { [clientId]: entry });
   }
 
   function revokePairing() {

@@ -24,7 +24,7 @@ function createChromeStub() {
       onMessage: { addListener: (fn) => listeners.message.push(fn) },
       onInstalled: { addListener: () => {} },
       sendMessage: () => Promise.resolve(),
-      getManifest: () => ({ version: '0.4.1' }),
+      getManifest: () => ({ version: '0.4.2' }),
       getURL: (p) => `chrome-extension://stub/${p}`,
       getContexts: async (filter) =>
         (filter?.contextTypes?.includes('SIDE_PANEL') ? sidePanelContexts : []),
@@ -164,6 +164,47 @@ test('a bridge outage must not forget trusted (paired) clients', async () => {
     assert.equal(status.clients[0].name, 'WorkBuddy AI');
   } finally {
     stub.chrome.storage.local.get = savedGet;
+    globalThis.fetch = savedFetch;
+  }
+});
+
+test('only the most recent pairing survives (single tenant)', async () => {
+  // Regression: paired clients accumulated, so the panel showed a growing stack
+  // of "正在与 X 驱动浏览器" chips after switching agent software.
+  const { createBridgeClient } = await import('../kernel/control/background/bridge-client.js');
+  const { STORAGE_KEYS } = await import('../kernel/shared/constants.js');
+  const savedGet = stub.chrome.storage.local.get;
+  const savedSet = stub.chrome.storage.local.set;
+  const savedFetch = globalThis.fetch;
+  const writes = [];
+  stub.chrome.storage.local.get = async (key) => (
+    key === STORAGE_KEYS.pairedClients
+      ? {
+        [STORAGE_KEYS.pairedClients]: {
+          'old-client': { id: 'old-client', name: 'Old AI', kind: 'x', pairedAt: '2026-10-22T08:00:00.000Z' },
+          'new-client': { id: 'new-client', name: 'New AI', kind: 'x', pairedAt: '2026-10-22T09:00:00.000Z' },
+        },
+      }
+      : {}
+  );
+  stub.chrome.storage.local.set = async (items) => { writes.push(items); };
+  globalThis.fetch = async () => { throw new Error('no bridge'); };
+  try {
+    const bridge = createBridgeClient({});
+    await bridge.start();
+    // Both trusted clients load (never drop trust on load — that would force a
+    // needless re-pair), but once one of them actually shows up it owns the
+    // browser and the rest are forgotten.
+    assert.equal(bridge.getStatus().clients.length, 2, 'both remembered clients load');
+    await bridge.keepOnlyPaired('new-client');
+    const status = bridge.getStatus();
+    assert.equal(status.clients.length, 1, 'only one paired client may remain');
+    assert.equal(status.clients[0].id, 'new-client', 'the connected client wins');
+    const persisted = writes.at(-1)?.[STORAGE_KEYS.pairedClients];
+    assert.deepEqual(Object.keys(persisted || {}), ['new-client'], 'stale pairing erased from storage');
+  } finally {
+    stub.chrome.storage.local.get = savedGet;
+    stub.chrome.storage.local.set = savedSet;
     globalThis.fetch = savedFetch;
   }
 });

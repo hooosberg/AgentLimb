@@ -89,12 +89,14 @@ function render() {
 
 function renderChips(paired) {
   els.clientChips.innerHTML = '';
-  for (const c of paired) {
-    const chip = document.createElement('span');
-    chip.className = 'chip';
-    chip.innerHTML = `<span class="dot"></span>正在与 ${escapeHtml(c.name)} 驱动浏览器`;
-    els.clientChips.appendChild(chip);
-  }
+  // Single tenant: only the most recently paired client is shown, so switching
+  // from software A to B never leaves a stack of stale chips behind.
+  const latest = [...paired].sort((a, b) => String(b.pairedAt || '').localeCompare(String(a.pairedAt || '')))[0];
+  if (!latest) return;
+  const chip = document.createElement('span');
+  chip.className = 'chip';
+  chip.innerHTML = `<span class="dot"></span>正在与 ${escapeHtml(latest.name)} 驱动浏览器`;
+  els.clientChips.appendChild(chip);
 }
 
 /** The SW owns the transcript; the panel just mirrors it (survives close/reopen). */
