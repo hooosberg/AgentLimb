@@ -21,12 +21,7 @@
     .logo { width: 36px; height: 36px; display: block; margin-bottom: 12px; }
     h1 { font-size: 16px; margin: 0 0 6px; }
     p.sub { font-size: 13px; opacity: 0.7; margin: 0 0 16px; line-height: 1.6; }
-    label { display: block; font-size: 12px; opacity: 0.7; margin-bottom: 6px; }
-    input {
-      width: 100%; box-sizing: border-box; padding: 9px 11px; font-size: 13px;
-      border: 1px solid #e5e1da; border-radius: 9px; background: transparent; color: inherit;
-      margin-bottom: 16px;
-    }
+    .note { font-size: 12px; opacity: 0.55; margin: 0 0 16px; line-height: 1.6; }
     .actions { display: flex; gap: 10px; justify-content: flex-end; }
     button {
       font-size: 13px; padding: 8px 16px; border-radius: 9px; cursor: pointer; border: 1px solid transparent;
@@ -41,12 +36,11 @@
   <div class="card">
     <img class="logo" src="../../icons/icon.svg" alt="">
     <h1 id="title">智能体软件请求连接浏览器</h1>
-    <p class="sub" id="subtitle">允许后，该智能体可以通过 MCP 控制你的浏览器（包括新建标签、点击、输入等）。你可以随时在侧栏断开。</p>
-    <label for="name">给这个连接起个名字（可选）</label>
-    <input id="name" type="text" placeholder="例如：工作电脑、我的智能体" autofocus>
+    <p class="sub" id="subtitle">允许后，它可以新建标签、读取页面、点击和输入。你可以随时在侧栏断开。</p>
+    <p class="note">配对一次就记住：之后它再连接会自动通过，不再打扰你。配对期间不需要一直开着侧栏。</p>
     <div class="actions">
       <button class="ignore" id="btn-ignore">忽略</button>
-      <button class="allow" id="btn-allow">允许连接</button>
+      <button class="allow" id="btn-allow" autofocus>允许连接</button>
     </div>
     <div class="status" id="status"></div>
   </div>

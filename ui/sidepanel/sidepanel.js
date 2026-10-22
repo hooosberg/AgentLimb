@@ -88,7 +88,7 @@ function renderChips(paired) {
   for (const c of paired) {
     const chip = document.createElement('span');
     chip.className = 'chip';
-    chip.innerHTML = `<span class="dot"></span>${escapeHtml(c.name)} · 智能体`;
+    chip.innerHTML = `<span class="dot"></span>正在与 ${escapeHtml(c.name)} 驱动浏览器`;
     els.clientChips.appendChild(chip);
   }
 }

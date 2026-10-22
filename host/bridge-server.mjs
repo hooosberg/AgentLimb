@@ -64,6 +64,9 @@ export function createBridge({ clientId, clientName = 'AI Agent', clientKind = '
   let server = null;
   let port = null;
   let heartbeat = null;
+  // Set from MCP initialize.params.clientInfo.name — the agent software tells
+  // us who it is, so the user never has to type a name during pairing.
+  let effectiveClientName = clientName;
 
   function log(level, message) {
     onLog?.(level, message);
@@ -81,7 +84,7 @@ export function createBridge({ clientId, clientName = 'AI Agent', clientKind = '
     const clients = pairedClients();
     clients[clientId] = {
       id: clientId,
-      name: name || clientName,
+      name: name || effectiveClientName,
       kind: clientKind,
       pairedAt: new Date().toISOString(),
     };
@@ -136,7 +139,7 @@ export function createBridge({ clientId, clientName = 'AI Agent', clientKind = '
         port,
         browsers: sseClients.size,
         paired: isPaired(),
-        client: { id: clientId, name: clientName, kind: clientKind },
+        client: { id: clientId, name: effectiveClientName, kind: clientKind },
       }));
       return;
     }
@@ -157,7 +160,7 @@ export function createBridge({ clientId, clientName = 'AI Agent', clientKind = '
       everConnected = true;
       log('info', `browser connected (${sseClients.size} total)`);
 
-      sendTo(conn, { t: WIRE.HELLO, client: { id: clientId, name: clientName, kind: clientKind } });
+      sendTo(conn, { t: WIRE.HELLO, client: { id: clientId, name: effectiveClientName, kind: clientKind } });
       // Always request pairing; the extension auto-confirms trusted clients.
       requestPairing(conn);
 
@@ -220,7 +223,7 @@ export function createBridge({ clientId, clientName = 'AI Agent', clientKind = '
     sendTo(conn, {
       t: WIRE.PAIRING_REQUEST,
       request_id: requestId,
-      client: { id: clientId, name: clientName, kind: clientKind },
+      client: { id: clientId, name: effectiveClientName, kind: clientKind },
     });
     log('info', `pairing requested from browser (already paired: ${isPaired()})`);
   }
@@ -256,7 +259,7 @@ export function createBridge({ clientId, clientName = 'AI Agent', clientKind = '
       case WIRE.PAIRING_RESPONSE: {
         if (frame.ok) {
           markPaired(frame.name);
-          log('info', `paired as "${frame.name || clientName}"`);
+          log('info', `paired as "${frame.name || effectiveClientName}"`);
         }
         // Whoever answered becomes the active browser.
         if (browserConn && frame.ok) {
@@ -402,6 +405,13 @@ export function createBridge({ clientId, clientName = 'AI Agent', clientKind = '
 
   return {
     start,
+    setClientName(name) {
+      const next = String(name || '').trim();
+      if (!next || next === effectiveClientName) return false;
+      effectiveClientName = next;
+      log('info', `client identified itself as "${next}"`);
+      return true;
+    },
     stop,
     callTool,
     waitForPairing,

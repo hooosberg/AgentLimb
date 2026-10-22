@@ -157,11 +157,15 @@ export function createBridgeClient({ onStatus, onToolCall, onPairingRequest, onA
       if (found !== port) {
         port = found;
       }
+      // The bridge (MCP host) restarts with the agent software. Trusted clients
+      // live in chrome.storage, so restore them BEFORE the stream opens —
+      // otherwise the HELLO/PAIRING_REQUEST handshake sees an empty map and the
+      // user is asked to pair again on every restart.
+      await loadPaired();
       openStream();
     } else {
       port = null;
       setStatus('disconnected');
-      clients.clear();
       pending.clear();
       broadcast();
     }

@@ -18,6 +18,9 @@ import { APP_NAME, APP_VERSION, APP_BUILD, MCP_PROTOCOL_VERSION } from '../kerne
 
 const CLIENT_NAME = process.env.AGENTLIMB_CLIENT_NAME || 'AI Agent';
 const CLIENT_KIND = process.env.AGENTLIMB_CLIENT_KIND || 'generic';
+// An explicit env name wins; otherwise we adopt initialize.clientInfo.name so
+// the pairing page / side panel can say exactly which software connected.
+const EXPLICIT_CLIENT_NAME = !!process.env.AGENTLIMB_CLIENT_NAME;
 
 const bridge = createBridge({
   clientId: loadOrCreateClientId(),
@@ -69,6 +72,9 @@ async function handleRequest(request) {
 
   switch (request.method) {
     case 'initialize':
+      // The agent software tells us its own name here — the pairing UI and the
+      // side panel then show "正在与 <name> 驱动浏览器" with no user input.
+      if (!EXPLICIT_CLIENT_NAME) bridge.setClientName(request.params?.clientInfo?.name);
       reply(request.id, {
         protocolVersion: MCP_PROTOCOL_VERSION,
         capabilities: { tools: {}, logging: {} },

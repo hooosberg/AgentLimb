@@ -191,3 +191,5 @@ body {
 #chat-input:focus { border-color: var(--brand); }
 .btn-send { padding: 10px 16px; }
 .chat-note { font-size: 11px; color: var(--text-soft); text-align: center; }
+
+.paired-hint { margin: 8px 0 4px; }

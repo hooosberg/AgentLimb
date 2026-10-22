@@ -24,7 +24,7 @@ function createChromeStub() {
       onMessage: { addListener: (fn) => listeners.message.push(fn) },
       onInstalled: { addListener: () => {} },
       sendMessage: () => Promise.resolve(),
-      getManifest: () => ({ version: '0.3.2' }),
+      getManifest: () => ({ version: '0.3.3' }),
       getURL: (p) => `chrome-extension://stub/${p}`,
       getContexts: async (filter) =>
         (filter?.contextTypes?.includes('SIDE_PANEL') ? sidePanelContexts : []),
@@ -136,6 +136,36 @@ test('panel behavior does not consume the action click', async () => {
   const last = stub.calls.panelBehavior.at(-1);
   assert.ok(last, 'setPanelBehavior called');
   assert.equal(last.openPanelOnActionClick, false);
+});
+
+test('a bridge outage must not forget trusted (paired) clients', async () => {
+  // Regression: reconnect() used to call clients.clear() when the bridge was
+  // down, so the next HELLO saw an empty map and the user was asked to pair
+  // again on EVERY agent restart — the opposite of "pair once".
+  const { createBridgeClient } = await import('../kernel/control/background/bridge-client.js');
+  const { STORAGE_KEYS } = await import('../kernel/shared/constants.js');
+  const savedGet = stub.chrome.storage.local.get;
+  const savedFetch = globalThis.fetch;
+  stub.chrome.storage.local.get = async (key) => (
+    key === STORAGE_KEYS.pairedClients
+      ? { [STORAGE_KEYS.pairedClients]: { 'client-1': { id: 'client-1', name: 'WorkBuddy AI', kind: 'generic' } } }
+      : {}
+  );
+  // Pretend no MCP host is running — otherwise this test would pick up a real
+  // bridge (other test files run in parallel and do bind 8765..8770).
+  globalThis.fetch = async () => { throw new Error('no bridge'); };
+  try {
+    const bridge = createBridgeClient({});
+    await bridge.start();
+    const status = bridge.getStatus();
+    assert.equal(status.status, 'disconnected');
+    assert.equal(status.clients.length, 1, 'trusted client must survive a bridge outage');
+    assert.equal(status.clients[0].paired, true);
+    assert.equal(status.clients[0].name, 'WorkBuddy AI');
+  } finally {
+    stub.chrome.storage.local.get = savedGet;
+    globalThis.fetch = savedFetch;
+  }
 });
 
 test('tab_new returns only after the new tab commits a URL', async () => {
