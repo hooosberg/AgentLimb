@@ -40,6 +40,12 @@ export function createBridgeClient({ onStatus, onToolCall, onPairingRequest, onA
    * Persisted so closing/reopening the panel keeps the conversation.
    */
   const chatLog = [];
+  /**
+   * Timestamp of a panel message that has not been answered yet. Drives the
+   * "正在思考…" bubble — the only liveness signal the user gets when the agent
+   * is silent.
+   */
+  let pendingReplyAt = null;
 
   function persistChat() {
     const durable = chatLog.filter((m) => m.from !== 'activity').slice(-60);
@@ -55,6 +61,7 @@ export function createBridgeClient({ onStatus, onToolCall, onPairingRequest, onA
 
   /** Wipe the transcript (disconnect, or a different agent took over). */
   function clearChat() {
+    pendingReplyAt = null;
     if (!chatLog.length) return;
     chatLog.length = 0;
     persistChat();
@@ -111,6 +118,7 @@ export function createBridgeClient({ onStatus, onToolCall, onPairingRequest, onA
         kind: p.client.kind,
       })),
       chat: chatLog.slice(-60),
+      pendingReplyAt,
     };
   }
 
@@ -335,6 +343,7 @@ export function createBridgeClient({ onStatus, onToolCall, onPairingRequest, onA
 
       case WIRE.AGENT_MESSAGE: {
         // The agent replied via the `say` tool — show it in the panel chat.
+        pendingReplyAt = null;
         pushChat({ from: 'agent', text: frame.text, at: frame.at || new Date().toISOString() });
         break;
       }
@@ -425,6 +434,7 @@ export function createBridgeClient({ onStatus, onToolCall, onPairingRequest, onA
     const message = { text: text.trim(), at: new Date().toISOString() };
     if (page) message.page = page;
     pushChat({ from: 'user', ...message });
+    pendingReplyAt = Date.now();
     // Queue locally too: the host echoes the frame back, but if the SSE hiccups
     // the message still rides on the agent's next tool result.
     queueUserMessage(clientId, message);

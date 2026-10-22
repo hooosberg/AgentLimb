@@ -74,6 +74,7 @@ function render() {
     els.statePaired.hidden = false;
     renderChips(paired, bridgeUp);
     syncChat();
+    renderThinking();
   } else {
     els.stateUnpaired.hidden = false;
     els.statePaired.hidden = true;
@@ -127,6 +128,27 @@ function appendMessage(message) {
     div.appendChild(img);
   } else if (message.text) {
     div.textContent = message.text;
+  }
+  els.chatLog.appendChild(div);
+  els.chatLog.scrollTop = els.chatLog.scrollHeight;
+}
+
+/**
+ * "正在思考…" — the only liveness signal when the agent is silent.
+ * Sent → dots; no answer after 40s → an honest hint instead of spinning forever.
+ */
+function renderThinking() {
+  document.querySelectorAll('.msg.thinking, .msg.pending-hint').forEach((n) => n.remove());
+  const at = lastStatus?.pendingReplyAt;
+  if (!at) return;
+  const age = Date.now() - at;
+  const div = document.createElement('div');
+  if (age < 40000) {
+    div.className = 'msg thinking';
+    div.innerHTML = '<span class="dots"><i></i><i></i><i></i></span>正在思考…';
+  } else {
+    div.className = 'msg pending-hint';
+    div.textContent = 'AI 还没回应——它可能没在处理这条消息；你这条会在它下次调用工具时送达。';
   }
   els.chatLog.appendChild(div);
   els.chatLog.scrollTop = els.chatLog.scrollHeight;

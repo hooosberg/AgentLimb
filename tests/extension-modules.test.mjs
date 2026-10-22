@@ -24,7 +24,7 @@ function createChromeStub() {
       onMessage: { addListener: (fn) => listeners.message.push(fn) },
       onInstalled: { addListener: () => {} },
       sendMessage: () => Promise.resolve(),
-      getManifest: () => ({ version: '0.4.4' }),
+      getManifest: () => ({ version: '0.4.5' }),
       getURL: (p) => `chrome-extension://stub/${p}`,
       getContexts: async (filter) =>
         (filter?.contextTypes?.includes('SIDE_PANEL') ? sidePanelContexts : []),
@@ -85,6 +85,12 @@ let stub;
 test('extension modules import cleanly under a chrome stub', async () => {
   stub = createChromeStub();
   globalThis.chrome = stub.chrome;
+
+  // Hermetic: the SW bootstrap kicks off bridge discovery. On a dev machine a
+  // real AgentLimb host may well be listening on 8765 (and Node has no
+  // EventSource), which would turn this unit test into a flaky integration one.
+  globalThis.fetch = async () => { throw new Error('no bridge in tests'); };
+  globalThis.EventSource = class { close() {} addEventListener() {} removeEventListener() {} };
 
   // Pure modules first (no chrome usage at import time).
   await import('../kernel/shared/constants.js');
