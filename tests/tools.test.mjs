@@ -35,6 +35,10 @@ test('connection prompt: generic, no vendor branding, embeds host path', () => {
   const prompt = buildConnectionPrompt({ hostPath: '~/.agentlimb/host/mcp-server.mjs', lang: 'zh' });
   assert.match(prompt, /~\/\.agentlimb\/host\/mcp-server\.mjs/);
   assert.match(prompt, /mcpServers/);
+  // The ~ placeholder must come with an explicit "replace with absolute path"
+  // warning — JSON configs are spawned without a shell, ~ is NOT expanded.
+  assert.match(prompt, /替换成用户主目录的绝对路径/);
+  assert.match(prompt, /重启智能体软件/);
   // Product is vendor-neutral: no third-party agent brands anywhere in user-facing copy.
   for (const brand of ['claude', 'Claude', 'cursor', 'Cursor', 'windsurf', 'Windsurf']) {
     assert.ok(!prompt.includes(brand), `prompt must not mention ${brand}`);
@@ -42,5 +46,7 @@ test('connection prompt: generic, no vendor branding, embeds host path', () => {
   assert.match(prompt, /智能体软件/);
   const en = buildConnectionPrompt({ lang: 'en' });
   assert.match(en, /agent software/);
+  assert.match(en, /replace `~` with the user's absolute home directory path/i);
+  assert.match(en, /restart the agent software/i);
   assert.ok(!en.includes('claude'));
 });

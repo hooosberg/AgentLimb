@@ -48,7 +48,11 @@ Add this MCP server config to your agent software (any MCP-capable client):
 }
 \`\`\`
 
-(\`~\` expands to the user's home directory. Optional env vars \`AGENTLIMB_CLIENT_NAME\` / \`AGENTLIMB_CLIENT_KIND\` identify you during pairing.)
+**IMPORTANT — replace \`~\` with the user's absolute home directory path.** JSON configs are passed to the process directly (no shell), so \`~\` is NOT expanded and \`node\` will fail with MODULE_NOT_FOUND. Examples: macOS \`/Users/<username>/.agentlimb/host/mcp-server.mjs\`, Linux \`/home/<username>/...\`, Windows \`C:\\Users\\<username>\\.agentlimb\\host\\mcp-server.mjs\`. If you cannot determine the home directory, ask the user for it.
+
+After editing the config, restart the agent software so the new MCP server is picked up.
+
+Optional env vars \`AGENTLIMB_CLIENT_NAME\` / \`AGENTLIMB_CLIENT_KIND\` identify you during pairing.
 
 ## 2. Connect & pair
 - Starting the MCP server automatically connects to the browser extension over a local channel (127.0.0.1).
@@ -66,7 +70,10 @@ ${tools}
 - Never ask the user to click things you can do yourself with the tools above.
 
 ## 5. Verify
-Run the \`ping\` tool once. If it returns pong, the link is live — wait for the user's mission.`;
+Run the \`ping\` tool once.
+- If it returns pong, the link is live — wait for the user's mission.
+- If it fails with \`no paired browser\`, ask the user to open the ${appName} side panel and confirm the pairing popup.
+- If it fails with \`no browser extension connected\`, the ${appName} Chrome extension is not installed or Chrome is not running — ask the user to check chrome://extensions.`;
   }
 
   return `# ${appName} — 浏览器控制接入
@@ -87,7 +94,11 @@ Run the \`ping\` tool once. If it returns pong, the link is live — wait for th
 }
 \`\`\`
 
-（\`~\` 表示用户主目录；可选环境变量 \`AGENTLIMB_CLIENT_NAME\` / \`AGENTLIMB_CLIENT_KIND\` 用于在配对时标识自己）
+**重要：把 \`~\` 替换成用户主目录的绝对路径。** JSON 配置是直接传给进程的（不过 shell），\`~\` 不会被展开，node 会报 MODULE_NOT_FOUND。示例：macOS \`/Users/<用户名>/.agentlimb/host/mcp-server.mjs\`，Linux \`/home/<用户名>/...\`，Windows \`C:\\Users\\<用户名>\\.agentlimb\\host\\mcp-server.mjs\`。拿不到主目录路径就问用户。
+
+改完配置后重启智能体软件，新 MCP 才会生效。
+
+（可选环境变量 \`AGENTLIMB_CLIENT_NAME\` / \`AGENTLIMB_CLIENT_KIND\` 用于在配对时标识自己）
 
 ## 2. 连接与配对
 - 启动 MCP 后会通过本地通道（127.0.0.1）自动连接浏览器扩展。
@@ -105,7 +116,10 @@ ${tools}
 - 能用工具做的事，不要麻烦用户手动点。
 
 ## 5. 验证
-调用一次 \`ping\`，返回 pong 即链路就绪——然后等待用户下达任务。`;
+调用一次 \`ping\`。
+- 返回 pong：链路就绪——等待用户下达任务。
+- 报错 \`no paired browser\`：请用户打开 ${appName} 侧栏，确认弹出的配对页。
+- 报错 \`no browser extension connected\`：${appName} 扩展没装或 Chrome 没运行——请用户检查 chrome://extensions。`;
 }
 
 export function detectLang() {
