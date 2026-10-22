@@ -228,7 +228,7 @@ export function createDebuggerManager() {
   }
 
   // ── screenshot with adaptive quality ───────────────────────────────────────
-  async function screenshot(tabId, { format = 'jpeg', fullPage = false, quality = 75 } = {}) {
+  async function screenshot(tabId, { format = 'jpeg', fullPage = false, quality = 75, maxBase64 = MAX_BASE64_CHARS } = {}) {
     await attach(tabId);
     let q = quality;
     let shot = await send(tabId, 'Page.captureScreenshot', {
@@ -240,7 +240,7 @@ export function createDebuggerManager() {
     // Shrink until the payload fits the budget (JPEG only).
     if (format === 'jpeg') {
       let guard = 0;
-      while (shot.data && shot.data.length > MAX_BASE64_CHARS && q > 10 && guard++ < 12) {
+      while (shot.data && shot.data.length > maxBase64 && q > 10 && guard++ < 12) {
         q = Math.max(10, q - 15);
         shot = await send(tabId, 'Page.captureScreenshot', {
           format,

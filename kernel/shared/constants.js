@@ -7,7 +7,7 @@
 
 export const APP_ID = 'agentlimb.chrome';
 export const APP_NAME = 'AgentLimb';
-export const APP_VERSION = '0.4.5';
+export const APP_VERSION = '0.4.6';
 export const APP_BUILD = 'l1';
 
 /** Local bridge defaults. The host picks the first free port in the range. */

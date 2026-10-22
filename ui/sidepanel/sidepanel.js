@@ -30,7 +30,6 @@ const els = {
   chatLog: $('chat-log'),
   chatForm: $('chat-form'),
   chatInput: $('chat-input'),
-  btnStop: $('btn-stop'),
 };
 
 let lastStatus = null;
@@ -238,11 +237,6 @@ els.btnDisconnect.addEventListener('click', async () => {
     await chrome.runtime.sendMessage({ type: MESSAGE_TYPES.DISCONNECT_CLIENT, clientId: c.id });
   }
   refreshStatus();
-});
-
-els.btnStop.addEventListener('click', async () => {
-  await chrome.runtime.sendMessage({ type: MESSAGE_TYPES.STOP_AGENT });
-  appendMessage({ from: 'system', text: '已请求停止', at: new Date().toISOString() });
 });
 
 function escapeHtml(s) {

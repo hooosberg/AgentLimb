@@ -135,13 +135,26 @@ function bootstrap() {
         { type: 'AGENTLIMB_PAGE_SNAPSHOT', options: { maxText: 2500, maxElements: 30 } },
         { frameId: 0 },
       );
-      if (snap?.ok) {
-        return { ...base, text: snap.text, interactive: snap.interactive };
-      }
-      return base;
+      let page = snap?.ok ? { ...base, text: snap.text, interactive: snap.interactive } : base;
+      const image = await capturePageImage(tab.id);
+      if (image) page = { ...page, image: image.data, imageMime: image.mimeType };
+      return page;
     } catch (_) {
       return null; // no content script (chrome:// page, PDF, etc.)
     }
+  }
+
+  /**
+   * Same as above plus a screenshot of that tab — "what am I looking at" beats
+   * any text description. Attached to every panel chat message so the agent can
+   * answer without spending a tool call on it.
+   */
+  async function capturePageImage(tabId) {
+    try {
+      const shot = await runtime.debugger.screenshot(tabId, { quality: 45, maxBase64: 220000 });
+      if (shot?.data) return { data: shot.data, mimeType: 'image/jpeg' };
+    } catch (_) { /* screenshot failed — text context is still useful */ }
+    return null;
   }
 
   async function handleMessage(message = {}, sender) {    switch (message.type) {

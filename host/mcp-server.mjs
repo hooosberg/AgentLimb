@@ -58,6 +58,7 @@ function formatUserMessage(msg) {
   if (page) {
     lines.push('');
     lines.push(`Current tab: ${page.title || '(untitled)'} — ${page.url}`);
+    if (page.image) lines.push('(a screenshot of this exact tab is attached to this message)');
     if (page.text) {
       lines.push('Visible page text (excerpt):');
       lines.push(page.text);
@@ -157,6 +158,10 @@ async function handleToolCall(request) {
       content.push({ type: 'text', text: JSON.stringify(result) });
     }
     for (const msg of userMessages || []) {
+      // Screenshot of the tab the user was looking at — worth more than any text.
+      if (msg.page?.image) {
+        content.push({ type: 'image', data: msg.page.image, mimeType: msg.page.imageMime || 'image/jpeg' });
+      }
       content.push({ type: 'text', text: formatUserMessage(msg) });
     }
     reply(request.id, { content });
