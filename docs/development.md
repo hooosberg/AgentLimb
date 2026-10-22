@@ -116,6 +116,13 @@ CFT="$HOME/Library/Caches/ms-playwright/chromium-1228/chrome-mac-arm64/Google Ch
    （`--disable-features=DisableLoadExtensionCommandLineSwitch` 无效）。想自动化
    起浏览器验扩展，只能用 Chrome for Testing（见「D. 自动化真机验证」）。
    另外沙箱里跑 Chrome 必须 `--no-sandbox --disable-gpu`，否则 GPU 进程 FATAL。
+10. **改完 SW 代码、点 ↻ 后仍报同样的旧错误（错误页代码片段却是新的）**：
+   这是**扩展代码缓存**（Extension Code Cache 按 `扩展ID + 版本号 + 文件路径` 缓存
+   编译产物，不含内容哈希）在起作用——解析用的是旧脚本，而错误页的代码片段
+   是 `developerPrivate.requestFileSource` 从磁盘读的**当前**文件。判断依据：
+   「片段看着完全正确，报错却指向它」。解法按顺序试：
+   ① 错误页点 **Clear all** 再 ↻；② **bump `manifest.json` 的 version**
+   （缓存键变化，最可靠）；③ 彻底重启 Chrome。若三条都做完还复现，才是真错误。
 
 ## 改代码的检查单
 

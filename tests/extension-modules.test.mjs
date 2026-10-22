@@ -24,7 +24,7 @@ function createChromeStub() {
       onMessage: { addListener: (fn) => listeners.message.push(fn) },
       onInstalled: { addListener: () => {} },
       sendMessage: () => Promise.resolve(),
-      getManifest: () => ({ version: '0.3.0' }),
+      getManifest: () => ({ version: '0.3.1' }),
       getURL: (p) => `chrome-extension://stub/${p}`,
       getContexts: async (filter) =>
         (filter?.contextTypes?.includes('SIDE_PANEL') ? sidePanelContexts : []),

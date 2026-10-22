@@ -1,6 +1,6 @@
 {
   "name": "agentlimb",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "agentlimbBuild": "l1",
   "private": true,
   "type": "module",
