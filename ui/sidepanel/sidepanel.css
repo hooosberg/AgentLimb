@@ -71,6 +71,15 @@ body {
   color: var(--ok);
 }
 
+.panel-hint {
+  margin: 0;
+  padding: 0 6px;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--text-soft);
+}
+
 .pending-box {
   border: 1px solid var(--warn);
   border-radius: var(--radius);

@@ -50,17 +50,50 @@ function bootstrap() {
     }
   });
 
-  // ── side panel ─────────────────────────────────────────────────────────────
-  chrome.sidePanel?.setPanelBehavior?.({ openPanelOnActionClick: true }).catch(() => {});
-  chrome.runtime.onInstalled.addListener(() => {
-    chrome.sidePanel?.setPanelBehavior?.({ openPanelOnActionClick: true }).catch(() => {});
+  // ── side panel: click toggles (open ↔ close) ───────────────────────────────
+  // openPanelOnActionClick must be false, otherwise Chrome consumes the click
+  // to open the panel and onClicked never fires (no toggle possible).
+  setPanelBehavior();
+
+  chrome.action.onClicked.addListener((tab) => {
+    void toggleSidePanel(tab);
   });
+
   chrome.commands?.onCommand?.addListener((command) => {
     if (command !== 'toggle-side-panel') return;
     chrome.tabs.query({ active: true, currentWindow: true }).then(([tab]) => {
-      if (tab?.id != null) chrome.sidePanel.open({ tabId: tab.id }).catch(() => {});
+      if (tab) void toggleSidePanel(tab);
     });
   });
+
+  function setPanelBehavior() {
+    chrome.sidePanel?.setPanelBehavior?.({ openPanelOnActionClick: false }).catch(() => {});
+  }
+
+  async function toggleSidePanel(tab) {
+    if (tab?.id == null) return;
+    try {
+      // One side panel per window: if a SIDE_PANEL context exists in this
+      // window the panel is open → close it; otherwise open it.
+      let isOpen = false;
+      try {
+        const contexts = await chrome.runtime.getContexts({
+          contextTypes: ['SIDE_PANEL'],
+          windowId: tab.windowId,
+        });
+        isOpen = Array.isArray(contexts) && contexts.length > 0;
+      } catch (_) {
+        isOpen = false; // getContexts unavailable (pre-116) → open
+      }
+      if (isOpen) {
+        await chrome.sidePanel.close({ tabId: tab.id });
+      } else {
+        await chrome.sidePanel.open({ tabId: tab.id });
+      }
+    } catch (error) {
+      console.warn('[AgentLimb] side panel toggle failed', error);
+    }
+  }
 
   // ── runtime messages (panel / pairing page / content scripts) ──────────────
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
