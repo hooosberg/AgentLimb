@@ -318,6 +318,16 @@ export function createBridge({ clientId, clientName = 'AI Agent', clientKind = '
     }
   }
 
+  /** Wait for the extension to finish its auto-confirm handshake. */
+  async function waitForActiveConnection(timeoutMs) {
+    const deadline = Date.now() + timeoutMs;
+    while (Date.now() < deadline) {
+      if (activeConnection()) return true;
+      await new Promise((r) => setTimeout(r, 100));
+    }
+    return activeConnection() != null;
+  }
+
   // ── tool calls ──────────────────────────────────────────────────────────────
   async function callTool(tool, args = {}, timeoutMs = 65000) {
     if (!activeConnection()) {
@@ -335,15 +345,22 @@ export function createBridge({ clientId, clientName = 'AI Agent', clientKind = '
           );
         }
       }
+      // Already paired? The extension still needs a beat to answer PAIRING_REQUEST
+      // with its auto-confirm, and the very first tool call usually lands inside
+      // that window — wait it out instead of failing.
+      if (isPaired()) await waitForActiveConnection(10000);
       if (!activeConnection()) {
         try {
           await waitForPairing(Math.min(timeoutMs, 150000));
         } catch (error) {
           throw new Error(`no paired browser: ${error.message}`);
         }
+        await waitForActiveConnection(3000);
       }
       if (!activeConnection()) {
-        throw new Error('pairing finished but no active browser — reload the extension and retry');
+        throw new Error(
+          'paired but the browser has not taken control yet — if a pairing tab is open, confirm it; otherwise reload the extension and retry',
+        );
       }
     }
     const toolUseId = randomUUID();
