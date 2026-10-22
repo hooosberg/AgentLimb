@@ -1,15 +1,15 @@
 {
   "name": "agentlimb",
-  "version": "0.2.2",
-  "agentlimbBuild": "b8",
+  "version": "0.3.0",
+  "agentlimbBuild": "l1",
   "private": true,
   "type": "module",
   "engines": {
     "node": ">=18"
   },
   "scripts": {
-    "test": "node --test tests/*.test.mjs",
-    "build": "node scripts/build-release.mjs",
-    "release": "node scripts/build-release.mjs"
+    "test": "node --test --test-force-exit tests/*.test.mjs",
+    "mcp": "node bin/agentlimb.mjs mcp",
+    "bridge": "node bin/agentlimb.mjs bridge"
   }
 }

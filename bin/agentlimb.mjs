@@ -1,38 +1,49 @@
 #!/usr/bin/env node
+/**
+ * AgentLimb CLI
+ *
+ *   agentlimb mcp                 run the MCP server (what AI agents spawn)
+ *   agentlimb install             install the host to ~/.agentlimb + print MCP config
+ *   agentlimb uninstall           remove ~/.agentlimb
+ *   agentlimb status              probe the local bridge
+ *   agentlimb pair-status         show persisted pairings
+ */
 
 import { spawn } from 'node:child_process';
-import { existsSync } from 'node:fs';
+import { existsSync, mkdirSync, copyFileSync, rmSync, readdirSync, statSync } from 'node:fs';
+import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { dirname, resolve } from 'node:path';
+import { homedir } from 'node:os';
 
-const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+import { BRIDGE_PORTS, BRIDGE_HOST, APP_VERSION } from '../kernel/shared/constants.js';
+import { agentlimbHome } from '../host/bridge-server.mjs';
+
+const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const [command = 'help', ...args] = process.argv.slice(2);
-const extensionId = readOption(args, '--extension-id');
-const host = readOption(args, '--host') || 'http://127.0.0.1:7791';
 
 try {
   switch (command) {
-    case 'setup':
-      await setup(extensionId);
-      break;
-    case 'status':
-      await status(host);
-      break;
     case 'mcp':
     case 'serve':
-      await import('../runtime/mcp-server.mjs').then(({ runMcpServer }) => runMcpServer({ host }));
+      await import('../host/mcp-server.mjs');
       break;
-    case 'service':
-      await service(args[0] || 'status', host);
+
+    case 'install':
+      await install();
       break;
-    case 'start':
-    case 'connect':
-    case 'claim':
-    case 'task':
-    case 'call':
-    case 'complete':
-      await runTerminalCommand(command, args);
+
+    case 'uninstall':
+      await uninstall();
       break;
+
+    case 'status':
+      await status();
+      break;
+
+    case 'pair-status':
+      await pairStatus();
+      break;
+
     default:
       printHelp();
   }
@@ -41,84 +52,88 @@ try {
   process.exitCode = 1;
 }
 
-async function setup(id) {
-  if (!/^[a-p]{32}$/.test(id || '')) {
-    throw new Error('setup requires --extension-id <32-character Chromium extension ID>.');
+// ── commands ─────────────────────────────────────────────────────────────────
+async function install() {
+  const home = agentlimbHome();
+  // Mirror the repo layout so the installed host's relative imports resolve.
+  const layout = [
+    ['host/mcp-server.mjs', 'host/mcp-server.mjs'],
+    ['host/bridge-server.mjs', 'host/bridge-server.mjs'],
+    ['kernel/shared/constants.js', 'kernel/shared/constants.js'],
+    ['kernel/control/host/tools.js', 'kernel/control/host/tools.js'],
+  ];
+  for (const [from, to] of layout) {
+    const target = join(home, to);
+    mkdirSync(dirname(target), { recursive: true });
+    copyFileSync(join(root, from), target);
   }
-
-  const isWindows = process.platform === 'win32';
-  const script = isWindows ? resolve(root, 'scripts', 'install.ps1') : resolve(root, 'scripts', 'install.sh');
-  if (!existsSync(script)) throw new Error(`AgentLimb setup script is missing: ${script}`);
-
-  const program = isWindows ? 'powershell.exe' : 'bash';
-  const scriptArgs = isWindows
-    ? ['-NoLogo', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', script, '-ExtensionId', id]
-    : [script, '--extension-id', id];
-  await run(program, scriptArgs);
+  const mcpPath = join(home, 'host', 'mcp-server.mjs');
+  console.log(`AgentLimb host installed to ${home}`);
+  console.log('');
+  console.log('Add this MCP server to your agent software (any MCP-capable client):');
+  console.log('');
+  console.log('  {');
+  console.log('    "mcpServers": {');
+  console.log('      "agentlimb": {');
+  console.log('        "command": "node",');
+  console.log(`        "args": ["${mcpPath}"]`);
+  console.log('      }');
+  console.log('    }');
+  console.log('  }');
+  console.log('');
+  console.log('Then open the extension side panel, copy the connection prompt,');
+  console.log('and paste it into your agent software. Pairing confirms on first connect.');
 }
 
-async function status(baseUrl) {
-  const response = await fetch(`${baseUrl.replace(/\/$/, '')}/api/mvp/status`);
-  if (!response.ok) throw new Error(`AgentLimb Bridge is offline (${response.status}). Run: agentlimb setup --extension-id <id>`);
-  console.log(JSON.stringify(await response.json(), null, 2));
+async function uninstall() {
+  const home = agentlimbHome();
+  if (!existsSync(home)) {
+    console.log(`${home} does not exist — nothing to do.`);
+    return;
+  }
+  rmSync(home, { recursive: true, force: true });
+  console.log(`removed ${home}`);
+  console.log('Note: remove the "agentlimb" entry from your agent software\'s MCP config to detach it.');
 }
 
-async function service(action, baseUrl) {
-  if (action === 'status') {
-    await status(baseUrl);
-    return;
-  }
-  if (action !== 'start') {
-    throw new Error('service accepts only start or status.');
-  }
-
-  try {
-    await status(baseUrl);
-    return;
-  } catch {
-    if (process.platform === 'win32') {
-      await run('powershell.exe', ['-NoProfile', '-Command', 'Start-ScheduledTask -TaskName "AgentLimb Bridge"']);
-    } else if (process.platform === 'darwin') {
-      await run('launchctl', ['kickstart', '-k', `gui/${process.getuid()}/com.agentlimb.bridge`]);
-    } else {
-      throw new Error('AgentLimb Runtime currently supports macOS and Windows.');
+async function status() {
+  for (const port of BRIDGE_PORTS) {
+    try {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 800);
+      const res = await fetch(`http://${BRIDGE_HOST}:${port}/health`, { signal: controller.signal });
+      clearTimeout(timer);
+      if (res.ok) {
+        const body = await res.json();
+        console.log(JSON.stringify(body, null, 2));
+        return;
+      }
+    } catch (_) {
+      // try next port
     }
-    await new Promise((resolveSleep) => setTimeout(resolveSleep, 800));
-    await status(baseUrl);
   }
+  console.log('AgentLimb bridge is not running.');
+  console.log('Start it via your AI agent (it spawns the MCP server automatically),');
+  console.log('or run: node bin/agentlimb.mjs mcp');
 }
 
-async function runTerminalCommand(subcommand, values) {
-  const client = resolve(root, 'kernel', 'bridge', 'mvp', 'terminal-client.mjs');
-  if (!existsSync(client)) throw new Error(`AgentLimb terminal client is missing: ${client}`);
-  await run(process.execPath, [client, subcommand, ...values]);
-}
-
-function readOption(values, name) {
-  const index = values.indexOf(name);
-  return index >= 0 ? values[index + 1] : '';
-}
-
-function run(program, programArgs) {
-  return new Promise((resolveRun, rejectRun) => {
-    const child = spawn(program, programArgs, { stdio: 'inherit' });
-    child.once('error', rejectRun);
-    child.once('exit', (code) => code === 0
-      ? resolveRun()
-      : rejectRun(new Error(`${program} exited with code ${code ?? 'unknown'}.`)));
-  });
+async function pairStatus() {
+  const file = join(agentlimbHome(), 'paired-clients.json');
+  if (!existsSync(file)) {
+    console.log('no pairings yet.');
+    return;
+  }
+  console.log(readFileSync(file, 'utf8'));
 }
 
 function printHelp() {
   console.log([
-    'AgentLimb Runtime',
+    `AgentLimb ${APP_VERSION}`,
     '',
-    '  agentlimb setup --extension-id <id>  Install or upgrade the local Runtime',
-    '  agentlimb status                     Check the local Bridge',
-    '  agentlimb service start              Start the installed Bridge service',
-    '  agentlimb start [--task-id <id>]     Connect, claim a task, and fetch browser context',
-    '  agentlimb call --tool <name> --params <JSON>',
-    '  agentlimb complete --ok true --output <summary>',
-    '  agentlimb mcp                        Serve AgentLimb through MCP stdio',
+    '  agentlimb install      install the host to ~/.agentlimb and print MCP setup',
+    '  agentlimb mcp          run the MCP server (stdio) — used by AI agents',
+    '  agentlimb status       probe the local bridge',
+    '  agentlimb pair-status  show persisted pairings',
+    '  agentlimb uninstall    remove ~/.agentlimb',
   ].join('\n'));
 }

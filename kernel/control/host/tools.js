@@ -1,82 +1,158 @@
+/**
+ * AgentLimb tool catalog — the single source of truth shared by:
+ *   - the extension service worker (executor)
+ *   - host/mcp-server.mjs (tools/list advertisement to the AI agent)
+ *
+ * Keep this list LEAN. Every tool costs context tokens on every agent turn.
+ */
+
 export const HOST_TOOLS = [
-  {
-    name: 'browser_session',
-    description:
-      'Inspect the current AgentLimb browser runtime session, capabilities, and module readiness.',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        includeModules: {
-          type: 'boolean',
-          description: 'Include detailed module status. Default: true',
-        },
-      },
-      additionalProperties: false,
-    },
-  },
   {
     name: 'tabs_context',
     description:
-      'Get active-tab context including URL, title, readyState, viewport, and scroll position.',
+      'List browser tabs (id, title, url, active, windowId, muted). Without arguments lists all tabs; pass tabId for one. Call this first to learn which tab to operate.',
     inputSchema: {
       type: 'object',
       properties: {
-        tabId: {
-          type: 'number',
-          description: 'Optional target tab id. Defaults to the active tab.',
-        },
+        tabId: { type: 'number', description: 'Optional tab id to inspect.' },
       },
       additionalProperties: false,
     },
   },
   {
-    name: 'page_snapshot',
+    name: 'tab_new',
     description:
-      'Capture a page snapshot with interactive refs, coordinate centers, and lightweight page metadata.',
+      'Open a new tab (background by default — it does NOT steal focus from the user). Returns the new tab id for subsequent tool calls.',
     inputSchema: {
       type: 'object',
       properties: {
-        tabId: {
-          type: 'number',
-          description: 'Optional target tab id. Defaults to the active tab.',
-        },
-        filterMode: {
-          type: 'string',
-          enum: ['interactive', 'all'],
-          description: 'Snapshot scope. Default: interactive',
-        },
-        limit: {
-          type: 'number',
-          description: 'Maximum number of nodes to include. Default: 60',
-        },
+        url: { type: 'string', description: 'URL to open. Defaults to about:blank.' },
+        active: { type: 'boolean', description: 'Bring the new tab to front. Default: false.' },
       },
+      additionalProperties: false,
+    },
+  },
+  {
+    name: 'tab_close',
+    description: 'Close a tab by id.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        tabId: { type: 'number', description: 'Tab id to close.' },
+      },
+      required: ['tabId'],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: 'tab_activate',
+    description: 'Focus the window and activate a tab (use only when the user should see it).',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        tabId: { type: 'number', description: 'Tab id to activate.' },
+      },
+      required: ['tabId'],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: 'read_page',
+    description:
+      'Get the page accessibility tree with element refs (use refs with computer/form_input). filter "interactive" (default) returns only clickable/typeable elements; "all" returns the full tree. Refs stay valid until the next navigation.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        tabId: { type: 'number', description: 'Target tab. Defaults to the active tab.' },
+        filter: { type: 'string', enum: ['interactive', 'all'], description: 'Default: interactive.' },
+        depth: { type: 'number', description: 'Max tree depth. Default: 15.' },
+        limit: { type: 'number', description: 'Max elements returned. Default: 100.' },
+      },
+      additionalProperties: false,
+    },
+  },
+  {
+    name: 'find',
+    description:
+      'Find elements by visible text or CSS selector and return their refs — much cheaper than read_page when you know what you are looking for.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        tabId: { type: 'number', description: 'Target tab.' },
+        query: { type: 'string', description: 'Visible text to match (case-insensitive substring).' },
+        selector: { type: 'string', description: 'CSS selector (alternative to query).' },
+        limit: { type: 'number', description: 'Max matches. Default: 20.' },
+      },
+      additionalProperties: false,
+    },
+  },
+  {
+    name: 'computer',
+    description:
+      'Mouse/keyboard/screenshot actions via CDP. Target elements by ref (from read_page/find) or by viewport coordinates. Actions: click, double_click, right_click, hover, type, scroll, key, drag, screenshot, wait.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        action: {
+          type: 'string',
+          enum: [
+            'click',
+            'double_click',
+            'right_click',
+            'hover',
+            'type',
+            'scroll',
+            'key',
+            'drag',
+            'screenshot',
+          ],
+        },
+        tabId: { type: 'number', description: 'Target tab.' },
+        ref: { type: 'number', description: 'Element ref from read_page/find.' },
+        selector: { type: 'string', description: 'CSS selector fallback when no ref.' },
+        x: { type: 'number', description: 'Viewport x (CSS px).' },
+        y: { type: 'number', description: 'Viewport y (CSS px).' },
+        text: { type: 'string', description: 'Text for "type" action.' },
+        key: { type: 'string', description: 'Key for "key" action, e.g. "Enter", "Tab", "a".' },
+        modifiers: { type: 'string', description: 'e.g. "ctrl", "shift", "ctrl+shift", "meta".' },
+        deltaY: { type: 'number', description: 'Scroll delta in CSS px (negative = up).' },
+        x2: { type: 'number', description: 'Drag target x.' },
+        y2: { type: 'number', description: 'Drag target y.' },
+        ref2: { type: 'number', description: 'Drag target element ref.' },
+        format: { type: 'string', enum: ['jpeg', 'png'], description: 'Screenshot format. Default: jpeg.' },
+        fullPage: { type: 'boolean', description: 'Screenshot beyond viewport. Default: false.' },
+      },
+      required: ['action'],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: 'form_input',
+    description:
+      'Set a form value directly (text inputs, textarea, select, checkbox, radio, contenteditable). More reliable than click+type. Use ref or selector.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        tabId: { type: 'number', description: 'Target tab.' },
+        ref: { type: 'number', description: 'Element ref.' },
+        selector: { type: 'string', description: 'CSS selector fallback.' },
+        value: { description: 'String for text/select, boolean for checkbox/radio.' },
+      },
+      required: ['value'],
       additionalProperties: false,
     },
   },
   {
     name: 'navigate',
     description:
-      'Navigate the active tab to a URL, or go back/forward in browser history. When "back" closes a newly-opened tab (navigationType: "back_close_tab"), the opener tab is activated but has no forward history — do not call forward after a back_close_tab result.',
+      'Navigate the target tab: open a URL, or go "back"/"forward" in history.',
     inputSchema: {
       type: 'object',
       properties: {
-        url: {
-          type: 'string',
-          description:
-            'Target URL (e.g. "https://example.com"), or "back"/"forward" for history navigation. Note: if the active tab was opened as a new tab (e.g. by a link click), "back" will close it and return to the opener tab (navigationType: "back_close_tab"). Forward navigation after that is not available.',
-        },
-        tabId: {
-          type: 'number',
-          description: 'Optional target tab id. Defaults to the active tab.',
-        },
-        waitForLoad: {
-          type: 'boolean',
-          description: 'Wait for page load to complete. Default: true',
-        },
-        timeout: {
-          type: 'number',
-          description: 'Max wait time in ms for page load. Default: 15000',
-        },
+        url: { type: 'string', description: 'Absolute URL, or "back"/"forward".' },
+        tabId: { type: 'number', description: 'Target tab. Defaults to the active tab.' },
+        waitForLoad: { type: 'boolean', description: 'Wait for load event. Default: true.' },
+        timeout: { type: 'number', description: 'Load wait timeout ms. Default: 15000.' },
       },
       required: ['url'],
       additionalProperties: false,
@@ -85,369 +161,94 @@ export const HOST_TOOLS = [
   {
     name: 'javascript_eval',
     description:
-      'Execute JavaScript in the page context. Can read DOM, page state, call page functions, and interact with variables. Returns the result of the last expression.',
+      'Evaluate a JavaScript expression in the page context (awaitPromise supported). Returns the value of the last expression.',
     inputSchema: {
       type: 'object',
       properties: {
-        expression: {
-          type: 'string',
-          description:
-            'JavaScript expression to evaluate. The result of the last expression is returned. Supports async/await.',
-        },
-        tabId: {
-          type: 'number',
-          description: 'Optional target tab id. Defaults to the active tab.',
-        },
+        expression: { type: 'string', description: 'JS expression to evaluate.' },
+        tabId: { type: 'number', description: 'Target tab.' },
       },
       required: ['expression'],
       additionalProperties: false,
     },
   },
   {
-    name: 'computer',
-    description:
-      'Execute CDP-first browser actions such as click, type, scroll, and screenshot.',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        type: {
-          type: 'string',
-          enum: ['click', 'double_click', 'right_click', 'type', 'scroll', 'screenshot', 'key', 'hover', 'drag'],
-          description: 'Computer action type.',
-        },
-        tabId: {
-          type: 'number',
-          description: 'Optional target tab id. Defaults to the active tab.',
-        },
-        refId: {
-          type: 'number',
-          description: 'Snapshot ref id to target.',
-        },
-        selector: {
-          type: 'string',
-          description: 'CSS selector fallback when no refId is provided.',
-        },
-        x: {
-          type: 'number',
-          description: 'Direct viewport x coordinate.',
-        },
-        y: {
-          type: 'number',
-          description: 'Direct viewport y coordinate.',
-        },
-        value: {
-          type: 'string',
-          description: 'Text value for type action.',
-        },
-        text: {
-          type: 'string',
-          description: 'Alias for value in type action.',
-        },
-        deltaY: {
-          type: 'number',
-          description: 'Scroll delta in CSS pixels.',
-        },
-        direction: {
-          type: 'string',
-          enum: ['up', 'down'],
-          description: 'Optional semantic scroll direction.',
-        },
-        amount: {
-          type: 'number',
-          description: 'Optional semantic scroll amount.',
-        },
-        format: {
-          type: 'string',
-          enum: ['png', 'jpeg'],
-          description: 'Screenshot format. Default: png',
-        },
-        includeData: {
-          type: 'boolean',
-          description: 'Include raw base64 screenshot data.',
-        },
-        key: {
-          type: 'string',
-          description:
-            'Key name for key action (e.g. "Enter", "Tab", "Escape", "ArrowDown", "a").',
-        },
-        modifiers: {
-          type: 'string',
-          description:
-            'Modifier keys for key action (e.g. "ctrl", "shift", "ctrl+shift", "meta").',
-        },
-        repeat: {
-          type: 'number',
-          description: 'Number of times to repeat key press. Default: 1',
-        },
-        startX: {
-          type: 'number',
-          description: 'Drag start x coordinate.',
-        },
-        startY: {
-          type: 'number',
-          description: 'Drag start y coordinate.',
-        },
-        startRefId: {
-          type: 'number',
-          description: 'Drag start element ref id.',
-        },
-      },
-      required: ['type'],
-      additionalProperties: true,
-    },
-  },
-  {
-    name: 'form_input',
-    description:
-      'Set values in form elements: select dropdowns, checkboxes, radio buttons, contenteditable, and text inputs. More reliable than click/type for complex form controls.',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        refId: {
-          type: 'number',
-          description: 'Snapshot ref id of the form element.',
-        },
-        selector: {
-          type: 'string',
-          description: 'CSS selector fallback when no refId is provided.',
-        },
-        tabId: {
-          type: 'number',
-          description: 'Optional target tab id. Defaults to the active tab.',
-        },
-        value: {
-          description:
-            'Value to set. String for text/select, boolean for checkbox/radio.',
-        },
-      },
-      required: ['value'],
-      additionalProperties: false,
-    },
-  },
-  {
     name: 'wait',
     description:
-      'Wait for a condition: element appears/disappears, URL contains text, or page load completes. Avoids polling with repeated snapshots.',
+      'Wait for a condition instead of polling snapshots: element visible/hidden/exists, url_contains, page_contains, or page_load.',
     inputSchema: {
       type: 'object',
       properties: {
-        tabId: {
-          type: 'number',
-          description: 'Optional target tab id. Defaults to the active tab.',
-        },
-        selector: {
-          type: 'string',
-          description: 'CSS selector to wait for.',
-        },
-        text: {
-          type: 'string',
-          description: 'Text to wait for in URL or page content.',
-        },
+        tabId: { type: 'number', description: 'Target tab.' },
+        selector: { type: 'string', description: 'CSS selector to wait for.' },
+        text: { type: 'string', description: 'Text for url_contains / page_contains.' },
         condition: {
           type: 'string',
-          enum: ['visible', 'hidden', 'exists', 'url_contains', 'page_load', 'page_contains'],
-          description:
-            'Wait condition. Default: "visible" when selector provided, "page_load" otherwise. Use "page_contains" (with text param) to wait until text content appears anywhere on the page.',
+          enum: ['visible', 'hidden', 'exists', 'url_contains', 'page_contains', 'page_load'],
+          description: 'Default: "visible" when selector given, else "page_load".',
         },
-        timeout: {
-          type: 'number',
-          description: 'Max wait time in ms. Default: 10000, Max: 30000',
-        },
+        timeout: { type: 'number', description: 'Max wait ms. Default: 10000, max: 30000.' },
       },
       additionalProperties: false,
     },
   },
   {
-    name: 'muscle_recall',
-    description:
-      'Read learned muscle knowledge for a site. Defaults to the active tab\'s domain. Returns a profile plus a pre-rendered Markdown prompt segment you can inline into context. Returns an empty profile for unexplored sites.',
+    name: 'read_console_messages',
+    description: 'Read recent console messages captured from the target tab (requires the tab to have been debugger-attached at least once).',
     inputSchema: {
       type: 'object',
       properties: {
-        domain: {
-          type: 'string',
-          description: 'Optional. Domain or full URL (auto-normalized). Leave empty to use the active tab\'s domain.',
-        },
+        tabId: { type: 'number', description: 'Target tab.' },
+        limit: { type: 'number', description: 'Max messages. Default: 50.' },
+        level: { type: 'string', enum: ['all', 'error', 'warning', 'info', 'log'], description: 'Default: all.' },
       },
       additionalProperties: false,
     },
   },
   {
-    name: 'muscle_remember',
-    description:
-      'Merge new knowledge discovered during this run into the site\'s muscle profile. Record reliable selectors, workflow steps, and gotchas. The extension deep-merges the patch and atomically writes the desktop JSON file (~/Desktop/AgentLimb-muscle/).',
+    name: 'read_network_requests',
+    description: 'Read recent network requests captured from the target tab.',
     inputSchema: {
       type: 'object',
       properties: {
-        domain: {
-          type: 'string',
-          description: 'Domain or full URL. Leave empty to use the active tab\'s domain.',
-        },
-        patch: {
-          type: 'object',
-          description:
-            'Partial SiteProfile fields. Supports three categories — notes / selectors / workflows.' +
-            ' notes: [{at, text}];' +
-            ' selectors: {roleName: [{value, type, reliability, lastTestedAt}]};' +
-            ' workflows: [{id, name, description, steps: [string], successCount}]',
-        },
+        tabId: { type: 'number', description: 'Target tab.' },
+        limit: { type: 'number', description: 'Max requests. Default: 50.' },
+        urlFilter: { type: 'string', description: 'Substring filter on request URL.' },
       },
-      required: ['patch'],
       additionalProperties: false,
     },
   },
   {
-    name: 'muscle_commit',
+    name: 'browser_batch',
     description:
-      'Persist (or discard) selectors and workflows auto-captured during this session into the site\'s muscle profile. The `status` field controls four modes: ' +
-      '(1) manual (default) — save mid-task when something valuable is found; keeps the session buffer for further accumulation (user says "save this", semi-automatic sites at their limit, or a reliable workflow you don\'t want to lose); ' +
-      '(2) success — full task success; writes and clears the buffer (call this before `task_complete`, then call `complete`); ' +
-      '(3) partial — task partially done (e.g. 80% of the form filled, stopped one step before the end); writes, marks partial, clears buffer; ' +
-      '(4) failed — task failed; discards the buffer to avoid polluting muscle (previously `manual`-committed data is kept).',
+      'Execute several browser actions in ONE round trip (max 20). Use for predictable sequences to cut latency.',
     inputSchema: {
       type: 'object',
       properties: {
-        status: {
-          type: 'string',
-          enum: ['manual', 'success', 'partial', 'failed'],
-          description: 'Commit mode. Defaults to manual when omitted.',
-        },
-        note: {
-          type: 'string',
-          description: 'Reason or context for this commit (written into notes). Recommended for manual; optional for other modes.',
-        },
-        verification: {
-          type: 'string',
-          description: 'How the task was verified (e.g. "URL changed to /post/123 and page_contains the success message"). Recommended for success/partial.',
-        },
-        workflowName: {
-          type: 'string',
-          description: 'Optional. A name for this workflow (e.g. "first half of publishing a video", "fill form up to the email field").',
-        },
-        stepsCompleted: {
-          type: 'number',
-          description: 'Optional. In partial mode, which step number was reached.',
+        actions: {
+          type: 'array',
+          maxItems: 20,
+          items: {
+            type: 'object',
+            properties: {
+              tool: { type: 'string', description: 'Tool name, e.g. "computer", "navigate", "wait".' },
+              args: { type: 'object', description: 'Tool arguments.' },
+            },
+            required: ['tool'],
+          },
         },
       },
+      required: ['actions'],
       additionalProperties: false,
     },
   },
   {
     name: 'ping',
-    description: 'Check connectivity between the AgentLimb Bridge and the extension. Returns pong and a timestamp, useful for verifying the link is healthy.',
-    inputSchema: {
-      type: 'object',
-      properties: {},
-      additionalProperties: false,
-    },
-  },
-  {
-    name: 'task_plan',
-    description:
-      'Submit a task plan (title + step list) to the side panel before the task starts. The side panel displays the live status of every step (✓ done / ▶ active / · pending). ' +
-      'Step progression is driven **exclusively** by `task_step_done` — the side panel does not infer progress from tool calls. ' +
-      'Plan steps at the **logical** level (2–5 steps such as "open page", "fill form", "verify result"), not at the tool-call level. One logical step typically spans 5–20 tool calls; if you break the plan into too many fine-grained steps, you will likely forget to call `task_step_done` after each, and the side panel will stall on step 1. ' +
-      'Call `task_plan` before the first browser tool call of every new task. The task must be terminated explicitly at the end via `task_complete` or `task_fail`.',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        title: {
-          type: 'string',
-          description: 'The overall task title — a concise description of the goal (e.g. "scrape quotes from the quotes.toscrape.com homepage").',
-        },
-        steps: {
-          type: 'array',
-          items: {
-            oneOf: [
-              { type: 'string' },
-              {
-                type: 'object',
-                properties: {
-                  text: { type: 'string' },
-                  hint: {
-                    type: 'string',
-                    enum: ['tool_call', 'terminal_connected', 'explicit'],
-                    description: 'Termination-signal type for this step. Defaults to tool_call.',
-                  },
-                },
-                required: ['text'],
-                additionalProperties: false,
-              },
-            ],
-          },
-          description: 'Ordered list of task steps. Each entry can be a string or a { text, hint } object.',
-          minItems: 1,
-          maxItems: 20,
-        },
-      },
-      required: ['title', 'steps'],
-      additionalProperties: false,
-    },
-  },
-  {
-    name: 'task_step_done',
-    description:
-      'Mark a specific plan step as done or errored. This is the **only** signal the side panel uses to advance step state — without it, progress stays on step 1 for the entire task. Call it every time a logical step in your `task_plan` is finished. Skipping ahead is allowed: calling `task_step_done(index=N)` force-marks steps 0..N-1 as done in one shot.',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        index: {
-          type: 'number',
-          description: '0-based index of the step.',
-        },
-        ok: {
-          type: 'boolean',
-          description: 'Whether the step succeeded. When false, the step is marked as error.',
-        },
-        note: {
-          type: 'string',
-          description: 'Optional note (e.g. failure reason or result summary).',
-        },
-      },
-      required: ['index', 'ok'],
-      additionalProperties: false,
-    },
-  },
-  {
-    name: 'task_complete',
-    description:
-      'Explicitly mark the entire task as successful, triggering the side panel\'s "completed" terminal state. Call this after all steps have finished and `muscle_commit` has been called.',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        summary: {
-          type: 'string',
-          description: 'Task completion summary (e.g. "scraped 12 quotes successfully").',
-        },
-      },
-      additionalProperties: false,
-    },
-  },
-  {
-    name: 'task_fail',
-    description:
-      'Explicitly mark the entire task as failed, triggering the side panel\'s "failed" terminal state. Call this after `muscle_commit` has been called.',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        reason: {
-          type: 'string',
-          description: 'Failure reason (e.g. "page unreachable", "captcha not solved").',
-        },
-        stepIndex: {
-          type: 'number',
-          description: 'Optional. Which step (0-based) the failure occurred at; that step is marked error, remaining pending steps are marked cancelled.',
-        },
-      },
-      required: ['reason'],
-      additionalProperties: false,
-    },
+    description: 'Health check between the MCP host and the browser extension.',
+    inputSchema: { type: 'object', properties: {}, additionalProperties: false },
   },
 ];
 
-export function summarizeHostTools() {
-  return HOST_TOOLS.map((tool) => ({
-    name: tool.name,
-    description: tool.description,
-  }));
+export function findTool(name) {
+  return HOST_TOOLS.find((tool) => tool.name === name) || null;
 }

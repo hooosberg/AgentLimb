@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [lite, main]
   pull_request:
 
 permissions:
@@ -16,12 +16,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Test
+      - name: Protocol + unit tests (no browser needed)
         run: npm test
-      - name: Build release assets
-        run: npm run build
       - name: Validate extension manifest
-        run: node -e "const m=require('./manifest.json'); if(m.manifest_version!==3) process.exit(1)"
+        run: node -e "const m=require('./manifest.json'); if(m.manifest_version!==3) process.exit(1); if(m.default_locale) { console.error('default_locale set but no _locales shipped'); process.exit(1); }"
 
   windows-compatibility:
     runs-on: windows-latest
@@ -44,11 +42,5 @@ jobs:
             }
           }
           if ($failed) { exit 1 }
-      - name: Compile Native Messaging host
-        shell: powershell
-        run: |
-          $csc = "$env:WINDIR\Microsoft.NET\Framework64\v4.0.30319\csc.exe"
-          & $csc /nologo /target:exe "/out:$env:TEMP\agentlimb-native-host.exe" scripts\windows\AgentLimbNativeHost.cs
-          if ($LASTEXITCODE -ne 0 -or -not (Test-Path "$env:TEMP\agentlimb-native-host.exe")) { exit 1 }
-      - name: Run Windows-focused tests
-        run: node --test tests/windows-runtime-layout.test.mjs tests/prompt-identity.test.mjs
+      - name: Run tests on Windows
+        run: npm test

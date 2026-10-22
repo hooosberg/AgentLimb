@@ -1,10 +1,9 @@
 {
   "manifest_version": 3,
   "name": "AgentLimb",
-  "version": "0.2.2",
-  "description": "Let your terminal AI control your browser. Muscle memory cuts repeat-task tokens by 85%. 100% local — no cloud, no tracking.",
+  "version": "0.3.0",
+  "description": "Let any MCP AI agent control your browser. Pair once, then the agent drives its own tabs — the side panel is only a chat window. 100% local.",
   "minimum_chrome_version": "116",
-  "default_locale": "en",
   "permissions": [
     "tabs",
     "activeTab",
@@ -12,7 +11,7 @@
     "storage",
     "sidePanel",
     "debugger",
-    "nativeMessaging",
+    "tabGroups",
     "alarms",
     "clipboardWrite"
   ],
@@ -26,12 +25,6 @@
   "side_panel": {
     "default_path": "ui/sidepanel/sidepanel.html"
   },
-  "options_page": "ui/options/options.html",
-  "icons": {
-    "16": "icons/icon16.png",
-    "48": "icons/icon48.png",
-    "128": "icons/icon128.png"
-  },
   "action": {
     "default_title": "AgentLimb",
     "default_icon": {
@@ -39,15 +32,36 @@
       "48": "icons/icon48.png"
     }
   },
+  "commands": {
+    "toggle-side-panel": {
+      "description": "Toggle AgentLimb side panel",
+      "suggested_key": {
+        "default": "Ctrl+E",
+        "mac": "Command+E"
+      }
+    }
+  },
+  "content_scripts": [
+    {
+      "js": ["kernel/control/content/a11y-tree.js"],
+      "matches": ["<all_urls>"],
+      "run_at": "document_start",
+      "all_frames": true
+    },
+    {
+      "js": ["kernel/control/content/indicator.js"],
+      "matches": ["<all_urls>"],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ],
   "web_accessible_resources": [
     {
-      "resources": [
-        "icons/icon.svg",
-        "_locales/*/messages.json"
-      ],
-      "matches": [
-        "<all_urls>"
-      ]
+      "resources": ["icons/icon.svg"],
+      "matches": ["<all_urls>"]
     }
-  ]
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' http://127.0.0.1:* http://localhost:*; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; font-src 'self' data:"
+  }
 }

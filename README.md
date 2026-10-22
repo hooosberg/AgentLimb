@@ -1,277 +1,132 @@
-<p align="center">
-  <img src="website/icons/icon.svg" alt="AgentLimb Logo" width="64" height="64">
-</p>
+# AgentLimb (Lite)
 
-<h1 align="center">AgentLimb</h1>
+通用浏览器控制插件：给任意支持 MCP 的智能体软件装上「手」，让它能控制你的 Chrome。
 
-<p align="center">
-  <strong>Stop watching your AI relearn the same task.</strong><br>
-  The open-source alternative to CoWork — 90% fewer tokens on repeat browser tasks.
-</p>
-
-<p align="center">
-  <a href="https://chromewebstore.google.com/detail/agentlimb/hldldfepjhljhbcneojddjkkodkjglof">
-    <img src="https://img.shields.io/badge/Chrome_Web_Store-Install_Free-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Install from Chrome Web Store">
-  </a>
-  <a href="https://agentlimb.com">
-    <img src="https://img.shields.io/badge/Website-agentlimb.com-F5A623?style=for-the-badge" alt="Website">
-  </a>
-  <a href="https://github.com/hooosberg/AgentLimb">
-    <img src="https://img.shields.io/github/stars/hooosberg/AgentLimb?style=for-the-badge&logo=github&label=Star&color=24292f" alt="Star on GitHub">
-  </a>
-</p>
-
-<p align="center">
-  <em>If AgentLimb is useful to you, please ⭐ star this repo — it helps others discover the project and keeps us motivated!</em>
-</p>
-
-<p align="center">
-  <a href="https://agentlimb.com">
-    <img src="https://img.shields.io/badge/License-BSL%201.1-blue?style=flat-square" alt="License">
-  </a>
-  <img src="https://img.shields.io/badge/Platform-Chrome-4285F4?style=flat-square&logo=googlechrome&logoColor=white" alt="Platform">
-  <img src="https://img.shields.io/badge/Privacy-100%25%20Local-34C759?style=flat-square" alt="Privacy">
-  <img src="https://img.shields.io/badge/Languages-12-AF52DE?style=flat-square" alt="Languages">
-</p>
-
-<p align="center">
-  <strong>
-    <a href="./README.md">English</a> &nbsp;|&nbsp;
-    <a href="./readme-locales/README.zh-CN.md">中文</a> &nbsp;|&nbsp;
-    <a href="./readme-locales/README.ja-JP.md">日本語</a> &nbsp;|&nbsp;
-    <a href="./readme-locales/README.ko-KR.md">한국어</a> &nbsp;|&nbsp;
-    <a href="./readme-locales/README.es-ES.md">Español</a> &nbsp;|&nbsp;
-    <a href="./readme-locales/README.fr-FR.md">Français</a> &nbsp;|&nbsp;
-    <a href="./readme-locales/README.de-DE.md">Deutsch</a> &nbsp;|&nbsp;
-    <a href="./readme-locales/README.pt-BR.md">Português</a> &nbsp;|&nbsp;
-    <a href="./readme-locales/README.ru-RU.md">Русский</a> &nbsp;|&nbsp;
-    <a href="./readme-locales/README.ar-SA.md">العربية</a> &nbsp;|&nbsp;
-    <a href="./readme-locales/README.it-IT.md">Italiano</a> &nbsp;|&nbsp;
-    <a href="./readme-locales/README.hi-IN.md">हिन्दी</a>
-  </strong>
-</p>
-
-<p align="center">
-  <img src="assets/demo.gif" alt="AgentLimb Demo — AI agent controlling the browser" width="720">
-</p>
+**一次配对，长期自动化。** 侧边栏只做两件事：没连接时复制提示词，连接后变成聊天窗。
+侧边栏开不开，AI 都能干活——它会在自己的后台标签页里操作，不打扰你当前看的页面。
 
 ---
 
-## About
-
-**AgentLimb** is a browser extension — [now live on the Chrome Web Store](https://chromewebstore.google.com/detail/agentlimb/hldldfepjhljhbcneojddjkkodkjglof) — that lets any AI terminal drive your browser with precision. It works with every Chromium-based browser (Chrome, Edge, Brave, Vivaldi, Chromium, …) and every major AI terminal — Claude Code, Codex, Cursor, Trae, Windsurf, Tencent WorkBuddy, Alibaba Qwen Office, ByteDance TRAE Work, Cola, Kimi Work, or any local model. Install the extension, copy one prompt, paste it to your AI, and it auto-configures in 10 seconds.
-
-No headless browsers. No re-login. No invasive agents. Your real Chrome, your real cookies, your real sessions — plus muscle memory that makes repeat tasks dramatically cheaper every time you run them.
-
-## Highlights
-
-### 1. One-Prompt Setup
-
-After the one-time local runtime install, copy a single prompt and paste it to any AI tool. No API keys or cloud account. If your AI can run commands, it can use AgentLimb.
-
-### 2. Muscle Memory — 85% Fewer Tokens, 80–95% Less Waiting
-
-The first time your AI hits a site, it explores the DOM and learns selectors / workflow. AgentLimb writes that knowledge to `~/Desktop/AgentLimb-muscle/<domain>.json`. Every future run on the same site skips the exploration and reuses what was learned.
-
-Real regression data from a Reddit posting task (low-parameter Codex, 2026-04-18):
-
-| | Cold start (first explore) | Hot start (muscle recall) | Savings |
-|---|---|---|---|
-| `page_snapshot` calls | 3 | **0** | 100% |
-| Total tool calls | 23 | 10 | 56.5% |
-| Estimated tokens | ~12,250 | **~1,750** | **↓ 85.7%** |
-| Wall-clock time | 8–20 min | 30 s–2 min | **↓ ~80–95%** |
-
-The more you reuse a site, the cheaper and faster it gets.
-
-### 3. CDP-Native, Not Screenshot Guessing
-
-AgentLimb drives the browser through Chrome Debugger Protocol. The AI receives a structured semantic list of interactive elements — not screenshots. Clicks hit the right node, form fills use native APIs, navigations return the new URL immediately.
-
-### 4. Explicit Task Lifecycle
-
-Silence no longer equals success. The AI explicitly declares `task_plan` → `task_step_done` → `task_complete` / `task_fail`. Timeouts and bridge drops are captured as real failures, not false positives. The side panel renders the live step list in real time.
-
-### 5. 100% Local & Private
-
-Bridge runs on `127.0.0.1:7791`. No analytics, no tracking, no cloud. Muscle knowledge is plain JSON on your desktop — you can read, diff, share, or delete it at any time.
-
-### 6. Multi-Account Parallel Control — Run Multiple Chrome Profiles at Once
-
-One AI command, every Chrome profile executes it. Whether you have two Twitter accounts, three company Google accounts, or a dozen test profiles — AgentLimb drives them all in a single task.
-
-- **Explicit identity** — each side panel shows "This panel: Profile-xxxxxx"; the Bridge tracks which profile sent which result
-- **Suspend / auto-suspend** — close a panel (or click Suspend) to opt that profile out; the rest continue without interruption
-- **task_\* fan-out** — `task_plan`, `task_step_done`, `task_complete`, `task_fail` broadcast to every active profile; all side panels stay in sync
-- **Window locking** — `navigate` targets the correct Chrome window automatically, even when the same profile has multiple windows open
-- **Target routing** — point a tool call at a specific profile by label for surgical precision
-
-## How It Works
-
-```
-Your AI Terminal  (Claude Code / Codex / Cursor / TRAE Work / WorkBuddy / Qwen Office / Kimi Work / local model)
-    ↕  HTTP + SSE  (16 standardized tools, auto-discoverable via /docs endpoints)
-AgentLimb Bridge  (local Node.js · 127.0.0.1:7791)
-    ↕  chrome.runtime message passing
-AgentLimb Extension  (Chrome MV3 · side panel UI · task/muscle/log tabs)
-    ↕  Chrome Debugger Protocol
-Your Browser  (logged in, with cookies, your real sessions)
-    ↓  knowledge persisted
-~/Desktop/AgentLimb-muscle/<domain>.json  (durable, human-readable)
-```
-
-## Supported AI Terminals & Platforms
-
-AgentLimb is agent-agnostic by design: if your AI can send an HTTP request or run a local command, it can drive the browser. It works on **all platforms (Windows & macOS)** with **every Chromium-based browser**.
-
-**International terminals** — Claude Code, Codex, Cursor, Trae, Windsurf, and any local model.
-
-**Chinese agent platforms** — fully supported:
-
-| | Platform | Highlights |
-|---|---|---|
-| TOP 1 | **Tencent WorkBuddy（腾讯 WorkBuddy）** | Tencent's AI productivity expert with coding, data analysis, and office automation — pairs perfectly with AgentLimb for end-to-end web control |
-| TOP 2 | **Alibaba Qwen Office（阿里千问办公）** | Alibaba's Qwen-powered workspace agent; give it a prompt and let it operate the web through your real browser sessions |
-| TOP 3 | **ByteDance TRAE Work（字节 TRAE Work）** | ByteDance's AI-native work terminal; connect it to AgentLimb to turn chat into precise browser actions |
-| TOP 4 | **Cola** | Lightweight Chinese agent client with strong terminal integration — one onboarding prompt and it's ready |
-| TOP 5 | **Kimi Work** | Moonshot's Kimi Work agent handles long-horizon web tasks; muscle memory makes its repeat runs dramatically cheaper |
-
-> Universal web-control for every agent, on every Chromium browser. That's the goal.
-
-## Quick Start
-
-### Which package do I download?
-
-Every GitHub Release ships **two packages** — make sure you grab the right one:
-
-| Package | What it is | Who installs it |
-|---|---|---|
-| `agentlimb-chrome-v0.2.2-b8.zip` | **Browser extension** | **You** — install it into your Chromium browser |
-| `agentlimb-runtime-v0.2.1-b7.zip` | **Local Runtime** (Bridge + CLI) | **Your AI agent** — downloaded automatically after your approval |
-
-> You normally never need to touch the Runtime zip manually. The onboarding prompt lets your AI download, verify (SHA-256), and install it for you.
-
-### Step 1 — Install the extension (Windows & macOS, identical)
-
-- **Chrome Web Store** (recommended): [Install AgentLimb](https://chromewebstore.google.com/detail/agentlimb/hldldfepjhljhbcneojddjkkodkjglof). Works in Chrome, Edge, Brave, Vivaldi, Chromium, and any other Chromium-based browser.
-- **Manual install**: download [`agentlimb-chrome-v0.2.2-b8.zip`](https://github.com/hooosberg/AgentLimb/releases/download/v0.2.2/agentlimb-chrome-v0.2.2-b8.zip) from the [Releases](https://github.com/hooosberg/AgentLimb/releases) page, unzip it, then load the extracted folder on your browser's extensions page with Developer Mode enabled.
-
-### Step 2 — Copy the onboarding prompt
-
-Open the AgentLimb side panel and click **"Copy Onboard Prompt"**. Node.js 18 or later is required on your machine.
-
-### Step 3 — Paste it into your AI terminal (Windows or macOS)
-
-Any agent that can run local commands follows the same protocol: it asks for your explicit approval, then downloads the small Runtime from the GitHub Release, verifies its SHA-256 checksum, installs the local Bridge and Native Messaging host, and runs a health check. It does not scan browser profiles, folders, or extension sources.
-
-What happens behind the scenes, per platform:
-
-- **macOS** — the agent extracts `agentlimb-runtime-v0.2.1-b7.zip`, then runs
-  `scripts/install.sh --extension-id <your-extension-id>`.
-  If AgentLimb is already installed, the agent simply starts the existing Runtime via `launchctl` — no re-download needed.
-- **Windows** — the agent extracts the same zip, then runs
-  `powershell -ExecutionPolicy Bypass -File scripts\install.ps1 -ExtensionId <your-extension-id>`.
-
-Both installers register the Native Messaging host, install the `agentlimb` CLI, and start the local Bridge on `127.0.0.1:7791`. A browser extension alone cannot do any of this — that's why the Runtime setup is deliberately handled by a terminal-capable agent.
-
-### Step 4 — Use the browser
-
-Once the health check passes, the side panel shows **ONLINE** and your AI can drive every Chromium browser window through the local Bridge, discovering tool schemas on demand.
-
-## Toolset — 16 Tools
-
-16 standardized tools spanning five categories: observing browser state, navigating and interacting with page elements, reading and writing muscle memory, declaring task lifecycle events, and maintaining bridge connectivity. Full documentation is served on demand — the AI fetches schemas only when it needs them.
-
-## Why Not Just Use X?
-
-Every existing approach to browser automation has a real cost. Here's the honest comparison:
-
-| | Browser Use / Playwright | BrowseAI / Browserbase | Codex / Claude Computer Use | **AgentLimb** |
-|---|---|---|---|---|
-| **Setup** | Write scripts, manage deps | SaaS config per workflow | Mac only, desktop env required | Copy one prompt |
-| **Element targeting** | CSS/XPath — you maintain them | Visual AI — breaks on updates | Screenshot coordinates — ±1px miss | CDP reads live DOM — semantic |
-| **Token cost / step** | None (pure script) | Cloud fees + AI tokens | 1,000–3,000/screenshot × every step | ~300/step, **85.7% less** on hot start |
-| **Repeat task cost** | Fixed | Billed per run | Linear — re-explores every time | **Decreasing** — muscle memory compounds |
-| **Login sessions** | Extra setup | Cloud — no local sessions | OS-level, unaware of browser state | Your real Chrome — already logged in |
-| **When site updates** | Scripts break, rewrite | Model may degrade silently | Screenshot inference — expensive | AI self-heals muscle selectors |
-| **Data privacy** | Local ✅ | Third-party servers ❌ | Local ✅ | 100% local, 127.0.0.1 ✅ |
-| **AI choice** | Any (pure script) | Platform-dependent | Bundled with Codex / Claude | Any AI that speaks HTTP |
-| **Shared knowledge** | Script = one AI only | Workflow = locked to platform | No persistent memory | Muscle files = cross-AI, transferable |
-| **Multi-account parallel** | Manual orchestration | Platform-dependent | No | ✅ Multiple Chrome profiles, one command |
-
-**The unique differentiator:** AgentLimb's muscle files live in `~/Desktop/AgentLimb-muscle/` as plain JSON. Knowledge explored by Claude Code today is available to Codex tomorrow — same files, zero re-exploration. Switch AI tools without losing a single learned workflow.
-
-## Use Cases
-
-- **Marketing** — Post to social media, manage campaigns across platforms
-- **Research** — Scrape data, compare products, gather competitive intelligence
-- **Automation** — Fill forms, submit applications, update profiles
-- **Testing** — QA your web app on a real browser with real sessions
-
-## Design Philosophy
-
-- **Minimal surface** — 16 tools, each does one thing well, composable across any workflow
-- **Non-invasive** — works inside your real browser, not a sandbox
-- **Local-first** — privacy by architecture, not by promise
-- **AI-agnostic** — any tool that can send HTTP can connect; no vendor lock-in
-
-## Repository Layout
-
-The public repository contains the complete product source:
-
-```text
-_locales/          Extension translations
-icons/             Extension icons
-kernel/            Bridge, CLI, prompt, browser control, and muscle runtime
-scripts/           macOS and Windows installers plus release tooling
-tests/             Node test suite
-ui/                Chrome extension side panel and options UI
-website/           Static agentlimb.com site deployed by Cloudflare Pages
-忽略上传/           Local-only references, legacy worktrees, private material, and builds
-```
-
-Development commands:
+## 快速开始
 
 ```bash
-npm test
-npm run build                    # builds into 忽略上传/dist/
-npm run release -- 0.2.1        # sets the version and builds release assets
+# 1. 安装本地宿主（~/.agentlimb，镜像仓库目录结构）
+bash scripts/install.sh          # Windows: powershell scripts/install.ps1
+
+# 2. Chrome 加载插件
+#    chrome://extensions → 开发者模式 → 加载已解压的扩展程序 → 选择本目录
+
+# 3. 点击插件图标打开侧栏 → 「复制连接提示词」→ 粘贴给你的智能体软件
+#    （提示词里含 MCP 配置 JSON，任何 MCP 客户端都能用）
+
+# 4. 首次连接：浏览器自动弹出配对标签页 → 点「允许连接」
+#    之后同一智能体重连全自动，无需再确认
 ```
 
-Cloudflare Pages should use the repository root as its root directory and `website` as its build output directory. Release zips are generated in `忽略上传/dist/` and published through GitHub Releases; the entire `忽略上传/` directory is never committed.
+本地调试（不装 Claude Code 也能跑）：
 
-## Resources
+```bash
+node bin/agentlimb.mjs mcp       # 直接以 stdio 模式启动 MCP + 桥接
+node bin/agentlimb.mjs status    # 探测桥接是否在线
+npm test                         # 协议端到端测试（含模拟扩展）
+```
 
-- **Website**: [agentlimb.com](https://agentlimb.com)
-- **Blog**: [hooosberg.com/apps/agentlimb](https://hooosberg.com/apps/agentlimb/)
-- **Windows test checklist**: [docs/windows-testing.md](docs/windows-testing.md)
-- **Development notes**: [docs/development/README.md](docs/development/README.md)
-- **Tutorials**: [agentlimb.com/tutorials.html](https://agentlimb.com/tutorials.html)
-- **AI Tools Directory**: [agentlimb.com/tools.html](https://agentlimb.com/tools.html)
-- **News**: [agentlimb.com/news.html](https://agentlimb.com/news.html)
-- **Privacy Policy**: [agentlimb.com/privacy.html](https://agentlimb.com/privacy.html)
-- **Terms of Service**: [agentlimb.com/terms.html](https://agentlimb.com/terms.html)
-- **License**: [agentlimb.com/license.html](https://agentlimb.com/license.html)
+---
 
-## Contact
+## 架构
 
-- **GitHub**: [hooosberg/AgentLimb](https://github.com/hooosberg/AgentLimb)
-- **Email**: [zikedece@proton.me](mailto:zikedece@proton.me)
+```
+┌─────────────┐  stdio MCP   ┌──────────────────────┐  SSE(推送)  ┌─────────────────────┐
+│ 智能体软件   │ ◄──────────► │  host/mcp-server.mjs │ ◄───────── │ 扩展 Service Worker  │
+│ (任意客户端) │  JSON-RPC    │  host/bridge-server  │  POST(回传) │ debugger 持久会话     │
+└─────────────┘              └──────────────────────┘            │ + content scripts    │
+                        127.0.0.1:8765(自动选端口)                └─────────────────────┘
+```
 
-## Sibling projects
+三个角色，零依赖（纯 Node 内置模块 + 原生 JS，无 npm 包）：
 
-Built by [hooosberg](https://github.com/hooosberg):
+| 层 | 文件 | 职责 |
+|---|---|---|
+| 扩展后台 | `kernel/control/background/` | 桥接客户端(SSE/POST)、CDP debugger 管理、工具路由 |
+| 页面脚本 | `kernel/control/content/` | a11y 树生成（document_start 常驻）、控制指示器 |
+| 侧栏 | `ui/sidepanel/` `ui/pairing/` | 未配对=复制提示词；已配对=聊天窗；配对确认页 |
+| 本地宿主 | `host/` `bin/` | MCP stdio 服务器 + 本地 HTTP/SSE 桥接 |
+| 共享 | `kernel/shared/constants.js` `kernel/control/host/tools.js` `kernel/prompt/` | 协议常量、工具目录（双端同源）、提示词生成 |
 
-- [BeRaw](https://hooosberg.com/apps/beraw/) — Behance raw-image grabber
-- [Packpour](https://hooosberg.com/apps/packpour/) — App Store Connect locale filler
-- [WitNote](https://hooosberg.com/apps/witnote/) — local-first AI writing companion
-- [GlotShot](https://hooosberg.com/apps/glotshot/) — perfect App Store preview images
-- [TrekReel](https://hooosberg.com/apps/trekreel/) — outdoor trails, cinematic reels
-- [DOMPrompter](https://hooosberg.com/apps/domprompter/) — visualize DOM for AI code
-- [UIXskills](https://uixskills.com) — AI → JSON → Whiteboard → UI
+### 配对即 MCP 安装
 
-## License
+用户复制提示词 → 智能体把 MCP 配置加进自己的客户端 → 智能体启动时 spawn
+`mcp-server.mjs` → 桥接在 127.0.0.1 起来 → 扩展连上 → 首次弹配对页 → 用户点允许
+→ 写入 `~/.agentlimb/paired-clients.json` + 扩展 `chrome.storage` → **之后全自动**。
 
-[Business Source License 1.1](LICENSE) — free for personal use. Commercial use requires a license. Converts to Apache 2.0 on 2030-04-12.
+## 交互极简原则
 
-Copyright © 2025 hooosberg. All rights reserved.
+- **侧边栏与控制彻底解耦**：工具调用走 SW ↔ 桥接，与侧栏是否打开无关。
+- **未配对**：整个侧栏只有一个按钮——复制提示词。没有进度条、没有日志、没有步骤。
+- **已配对**：侧栏变成聊天窗。发消息 = 给 Agent 下指令（随下一次工具结果送达）；
+  另有「截图 / 标签列表 / 读取页面」三个本地快捷操作，不经过 Agent。
+- **页面内的控制反馈**：辉光边框 + 幽灵光标 + 「停止智能体」按钮（参考主流
+  agent 浏览器的做法），用户在哪个标签都能看到 AI 在动哪个标签。
+
+## 效率设计（对照参考实现的关键优化）
+
+旧版（`workspace` 分支）的控制链路是 HTTP 轮询，每一跳都有损耗。本版逐项修正：
+
+| # | 旧版问题 | 本版方案 |
+|---|---|---|
+| 1 | SW 每 300ms 轮询桥接队列，加 50ms 忙轮询；SW 挂起靠 alarm 重启 relay | SSE 长连接推送，host→ext 零延迟；POST 回传；alarm 只做兜底唤醒 |
+| 2 | 每个动作 `debugger.attach` + `detach`（每次 10–50ms，且和 DevTools 抢锁） | **按标签持久 attach**，in-flight 去重，仅在被 Chrome 踢掉时重连 |
+| 3 | 内容脚本按需注入，每次快照都问一遍 | manifest `document_start` 全帧常驻 a11y 脚本，ref 映射用 WeakMap 缓存 |
+| 4 | 只能操作前台标签 | `Emulation.setFocusEmulationEnabled` 焦点模拟 + 自动静音，**后台标签可操控**，不抢用户焦点 |
+| 5 | 截图固定 PNG，动辄超限 | JPEG 自适应质量（75→10 降级），base64 预算 ~1.2MB |
+| 6 | 一步一个工具调用，来回 RTT 叠加 | `browser_batch` 一次提交最多 20 个动作 |
+| 7 | task_plan / task_step_done / task_complete / task_fail 四个工具 + 侧栏进度渲染纯开销 | **整个进度机制移除**（工具 15 个，对标主流 agent 浏览器工具集） |
+| 8 | muscle 记忆三件套常驻工具列表 | 本版移除（需要时可从 `workspace` 分支迁回，做成开关） |
+
+其他细节：CDP 命令全部带超时；console/network 在持久会话上常驻捕获（环形缓冲 200 条）；
+密码/敏感字段在 a11y 树里直接脱敏；同源 iframe 与 shadow DOM 可走入树并带坐标偏移。
+
+## 工具清单（15 个）
+
+`tabs_context` `tab_new` `tab_close` `tab_activate` `read_page` `find` `computer`
+`form_input` `navigate` `javascript_eval` `wait` `read_console_messages`
+`read_network_requests` `browser_batch` `ping`
+
+目录定义在 `kernel/control/host/tools.js`，扩展和 MCP 宿主共用同一份——改一处，两端同步。
+
+## 目录
+
+```
+manifest.json                  MV3（debugger / sidePanel / tabGroups / alarms）
+kernel/shared/constants.js     协议常量、SSE 帧类型、storage keys
+kernel/control/host/tools.js   工具目录（唯一事实源）
+kernel/control/background/
+  service-worker.js            入口：装配 + 消息路由 + alarm 保活
+  bridge-client.js             端口发现、SSE、配对管理、user_message 队列
+  debugger.js                  持久 attach / 焦点模拟 / 自适应截图 / 事件捕获
+  router.js                    15 个工具的执行器
+kernel/control/content/
+  a11y-tree.js                 document_start 全帧注入：ref 映射 + 可访问性树
+  indicator.js                 辉光边框 / 幽灵光标 / 停止按钮
+kernel/prompt/build-prompt.js  侧栏复制的连接提示词（中英）
+ui/sidepanel/                  双状态侧栏
+ui/pairing/                    配对确认标签页
+host/bridge-server.mjs         HTTP+SSE 桥接、配对注册表、tool_call 关联
+host/mcp-server.mjs            stdio MCP ↔ 桥接
+bin/agentlimb.mjs              CLI：install / mcp / status / pair-status / uninstall
+scripts/install.sh|ps1         安装宿主到 ~/.agentlimb
+tests/                         Node 原生 test runner，含端到端协议测试
+```
+
+## 已知边界
+
+- 同一时刻只有一个「活跃浏览器」：多个 Chrome 配置文件同时连接时，最后完成配对的获胜。
+- 侧栏聊天是「留言」语义：消息随 Agent 下一次工具结果送达（Agent 空闲时不会主动推送）。
+- `javascript_eval` 走 CDP，对 CSP 严格的页面仍可执行（debugger 权限）。
+- 首次连接依赖 SW 被唤醒：装好后 Chrome 运行时 SW 基本常驻；若遇休眠，最长约 1 分钟内自动连上（打开侧栏可立即触发）。
+
+## 与 workspace 分支的关系
+
+本工作树（`lite` 分支）是重写的精简版，刻意放弃了：任务进度机制、muscle 记忆、
+HTTP 轮询桥接、终端任务队列、12 语言 i18n、官网。这些资产保留在 `workspace` 分支，
+需要时可按需迁回。

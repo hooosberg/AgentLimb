@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgentLimb — 配对确认</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body {
+      margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      background: #f7f5f2; color: #1f1e1b;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Segoe UI", sans-serif;
+    }
+    @media (prefers-color-scheme: dark) { body { background: #1c1b18; color: #f0eee9; } }
+    .card {
+      width: 100%; max-width: 380px; margin: 16px; padding: 22px;
+      background: rgba(255,255,255,0.9); border: 1px solid #e5e1da; border-radius: 14px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+    }
+    @media (prefers-color-scheme: dark) { .card { background: #262421; border-color: #3a3733; } }
+    .logo { width: 36px; height: 36px; display: block; margin-bottom: 12px; }
+    h1 { font-size: 16px; margin: 0 0 6px; }
+    p.sub { font-size: 13px; opacity: 0.7; margin: 0 0 16px; line-height: 1.6; }
+    label { display: block; font-size: 12px; opacity: 0.7; margin-bottom: 6px; }
+    input {
+      width: 100%; box-sizing: border-box; padding: 9px 11px; font-size: 13px;
+      border: 1px solid #e5e1da; border-radius: 9px; background: transparent; color: inherit;
+      margin-bottom: 16px;
+    }
+    .actions { display: flex; gap: 10px; justify-content: flex-end; }
+    button {
+      font-size: 13px; padding: 8px 16px; border-radius: 9px; cursor: pointer; border: 1px solid transparent;
+    }
+    .ignore { background: transparent; border-color: #e5e1da; color: inherit; }
+    .allow { background: #d97757; color: #fff; font-weight: 600; }
+    .allow:disabled { opacity: 0.5; cursor: not-allowed; }
+    .status { font-size: 12px; text-align: center; margin-top: 12px; opacity: 0.7; min-height: 1em; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <img class="logo" src="../../icons/icon.svg" alt="">
+    <h1 id="title">智能体软件请求连接浏览器</h1>
+    <p class="sub" id="subtitle">允许后，该智能体可以通过 MCP 控制你的浏览器（包括新建标签、点击、输入等）。你可以随时在侧栏断开。</p>
+    <label for="name">给这个连接起个名字（可选）</label>
+    <input id="name" type="text" placeholder="例如：工作电脑、我的智能体" autofocus>
+    <div class="actions">
+      <button class="ignore" id="btn-ignore">忽略</button>
+      <button class="allow" id="btn-allow">允许连接</button>
+    </div>
+    <div class="status" id="status"></div>
+  </div>
+
+  <script type="module" src="pairing.js"></script>
+</body>
+</html>
