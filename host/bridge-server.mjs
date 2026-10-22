@@ -50,7 +50,7 @@ export function loadOrCreateClientId() {
   return id;
 }
 
-export function createBridge({ clientId, clientName = 'AI Agent', clientKind = 'generic', onLog, onUserMessage, onStop } = {}) {
+export function createBridge({ clientId, clientName = 'AI Agent', clientKind = 'generic', onLog, onUserMessage } = {}) {
   const pairedFile = join(agentlimbHome(), 'paired-clients.json');
   /** @type {Map<string, {res:any, id:string, token:string, paired:boolean}>} */
   const sseClients = new Map();
@@ -297,15 +297,10 @@ export function createBridge({ clientId, clientName = 'AI Agent', clientKind = '
         break;
       }
 
-      case WIRE.STOP_AGENT: {
-        log('info', 'user pressed STOP');
-        onStop?.();
-        break;
-      }
-
       case WIRE.PAIRING_REVOKED: {
         revokePairing();
-        log('info', 'pairing revoked by user');
+        // Plain words to the agent: the browser is gone, stop reaching for it.
+        log('warning', '用户已在浏览器侧断开连接（侧栏点了「断开」）——你不再能控制这个浏览器。需要时请让用户重新配对。');
         break;
       }
 

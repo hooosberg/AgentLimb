@@ -34,17 +34,31 @@ node bin/agentlimb.mjs status     # 另一个终端探测
 见下方「真机验证清单」。
 
 ### D. 自动化真机验证（Chrome for Testing + CDP）
-用 `--load-extension` 起一个隔离 profile 的 Chrome，全程 CDP + MCP 驱动，
-不需要人工点。
 
-**⚠️ 系统 Chrome 155 已移除 `--load-extension`**（传了也被静默忽略，
+**日常只需要一条命令**（已入库，可反复跑）：
+
+```bash
+node scripts/live-test.mjs          # 30 项断言，约 40s
+node scripts/live-test.mjs --keep   # 失败时留着浏览器窗口看现场
+```
+
+它自己做完这些事：清掉上一轮残留 → 起一个本地测试页（带按钮/输入框/折叠线以下元素）
+→ 用隔离 profile 起 Chrome for Testing 装扩展 → 用一个**真的 MCP 客户端**（和 AI 软件
+完全同一条 stdio 路径）走完：配对 → `tab_new`（后台）→ `read_page` → `find` →
+`computer click`（含折叠线以下）→ `form_input` → `computer screenshot` →
+`browser_batch` → 侧栏发消息（Enter 发送）→ agent 收到页面上下文 + 截图 →
+`say` 回话 → 不可读页面诚实告知 → `tab_close` → 断开。
+
+产物：`/tmp/agentlimb-verify/live/summary.json` + `shots/*.png`。
+
+**为什么不用系统 Chrome**：Chrome 155 已移除 `--load-extension`（传了也被静默忽略，
 `--disable-features=DisableLoadExtensionCommandLineSwitch` 也救不回来）。
-自动化验证要用 Playwright 缓存的 **Chrome for Testing 149**：
+要用 Playwright 缓存的 **Chrome for Testing 149**：
 
 ```bash
 CFT="$HOME/Library/Caches/ms-playwright/chromium-1228/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing"
 "$CFT" --user-data-dir=/tmp/agentlimb-verify/profile \
-       --load-extension=/tmp/agentlimb-ext \       # 建议复制到纯 ASCII 路径
+       --load-extension=/tmp/agentlimb-ext \
        --remote-debugging-port=9333 \
        --no-first-run --no-sandbox --disable-gpu about:blank
 ```
@@ -54,7 +68,6 @@ CFT="$HOME/Library/Caches/ms-playwright/chromium-1228/chrome-mac-arm64/Google Ch
 - 验证点按顺序：`/json/list` 出现 `service_worker` 且 URL 含
   `kernel/control/background/service-worker.js`（**这就是 SW 注册成功的硬证据**）
   → `/health` 的 `browsers>=1` → 配对页自动弹出 → `paired:true` → `tools/call`
-- 驱动脚本样例见 `/tmp/agentlimb-verify/verify-live.mjs`（不入库，一次性用）
 
 ## 真机验证清单
 
@@ -69,13 +82,15 @@ CFT="$HOME/Library/Caches/ms-playwright/chromium-1228/chrome-mac-arm64/Google Ch
 4. **已配对态**：侧栏变成聊天窗，顶部有「● 正在与 <软件名> 驱动浏览器」+ 一句
    「可以关掉侧栏——它不影响 AI 控制浏览器，只在聊天时用」
 5. **聊天（带页面上下文）**：随便打开一个网页，在侧栏发「这个页面讲什么」→
-   侧栏立刻出现「**正在思考…**」动画（连接性反馈）；智能体不用调
-   `tabs_context`/`read_page` 就能答（消息里已带 url/title/正文/refs）→
-   它用 `say` 回话，左侧出现 AI 气泡；关掉侧栏再打开，消息还在
-6. **操作日志**：智能体动浏览器时，聊天流里出现浅色小字（`· 读取页面结构` 等）；
-   执行期间工具栏图标显示 `…` 徽标
+   侧栏立刻出现进度气泡（连接性反馈）；智能体不用调
+   `tabs_context`/`read_page` 就能答（消息里已带 url/title/正文/refs/截图）→
+   它用 `say` 回话，左侧出现 AI 气泡；关掉侧栏再打开，消息还在。
+   输入框 Enter 发送、Shift+Enter 换行
+6. **操作日志**：智能体动浏览器时，聊天流里只出现一行「执行了 N 步操作 · 最后一个动作」，
+   点一下展开完整序列；执行期间工具栏图标显示 `…` 徽标
 7. **agent 侧工具调用**：用任意 MCP 客户端连上后调用 `ping`，应返回 pong
-8. **断开**：侧栏点「断开」→ 侧栏回到未配对态
+8. **断开**：侧栏点「断开」→ 立刻回到未配对态；宿主日志里出现一句
+   「用户已在浏览器侧断开连接」的明文（agent 也能看到）
 9. **重连自动**：再跑 `node bin/agentlimb.mjs mcp` → **不再弹配对页**，直接可用
 
 ## 调试技巧
@@ -126,6 +141,15 @@ CFT="$HOME/Library/Caches/ms-playwright/chromium-1228/chrome-mac-arm64/Google Ch
    「片段看着完全正确，报错却指向它」。解法按顺序试：
    ① 错误页点 **Clear all** 再 ↻；② **bump `manifest.json` 的 version**
    （缓存键变化，最可靠）；③ 彻底重启 Chrome。若三条都做完还复现，才是真错误。
+11. **自动化测试里不要用 CDP `Target.createTarget('chrome://…')`**：在本机
+   `--no-sandbox` 的 CfT 里创建 chrome://extensions 目标（或把它 `Page.bringToFront`）
+   会让整个测试进程组被 SIGKILL——日志停在那一行、连 `finally` 都不执行。
+   要测「不可读页面」这条分支，用扩展页（`chrome-extension://<id>/…`）当当前标签即可，
+   走的是同一段 `restricted` 代码。功能本身人工验证过：在 chrome://extensions 上
+   发消息，AI 收到的是「Chrome does not allow reading or controlling this page type」。
+12. **真机测试要在后台跑**：`node scripts/live-test.mjs` 会弹出 CfT 窗口并切前台，
+   在受管的 shell 里前台跑容易被整组杀掉；用 `run_in_background` 或
+   `sh -c '... > log 2>&1; echo exit=$?' &` 再读日志。
 
 ## 改代码的检查单
 
@@ -134,4 +158,5 @@ CFT="$HOME/Library/Caches/ms-playwright/chromium-1228/chrome-mac-arm64/Google Ch
       + `docs/protocol.md` + `tests/protocol.test.mjs`
 - [ ] 改用户可见文案 → 保持通用定位，**不出现第三方品牌名**（有测试断言）
 - [ ] 跑 `npm test`
+- [ ] 动到侧栏/工具链路 → 跑 `node scripts/live-test.mjs`（30 项，约 40s）
 - [ ] 真机清单过一遍（至少 1/2/3/7）

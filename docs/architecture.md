@@ -86,8 +86,8 @@ CDP 会话管理器，本插件效率的核心：
 - 预算保护：单次扫描 5000 节点、limit 默认 100
 
 ### kernel/control/content/indicator.js
-仅 top frame：辉光边框 + 幽灵光标（SW 在每次指针动作前 `MOVE_CURSOR`）+
-「停止智能体」按钮（→ SW → `stop_agent` 帧 → 宿主通知 agent 停机）。
+仅 top frame：辉光边框 + 幽灵光标（SW 在每次指针动作前 `MOVE_CURSOR`）。
+只负责「让你看见 AI 正在动哪个标签」，不带任何可点控件——对话都在侧栏。
 
 ### kernel/prompt/build-prompt.js
 侧栏「复制提示词」生成。**产品定位是通用插件：文案里禁止出现任何第三方

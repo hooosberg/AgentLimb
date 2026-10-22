@@ -36,8 +36,7 @@ SSE 帧格式：`data: <json>\n\n`，连接时先发 `retry: 2000\n\n`。
 | `tool_result` | `tool_use_id`, `ok`, `result?`, `error?`, `userMessages?[]` | 工具执行结果 |
 | `pong` | `at` | 心跳回应 |
 | `user_message` | `text`, `at`, `page?` | 侧栏聊天发出（host 转发给 agent + 广播给扩展） |
-| `stop_agent` | — | 用户点了页面内「停止智能体」 |
-| `pairing_revoked` | `client_id` | 侧栏点「断开」 |
+| `pairing_revoked` | `client_id` | 侧栏点「断开」——撤销信任，host 用一句明文告诉 agent 浏览器已断开 |
 | `status` | `paired:[id...]` | 扩展上报自己信任的客户端列表 |
 
 ## MCP（stdio，JSON-RPC 2.0，一行一消息）

@@ -46,6 +46,8 @@ export function createBridgeClient({ onStatus, onToolCall, onPairingRequest, onA
    * is silent.
    */
   let pendingReplyAt = null;
+  /** True while a tool call is executing — the panel says "操作页面中" then. */
+  let busy = false;
 
   function persistChat() {
     const durable = chatLog.filter((m) => m.from !== 'activity').slice(-60);
@@ -119,6 +121,7 @@ export function createBridgeClient({ onStatus, onToolCall, onPairingRequest, onA
       })),
       chat: chatLog.slice(-60),
       pendingReplyAt,
+      busy,
     };
   }
 
@@ -318,6 +321,8 @@ export function createBridgeClient({ onStatus, onToolCall, onPairingRequest, onA
       case WIRE.TOOL_CALL: {
         const { tool_use_id, tool, args, tabId, client_id } = frame;
         if (tool !== 'ping' && tool !== 'say') pushActivity(tool, args || {});
+        busy = true;
+        broadcast();
         // Serialize tool execution — agent calls are sequential by nature.
         toolChain = toolChain.then(async () => {
           let result = null;
@@ -336,6 +341,8 @@ export function createBridgeClient({ onStatus, onToolCall, onPairingRequest, onA
             error,
             userMessages,
           }).catch((e) => console.warn('[bridge] tool_result post failed', e));
+          busy = false;
+          broadcast();
         });
         await toolChain;
         break;
@@ -460,12 +467,6 @@ export function createBridgeClient({ onStatus, onToolCall, onPairingRequest, onA
     return queue;
   }
 
-  async function stopAgent() {
-    if (!port) return;
-    await post({ t: WIRE.STOP_AGENT }).catch(() => {});
-    userMessageQueues.clear();
-  }
-
   async function disconnectClient(clientId) {
     const c = clients.get(clientId);
     if (c) c.paired = false;
@@ -494,7 +495,6 @@ export function createBridgeClient({ onStatus, onToolCall, onPairingRequest, onA
     getStatus,
     respondPairing,
     sendUserMessage,
-    stopAgent,
     disconnectClient,
     queueUserMessage,
     keepOnlyPaired, // exposed for the single-tenant invariant test

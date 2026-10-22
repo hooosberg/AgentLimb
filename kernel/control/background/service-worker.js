@@ -129,7 +129,9 @@ function bootstrap() {
       const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
       if (!tab) return null;
       const base = { tabId: tab.id, url: tab.url || '', title: tab.title || '' };
-      if (!/^https?:/i.test(base.url)) return base;
+      // chrome:// pages, the Web Store, PDF viewers: Chrome forbids reading or
+      // driving them. Say so instead of pretending the page is empty.
+      if (!/^https?:/i.test(base.url)) return { ...base, restricted: true };
       const snap = await chrome.tabs.sendMessage(
         tab.id,
         { type: 'AGENTLIMB_PAGE_SNAPSHOT', options: { maxText: 2500, maxElements: 30 } },
@@ -171,21 +173,11 @@ function bootstrap() {
         return bridge.sendUserMessage(message.text, page);
       }
 
-      case MESSAGE_TYPES.QUICK_ACTION: {
-        // Direct local control from the panel (no agent in the loop).
-        const tool = message.tool;
-        const args = message.args || {};
-        const result = await router.execute(tool, args);
-        return { ok: true, result };
-      }
-
-      case MESSAGE_TYPES.DISCONNECT_CLIENT:
-        return bridge.disconnectClient(message.clientId);
-
-      case MESSAGE_TYPES.STOP_AGENT: {
+      case MESSAGE_TYPES.DISCONNECT_CLIENT: {
+        // Disconnect is not a "flow": revoke the trust, tell the agent in plain
+        // words, and drop the in-page indicators. Nothing else to unwind.
         router.stopAllDriving();
-        await bridge.stopAgent();
-        return { ok: true };
+        return bridge.disconnectClient(message.clientId);
       }
 
       default:

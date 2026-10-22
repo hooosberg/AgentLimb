@@ -38,13 +38,6 @@ const bridge = createBridge({
       data: formatUserMessage({ text, at: new Date().toISOString(), page }),
     });
   },
-  onStop: () => {
-    notify('notifications/message', {
-      level: 'warning',
-      logger: 'agentlimb',
-      data: 'User pressed STOP in the browser — halt browser actions now.',
-    });
-  },
 });
 
 // ── MCP stdio plumbing ────────────────────────────────────────────────────────
@@ -58,6 +51,9 @@ function formatUserMessage(msg) {
   if (page) {
     lines.push('');
     lines.push(`Current tab: ${page.title || '(untitled)'} — ${page.url}`);
+    if (page.restricted) {
+      lines.push('(Chrome does not allow reading or controlling this page type — chrome://, the Web Store, PDF viewer, etc. Answer from the url/title only.)');
+    }
     if (page.image) lines.push('(a screenshot of this exact tab is attached to this message)');
     if (page.text) {
       lines.push('Visible page text (excerpt):');

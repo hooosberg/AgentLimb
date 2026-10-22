@@ -7,7 +7,7 @@
 
 export const APP_ID = 'agentlimb.chrome';
 export const APP_NAME = 'AgentLimb';
-export const APP_VERSION = '0.4.6';
+export const APP_VERSION = '0.5.0';
 export const APP_BUILD = 'l1';
 
 /** Local bridge defaults. The host picks the first free port in the range. */
@@ -36,13 +36,10 @@ export const MESSAGE_TYPES = {
   COPY_PROMPT: 'AGENTLIMB_COPY_PROMPT',
   OPEN_PANEL: 'AGENTLIMB_OPEN_PANEL',
   CHAT_SEND: 'AGENTLIMB_CHAT_SEND',
-  QUICK_ACTION: 'AGENTLIMB_QUICK_ACTION',
   DISCONNECT_CLIENT: 'AGENTLIMB_DISCONNECT_CLIENT',
-  STOP_AGENT: 'AGENTLIMB_STOP_AGENT',
   // SW → pages (broadcast)
   NOTIFY_STATUS: 'AGENTLIMB_NOTIFY_STATUS',
   NOTIFY_CHAT: 'AGENTLIMB_NOTIFY_CHAT',
-  NOTIFY_ACTIVITY: 'AGENTLIMB_NOTIFY_ACTIVITY',
 };
 
 /**
@@ -62,7 +59,6 @@ export const WIRE = {
   TOOL_RESULT: 'tool_result', // {t, tool_use_id, ok, result?, error?, userMessages?}
   PONG: 'pong',
   USER_MESSAGE: 'user_message', // {t, text, at, page?}  (panel chat → agent)
-  STOP_AGENT: 'stop_agent', // {t}  (user pressed stop in-page)
   STATUS: 'status', // {t, paired:[...], pending:[...]}  (ext → host, on connect)
 };
 

@@ -65,11 +65,7 @@ body {
 }
 .btn-primary:hover { background: var(--brand-dark); }
 
-.copy-feedback {
-  text-align: center;
-  font-size: 12.5px;
-  color: var(--ok);
-}
+.copy-feedback { text-align: center; font-size: 12.5px; color: var(--ok); }
 
 .panel-hint {
   margin: 0;
@@ -115,16 +111,17 @@ body {
   font-family: ui-monospace, monospace;
 }
 
-/* ── paired: chat ── */
+/* ── paired: chat (no chrome around it — this IS the conversation) ── */
+.state-chat { padding: 10px 12px 8px; gap: 8px; }
+
 .chat-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--border);
+  padding: 2px 2px 6px;
 }
-.client-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.client-chips { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
 .chip {
   display: inline-flex;
   align-items: center;
@@ -134,11 +131,27 @@ body {
   border-radius: 999px;
   background: var(--bg-soft);
   border: 1px solid var(--border);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-.chip .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); }
+.chip .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); flex: none; }
 /* Paired but the agent's MCP is not running — must not claim it is driving. */
 .chip-offline { color: var(--text-soft); }
 .chip-offline .dot { background: var(--text-soft); }
+
+.btn-link {
+  appearance: none;
+  border: none;
+  background: none;
+  color: var(--text-soft);
+  font-size: 11.5px;
+  padding: 4px 2px;
+  cursor: pointer;
+  flex: none;
+}
+.btn-link:hover { color: var(--brand-dark); text-decoration: underline; }
 
 .chat-log {
   flex: 1;
@@ -147,9 +160,18 @@ body {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 4px 2px;
+  padding: 2px;
 }
-.msg { max-width: 88%; padding: 8px 11px; border-radius: 12px; font-size: 13px; line-height: 1.55; white-space: pre-wrap; word-break: break-word; }
+
+.msg {
+  max-width: 88%;
+  padding: 8px 11px;
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
 .msg.user { align-self: flex-end; background: var(--brand); color: #fff; border-bottom-right-radius: 4px; }
 .msg.system { align-self: flex-start; background: var(--bg-soft); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
 /* AI reply (delivered through the `say` tool) — visually the counterpart to .user */
@@ -159,9 +181,11 @@ body {
   align-self: flex-start; max-width: 100%; padding: 1px 4px;
   background: none; border: none; border-radius: 0;
   font-size: 11.5px; color: var(--text-soft); opacity: 0.85;
+  white-space: pre-wrap;
 }
 .msg.activity::before { content: '· '; }
-.header-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.msg.activity.grouped { cursor: pointer; }
+.msg.activity.grouped:hover { opacity: 1; }
 
 /* "正在思考…" — liveness feedback right after the user hits send */
 .msg.thinking {
@@ -185,7 +209,7 @@ body {
   color: var(--text-soft); font-size: 11.5px; padding: 6px 10px;
 }
 .msg img { max-width: 100%; border-radius: 6px; display: block; }
-.msg .meta { display: block; margin-top: 4px; font-size: 10.5px; opacity: 0.75; }
+.msg .meta { display: block; margin-top: 5px; font-size: 10.5px; opacity: 0.8; }
 .msg pre {
   margin: 6px 0 0;
   padding: 8px;
@@ -197,7 +221,49 @@ body {
   overflow-y: auto;
 }
 
-.quick-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.chat-form { display: flex; gap: 8px; align-items: flex-end; }
+#chat-input {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--text);
+  padding: 9px 12px;
+  font-size: 13px;
+  font-family: inherit;
+  line-height: 1.5;
+  resize: none;
+  overflow-y: hidden;
+  min-height: 38px;
+  max-height: 120px;
+  outline: none;
+}
+#chat-input:focus { border-color: var(--brand); }
+.btn-send {
+  appearance: none;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--brand);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 0 14px;
+  height: 38px;
+  cursor: pointer;
+  flex: none;
+}
+.btn-send:hover { background: var(--brand-dark); }
+.chat-note {
+  font-size: 11px;
+  color: var(--text-soft);
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 4px;
+}
+
+/* small helpers still used by the unpaired view */
 .btn-ghost {
   appearance: none;
   border: 1px solid var(--border);
@@ -209,22 +275,3 @@ body {
   cursor: pointer;
 }
 .btn-ghost:hover { background: var(--bg-soft); }
-.btn-sm { padding: 4px 9px; font-size: 11.5px; }
-.btn-stop { color: var(--brand-dark); border-color: var(--brand); }
-
-.chat-form { display: flex; gap: 8px; }
-#chat-input {
-  flex: 1;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--bg);
-  color: var(--text);
-  padding: 10px 12px;
-  font-size: 13px;
-  outline: none;
-}
-#chat-input:focus { border-color: var(--brand); }
-.btn-send { padding: 10px 16px; }
-.chat-note { font-size: 11px; color: var(--text-soft); text-align: center; }
-
-.paired-hint { margin: 8px 0 4px; }
