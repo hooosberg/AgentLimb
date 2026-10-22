@@ -82,6 +82,13 @@ node bin/agentlimb.mjs status     # 另一个终端探测
    packed 扩展 Chrome 会把周期钳到 1 分钟。
 7. **多浏览器 profile 同时连**：只有最后完成配对的是 active browser，
    工具调用只发给它。这是已知设计限制，不是 bug。
+8. **SW 注册失败（Errors 页 `Status code: 15` + `Unexpected token '{'`）**：
+   模块语法错误或 import 路径错误，SW 整个起不来，插件所有功能全灭。
+   两个教训：① `node --check` 只查语法、**不解析 import 路径**；
+   ② 早先一次「全文件语法检查」把输出接进管道，退出码被 `head` 吞掉，
+   误报全绿——查语法必须看退出码。现在 `tests/extension-modules.test.mjs`
+   用 chrome 桩真正 import 全部扩展模块（含 SW 的 bootstrap），这类错误
+   在 `npm test` 里就会挂。
 
 ## 改代码的检查单
 

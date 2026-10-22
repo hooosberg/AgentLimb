@@ -16,7 +16,7 @@
  *   → tool_call / tool_result frames → (SW suspend) → alarm wakes us → retry
  */
 
-import { BRIDGE_PORTS, STORAGE_KEYS, WIRE } from '../../../shared/constants.js';
+import { BRIDGE_PORTS, STORAGE_KEYS, WIRE } from '../../shared/constants.js';
 
 const TOOL_TIMEOUT_MS = 65000;
 
@@ -357,7 +357,7 @@ export function createBridgeClient({ onStatus, onToolCall, onPairingRequest, onA
   }
 
   /** Alarm-driven wakeup: MV3 suspends the SW; this re-opens the stream. */
-  ensure() {
+  function ensure() {
     if (status === 'connected' && eventSource) return;
     void reconnect();
   }

@@ -17,6 +17,7 @@
 
 ```bash
 # 跑协议测试（不需要装插件，模拟扩展自动配对）
+# 也会真正 import 全部扩展模块——SW 注册类错误在这里就会暴露
 npm test
 
 # 起 MCP + 桥接（模拟智能体接入，浏览器未连时会报 no paired browser）
@@ -32,7 +33,7 @@ node bin/agentlimb.mjs mcp
 - [x] 本地桥接：HTTP+SSE、端口发现、配对注册表（`~/.agentlimb/paired-clients.json`）
 - [x] MCP stdio 服务器 + 15 工具目录（扩展/宿主同源）
 - [x] 持久 CDP debugger、焦点模拟、自适应截图、console/network 捕获
-- [x] 协议端到端测试 6/6 通过
+- [x] 测试 9/9 通过（协议端到端 + 扩展模块冒烟/图标开关行为）
 - [ ] **未做真机验证**：Chrome 内加载插件后的页面控制链路（见 development.md 手动验证清单）
 - [ ] 侧栏聊天窗真机 UI 走查
 - [ ] Windows 安装脚本实机验证

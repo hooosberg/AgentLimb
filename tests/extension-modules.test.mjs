@@ -1,0 +1,139 @@
+/**
+ * Extension module smoke tests.
+ *
+ * These import the real extension modules under a chrome API stub. Their job:
+ * catch import-time failures (syntax errors, bad top-level code) that make
+ * Chrome refuse to register the service worker — a class of bug that unit
+ * tests of the host side never see, and that node --check misses when piped.
+ *
+ * Also covers the toolbar-icon toggle behavior end to end at the SW level.
+ */
+
+import test from 'node:test';
+import assert from 'node:assert/strict';
+
+function createChromeStub() {
+  const listeners = { actionClicked: [], command: [], message: [], alarm: [] };
+  const calls = {
+    panelOpen: [], panelClose: [], panelBehavior: [], alarms: [], storageSet: [],
+  };
+  let sidePanelContexts = [];
+
+  const chrome = {
+    runtime: {
+      onMessage: { addListener: (fn) => listeners.message.push(fn) },
+      onInstalled: { addListener: () => {} },
+      sendMessage: () => Promise.resolve(),
+      getManifest: () => ({ version: '0.3.0' }),
+      getURL: (p) => `chrome-extension://stub/${p}`,
+      getContexts: async (filter) =>
+        (filter?.contextTypes?.includes('SIDE_PANEL') ? sidePanelContexts : []),
+      lastError: null,
+    },
+    alarms: {
+      create: (name, opts) => calls.alarms.push({ name, ...opts }),
+      onAlarm: { addListener: (fn) => listeners.alarm.push(fn) },
+    },
+    sidePanel: {
+      setPanelBehavior: async (opts) => { calls.panelBehavior.push(opts); },
+      open: async (opts) => { calls.panelOpen.push(opts); },
+      close: async (opts) => { calls.panelClose.push(opts); },
+    },
+    action: { onClicked: { addListener: (fn) => listeners.actionClicked.push(fn) } },
+    commands: { onCommand: { addListener: (fn) => listeners.command.push(fn) } },
+    storage: {
+      local: {
+        get: async () => ({}),
+        set: async (items) => { calls.storageSet.push(items); },
+      },
+    },
+    tabs: {
+      query: async () => [{ id: 1, windowId: 10, active: true, url: 'https://example.com', status: 'complete' }],
+      get: async (id) => ({ id, windowId: 10, active: true, url: 'https://example.com', status: 'complete' }),
+      sendMessage: async () => ({}),
+      create: async () => ({}),
+      update: async () => ({}),
+      remove: async () => ({}),
+      goBack: async () => {},
+      goForward: async () => {},
+      onUpdated: { addListener: () => {} },
+    },
+    windows: { update: async () => ({}) },
+    debugger: {
+      attach: async () => {},
+      detach: async () => {},
+      sendCommand: async () => ({}),
+      onDetach: { addListener: () => {} },
+      onEvent: { addListener: () => {} },
+      getTargets: async () => [],
+    },
+    i18n: { getUILanguage: () => 'zh-CN', getMessage: (k) => k },
+  };
+
+  return {
+    chrome,
+    listeners,
+    calls,
+    setSidePanelContexts: (v) => { sidePanelContexts = v; },
+  };
+}
+
+const tick = () => new Promise((r) => setTimeout(r, 30));
+
+let stub;
+
+test('extension modules import cleanly under a chrome stub', async () => {
+  stub = createChromeStub();
+  globalThis.chrome = stub.chrome;
+
+  // Pure modules first (no chrome usage at import time).
+  await import('../kernel/shared/constants.js');
+  await import('../kernel/control/host/tools.js');
+  await import('../kernel/prompt/build-prompt.js');
+  await import('../kernel/control/background/bridge-client.js');
+  await import('../kernel/control/background/debugger.js');
+  await import('../kernel/control/background/router.js');
+
+  // The service worker runs bootstrap() at import time — this is exactly where
+  // a syntax/import error becomes "Service worker registration failed".
+  await import('../kernel/control/background/service-worker.js');
+
+  assert.equal(stub.listeners.actionClicked.length, 1, 'action click listener registered');
+  assert.equal(stub.listeners.message.length, 1, 'runtime message listener registered');
+  assert.equal(stub.listeners.alarm.length, 1, 'alarm listener registered');
+  assert.ok(
+    stub.calls.alarms.some((a) => a.name === 'agentlimb-bridge-keepalive'),
+    'keep-alive alarm created',
+  );
+});
+
+test('toolbar icon click toggles the side panel', async () => {
+  const click = stub.listeners.actionClicked[0];
+  const tab = { id: 1, windowId: 10 };
+
+  // Closed → click opens
+  await click(tab);
+  await tick();
+  assert.deepEqual(stub.calls.panelOpen.at(-1), { tabId: 1 });
+
+  // Open → click closes
+  stub.setSidePanelContexts([{ contextTypes: ['SIDE_PANEL'], windowId: 10 }]);
+  await click(tab);
+  await tick();
+  assert.deepEqual(stub.calls.panelClose.at(-1), { tabId: 1 });
+
+  // Keyboard shortcut goes through the same toggle (panel is closed again now)
+  stub.setSidePanelContexts([]);
+  const cmd = stub.listeners.command[0];
+  await cmd('toggle-side-panel');
+  await tick();
+  assert.equal(stub.calls.panelOpen.length, 2, 'shortcut re-opened the panel');
+});
+
+test('panel behavior does not consume the action click', async () => {
+  // openPanelOnActionClick must be false, otherwise onClicked never fires
+  // and the toggle is impossible.
+  const last = stub.calls.panelBehavior.at(-1);
+  assert.ok(last, 'setPanelBehavior called');
+  assert.equal(last.openPanelOnActionClick, false);
+});
