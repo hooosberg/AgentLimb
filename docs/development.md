@@ -33,6 +33,29 @@ node bin/agentlimb.mjs status     # 另一个终端探测
 ### C. 真机验证（需要你亲自加载插件）
 见下方「真机验证清单」。
 
+### D. 自动化真机验证（Chrome for Testing + CDP）
+用 `--load-extension` 起一个隔离 profile 的 Chrome，全程 CDP + MCP 驱动，
+不需要人工点。
+
+**⚠️ 系统 Chrome 155 已移除 `--load-extension`**（传了也被静默忽略，
+`--disable-features=DisableLoadExtensionCommandLineSwitch` 也救不回来）。
+自动化验证要用 Playwright 缓存的 **Chrome for Testing 149**：
+
+```bash
+CFT="$HOME/Library/Caches/ms-playwright/chromium-1228/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing"
+"$CFT" --user-data-dir=/tmp/agentlimb-verify/profile \
+       --load-extension=/tmp/agentlimb-ext \       # 建议复制到纯 ASCII 路径
+       --remote-debugging-port=9333 \
+       --no-first-run --no-sandbox --disable-gpu about:blank
+```
+
+- 沙箱环境里 Chrome 必须加 `--no-sandbox --disable-gpu`，否则
+  `sandbox initialization failed` → GPU 进程 FATAL → 主进程直接退出
+- 验证点按顺序：`/json/list` 出现 `service_worker` 且 URL 含
+  `kernel/control/background/service-worker.js`（**这就是 SW 注册成功的硬证据**）
+  → `/health` 的 `browsers>=1` → 配对页自动弹出 → `paired:true` → `tools/call`
+- 驱动脚本样例见 `/tmp/agentlimb-verify/verify-live.mjs`（不入库，一次性用）
+
 ## 真机验证清单
 
 在 Chrome 加载 `cowork_lite`（开发者模式 → 加载已解压）后：
@@ -41,16 +64,16 @@ node bin/agentlimb.mjs status     # 另一个终端探测
    任意文本编辑器，确认提示词含 `mcpServers` JSON 和 `~/.agentlimb/host/mcp-server.mjs`
    以及「替换 ~ 为绝对路径」的警告
 2. **图标开关**：侧栏开着时再点一次扩展图标 → 侧栏关闭（开/关切换，Cmd/Ctrl+E 同效）
-2. **配对**：另开终端 `node bin/agentlimb.mjs mcp` → 约 1 分钟内（或开关一次侧栏加速）
+3. **配对**：另开终端 `node bin/agentlimb.mjs mcp` → 约 1 分钟内（或开关一次侧栏加速）
    自动弹出配对标签页 → 点「允许连接」→ 标签页自动关闭
-3. **已配对态**：侧栏变成聊天窗，左上角有 `My Agent · 智能体` 芯片
-4. **快捷操作**：聊天窗上方「截图 / 标签列表 / 读取页面」三个按钮直接出结果
+4. **已配对态**：侧栏变成聊天窗，左上角有 `My Agent · 智能体` 芯片
+5. **快捷操作**：聊天窗上方「截图 / 标签列表 / 读取页面」三个按钮直接出结果
    （截图渲染成图片气泡；读取页面输出 a11y 树文本）
-5. **聊天送达**：输入框发一句话 → 出现「已送达 AI」→ 终端 stderr 可见
+6. **聊天送达**：输入框发一句话 → 出现「已送达 AI」→ 终端 stderr 可见
    `user message: …` 日志
-6. **agent 侧工具调用**：用任意 MCP 客户端连上后调用 `ping`，应返回 pong
-7. **断开**：侧栏点「断开」→ 侧栏回到未配对态
-8. **重连自动**：再跑 `node bin/agentlimb.mjs mcp` → **不再弹配对页**，直接可用
+7. **agent 侧工具调用**：用任意 MCP 客户端连上后调用 `ping`，应返回 pong
+8. **断开**：侧栏点「断开」→ 侧栏回到未配对态
+9. **重连自动**：再跑 `node bin/agentlimb.mjs mcp` → **不再弹配对页**，直接可用
 
 ## 调试技巧
 
@@ -89,6 +112,10 @@ node bin/agentlimb.mjs status     # 另一个终端探测
    误报全绿——查语法必须看退出码。现在 `tests/extension-modules.test.mjs`
    用 chrome 桩真正 import 全部扩展模块（含 SW 的 bootstrap），这类错误
    在 `npm test` 里就会挂。
+9. **`--load-extension` 在系统 Chrome 155 已失效**：命令行传了也不报错、也不加载
+   （`--disable-features=DisableLoadExtensionCommandLineSwitch` 无效）。想自动化
+   起浏览器验扩展，只能用 Chrome for Testing（见「D. 自动化真机验证」）。
+   另外沙箱里跑 Chrome 必须 `--no-sandbox --disable-gpu`，否则 GPU 进程 FATAL。
 
 ## 改代码的检查单
 

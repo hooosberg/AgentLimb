@@ -34,8 +34,13 @@ node bin/agentlimb.mjs mcp
 - [x] MCP stdio 服务器 + 15 工具目录（扩展/宿主同源）
 - [x] 持久 CDP debugger、焦点模拟、自适应截图、console/network 捕获
 - [x] 测试 9/9 通过（协议端到端 + 扩展模块冒烟/图标开关行为）
-- [ ] **未做真机验证**：Chrome 内加载插件后的页面控制链路（见 development.md 手动验证清单）
-- [ ] 侧栏聊天窗真机 UI 走查
+- [x] **SW 注册已在真实 Chrome 内核验证**：Chrome for Testing 149 用
+      `--load-extension` 加载后，`/json/list` 出现
+      `service_worker → kernel/control/background/service-worker.js`，
+      即 SW 注册成功、无语法/import 错误（见 development.md 的 D 节）
+- [ ] **完整链路真机走查**：系统 Chrome 155 里手动加载后的配对 / 工具调用 /
+      侧栏聊天窗（development.md 手动验证清单 1-9）。注意 Chrome 155 已移除
+      `--load-extension`，只能人工在 chrome://extensions 里「加载已解压」
 - [ ] Windows 安装脚本实机验证
 
 ## 代码结构速查
