@@ -136,6 +136,9 @@ body {
   border: 1px solid var(--border);
 }
 .chip .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); }
+/* Paired but the agent's MCP is not running — must not claim it is driving. */
+.chip-offline { color: var(--text-soft); }
+.chip-offline .dot { background: var(--text-soft); }
 
 .chat-log {
   flex: 1;

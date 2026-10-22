@@ -53,6 +53,14 @@ export function createBridgeClient({ onStatus, onToolCall, onPairingRequest, onA
     chrome.runtime.sendMessage({ type: 'AGENTLIMB_NOTIFY_CHAT', message: entry }).catch(() => {});
   }
 
+  /** Wipe the transcript (disconnect, or a different agent took over). */
+  function clearChat() {
+    if (!chatLog.length) return;
+    chatLog.length = 0;
+    persistChat();
+    chrome.runtime.sendMessage({ type: 'AGENTLIMB_NOTIFY_CHAT' }).catch(() => {});
+  }
+
   async function loadChatLog() {
     try {
       const store = await chrome.storage.local.get(STORAGE_KEYS.chatLog);
@@ -151,7 +159,10 @@ export function createBridgeClient({ onStatus, onToolCall, onPairingRequest, onA
         changed = true;
       }
     }
-    if (changed) await persistPaired();
+    if (changed) {
+      await persistPaired();
+      clearChat(); // a different agent took over — don't mix transcripts
+    }
   }
 
   // ── HTTP ───────────────────────────────────────────────────────────────────
@@ -450,6 +461,7 @@ export function createBridgeClient({ onStatus, onToolCall, onPairingRequest, onA
     if (c) c.paired = false;
     await persistPaired();
     await post({ t: WIRE.PAIRING_REVOKED, client_id: clientId }).catch(() => {});
+    clearChat(); // 断开 = 结束这段关系，聊天记录一并清掉
     broadcast();
   }
 

@@ -72,7 +72,7 @@ function render() {
   if (paired.length > 0) {
     els.stateUnpaired.hidden = true;
     els.statePaired.hidden = false;
-    renderChips(paired);
+    renderChips(paired, bridgeUp);
     syncChat();
   } else {
     els.stateUnpaired.hidden = false;
@@ -87,15 +87,20 @@ function render() {
   }
 }
 
-function renderChips(paired) {
+function renderChips(paired, connected) {
   els.clientChips.innerHTML = '';
   // Single tenant: only the most recently paired client is shown, so switching
   // from software A to B never leaves a stack of stale chips behind.
   const latest = [...paired].sort((a, b) => String(b.pairedAt || '').localeCompare(String(a.pairedAt || '')))[0];
   if (!latest) return;
   const chip = document.createElement('span');
-  chip.className = 'chip';
-  chip.innerHTML = `<span class="dot"></span>正在与 ${escapeHtml(latest.name)} 驱动浏览器`;
+  // Honest state: paired ≠ connected. When the agent software is not running
+  // (its MCP is down) the chip must not claim it is driving the browser.
+  chip.className = connected ? 'chip' : 'chip chip-offline';
+  chip.innerHTML = connected
+    ? `<span class="dot"></span>正在与 ${escapeHtml(latest.name)} 驱动浏览器`
+    : `<span class="dot"></span>已配对 · 等待 ${escapeHtml(latest.name)} 连接`;
+  chip.title = connected ? 'AI 已连接，可以下指令' : 'AI 的 MCP 进程没在运行，启动后会自动连上（不用重新配对）';
   els.clientChips.appendChild(chip);
 }
 
@@ -181,12 +186,29 @@ els.chatForm.addEventListener('submit', async (event) => {
   try {
     // The SW attaches the current page and pushes the entry into the transcript.
     const res = await chrome.runtime.sendMessage({ type: MESSAGE_TYPES.CHAT_SEND, text });
-    if (res?.ok) refreshStatus();
-    else appendMessage({ from: 'system', text: `发送失败：${res?.error || 'unknown'}`, at: new Date().toISOString() });
+    if (res?.ok) {
+      refreshStatus();
+      return;
+    }
+    els.chatInput.value = text; // don't swallow what the user typed
+    appendMessage({ from: 'system', text: explainSendError(res?.error), at: new Date().toISOString() });
   } catch (error) {
-    appendMessage({ from: 'system', text: `发送失败：${error.message}`, at: new Date().toISOString() });
+    els.chatInput.value = text;
+    appendMessage({ from: 'system', text: explainSendError(error.message), at: new Date().toISOString() });
   }
 });
+
+/** Raw protocol errors are not user language — translate the two that matter. */
+function explainSendError(raw) {
+  const msg = String(raw || '');
+  if (/bridge not connected/i.test(msg)) {
+    return 'AI 还没连上——它的 MCP 进程没在运行。启动智能体软件后会自动连上，不用重新配对。';
+  }
+  if (/no paired AI client/i.test(msg)) {
+    return '还没有配对的 AI——请先完成配对。';
+  }
+  return `发送失败：${msg || 'unknown'}`;
+}
 
 els.btnDisconnect.addEventListener('click', async () => {
   const paired = (lastStatus?.clients || []).filter((c) => c.paired);
