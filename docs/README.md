@@ -7,6 +7,7 @@
 
 | 文档 | 内容 | 什么时候读 |
 |---|---|---|
+| [product.md](./product.md) | **产品目标、交互原则、明确不做、验收标准** | 决定「该不该加这个功能」之前 |
 | [architecture.md](./architecture.md) | 三端架构、模块逐文件说明、控制链路时序 | 改任何代码之前 |
 | [protocol.md](./protocol.md) | HTTP 端点、SSE/POST 帧格式、MCP 方法、错误语义 | 动协议/加工具时 |
 | [development.md](./development.md) | 本地开发工作流、手动验证清单、调试技巧、已知坑 | 每天开发时 |

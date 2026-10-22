@@ -35,6 +35,61 @@ export function createBridgeClient({ onStatus, onToolCall, onPairingRequest, onA
   const userMessageQueues = new Map();
   const openPairingTabs = new Map(); // request_id -> tabId
   let toolChain = Promise.resolve();
+  /**
+   * Panel chat transcript: {from:'user'|'agent'|'activity', text, at}.
+   * Persisted so closing/reopening the panel keeps the conversation.
+   */
+  const chatLog = [];
+
+  function persistChat() {
+    const durable = chatLog.filter((m) => m.from !== 'activity').slice(-60);
+    chrome.storage.local.set({ [STORAGE_KEYS.chatLog]: durable }).catch(() => {});
+  }
+
+  function pushChat(entry) {
+    chatLog.push(entry);
+    if (chatLog.length > 120) chatLog.splice(0, chatLog.length - 120);
+    if (entry.from !== 'activity') persistChat();
+    chrome.runtime.sendMessage({ type: 'AGENTLIMB_NOTIFY_CHAT', message: entry }).catch(() => {});
+  }
+
+  async function loadChatLog() {
+    try {
+      const store = await chrome.storage.local.get(STORAGE_KEYS.chatLog);
+      const saved = store[STORAGE_KEYS.chatLog];
+      if (Array.isArray(saved) && saved.length) {
+        chatLog.splice(0, chatLog.length, ...saved.slice(-60));
+      }
+    } catch (_) { /* storage unavailable */ }
+  }
+
+  /** Human-readable one-liner for the panel's activity feed. */
+  const ACTIVITY_LABELS = {
+    tabs_context: '查看标签列表',
+    tab_new: '新建标签',
+    tab_close: '关闭标签',
+    tab_activate: '切换标签',
+    read_page: '读取页面结构',
+    find: '查找页面元素',
+    computer: '操作页面',
+    form_input: '填写表单',
+    navigate: '导航',
+    javascript_eval: '执行页面脚本',
+    wait: '等待页面条件',
+    read_console_messages: '读取控制台',
+    read_network_requests: '读取网络请求',
+    browser_batch: '批量操作',
+    ping: '检查连接',
+  };
+
+  function pushActivity(tool, args = {}) {
+    const label = ACTIVITY_LABELS[tool] || tool;
+    let detail = '';
+    if (tool === 'navigate' && args.url) detail = ` → ${String(args.url).slice(0, 60)}`;
+    else if (tool === 'tab_new' && args.url) detail = ` → ${String(args.url).slice(0, 60)}`;
+    else if (tool === 'computer' && args.action) detail = ` · ${args.action}`;
+    pushChat({ from: 'activity', text: `${label}${detail}`, at: new Date().toISOString() });
+  }
 
   // ── status ─────────────────────────────────────────────────────────────────
   function getStatus() {
@@ -47,6 +102,7 @@ export function createBridgeClient({ onStatus, onToolCall, onPairingRequest, onA
         name: p.client.name,
         kind: p.client.kind,
       })),
+      chat: chatLog.slice(-60),
     };
   }
 
@@ -220,6 +276,7 @@ export function createBridgeClient({ onStatus, onToolCall, onPairingRequest, onA
 
       case WIRE.TOOL_CALL: {
         const { tool_use_id, tool, args, tabId, client_id } = frame;
+        if (tool !== 'ping' && tool !== 'say') pushActivity(tool, args || {});
         // Serialize tool execution — agent calls are sequential by nature.
         toolChain = toolChain.then(async () => {
           let result = null;
@@ -243,10 +300,16 @@ export function createBridgeClient({ onStatus, onToolCall, onPairingRequest, onA
         break;
       }
 
+      case WIRE.AGENT_MESSAGE: {
+        // The agent replied via the `say` tool — show it in the panel chat.
+        pushChat({ from: 'agent', text: frame.text, at: frame.at || new Date().toISOString() });
+        break;
+      }
+
       case WIRE.USER_MESSAGE: {
         // Panel chat → queued and attached to the agent's next tool result.
         const clientId = [...clients.values()].find((c) => c.paired)?.id || frame.client_id;
-        if (clientId) queueUserMessage(clientId, frame.text);
+        if (clientId) queueUserMessage(clientId, { text: frame.text, at: frame.at, page: frame.page });
         onAgentMessage?.(frame);
         break;
       }
@@ -318,18 +381,29 @@ export function createBridgeClient({ onStatus, onToolCall, onPairingRequest, onA
   }
 
   // ── panel chat ─────────────────────────────────────────────────────────────
-  async function sendUserMessage(text) {
+  async function sendUserMessage(text, page) {
     if (!text || !text.trim()) return { ok: false, error: 'empty message' };
     if (!port) return { ok: false, error: 'bridge not connected' };
     const clientId = [...clients.values()].find((c) => c.paired)?.id;
     if (!clientId) return { ok: false, error: 'no paired AI client' };
-    await post({ t: WIRE.USER_MESSAGE, text: text.trim(), at: new Date().toISOString() });
+    const message = { text: text.trim(), at: new Date().toISOString() };
+    if (page) message.page = page;
+    pushChat({ from: 'user', ...message });
+    // Queue locally too: the host echoes the frame back, but if the SSE hiccups
+    // the message still rides on the agent's next tool result.
+    queueUserMessage(clientId, message);
+    await post({ t: WIRE.USER_MESSAGE, ...message });
     return { ok: true };
   }
 
-  function queueUserMessage(clientId, text) {
+  function queueUserMessage(clientId, message) {
     const queue = userMessageQueues.get(clientId) || [];
-    queue.push({ text, at: new Date().toISOString() });
+    const entry = typeof message === 'string'
+      ? { text: message, at: new Date().toISOString() }
+      : message;
+    // The host echoes our own USER_MESSAGE back over SSE; dedupe on (at, text)
+    // so the agent doesn't receive the same message twice.
+    if (!queue.some((m) => m.at === entry.at && m.text === entry.text)) queue.push(entry);
     userMessageQueues.set(clientId, queue);
   }
 
@@ -356,6 +430,7 @@ export function createBridgeClient({ onStatus, onToolCall, onPairingRequest, onA
 
   // ── lifecycle ──────────────────────────────────────────────────────────────
   async function start() {
+    await loadChatLog();
     await loadPaired();
     await reconnect();
   }

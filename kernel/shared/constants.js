@@ -7,7 +7,7 @@
 
 export const APP_ID = 'agentlimb.chrome';
 export const APP_NAME = 'AgentLimb';
-export const APP_VERSION = '0.3.5';
+export const APP_VERSION = '0.4.0';
 export const APP_BUILD = 'l1';
 
 /** Local bridge defaults. The host picks the first free port in the range. */
@@ -26,6 +26,7 @@ export const STORAGE_KEYS = {
   lastClient: 'agentlimb.lastClient',
   hostPath: 'agentlimb.hostPath', // user-overridable MCP command path
   lang: 'agentlimb.lang',
+  chatLog: 'agentlimb.chatLog', // recent panel chat (survives panel close / SW restart)
 };
 
 /** chrome.runtime message types (panel/pairing ↔ SW) */
@@ -41,6 +42,7 @@ export const MESSAGE_TYPES = {
   // SW → pages (broadcast)
   NOTIFY_STATUS: 'AGENTLIMB_NOTIFY_STATUS',
   NOTIFY_CHAT: 'AGENTLIMB_NOTIFY_CHAT',
+  NOTIFY_ACTIVITY: 'AGENTLIMB_NOTIFY_ACTIVITY',
 };
 
 /**
@@ -53,12 +55,13 @@ export const WIRE = {
   PAIRING_REQUEST: 'pairing_request', // {t, request_id, client}
   PAIRING_REVOKED: 'pairing_revoked', // {t, client_id}
   TOOL_CALL: 'tool_call', // {t, tool_use_id, tool, args, tabId?}
+  AGENT_MESSAGE: 'agent_message', // {t, text, at}  (agent → panel chat)
   PING: 'ping',
   // extension → host (POST /api/message)
   PAIRING_RESPONSE: 'pairing_response', // {t, request_id, ok, name}
   TOOL_RESULT: 'tool_result', // {t, tool_use_id, ok, result?, error?, userMessages?}
   PONG: 'pong',
-  USER_MESSAGE: 'user_message', // {t, text, at}  (panel chat → agent)
+  USER_MESSAGE: 'user_message', // {t, text, at, page?}  (panel chat → agent)
   STOP_AGENT: 'stop_agent', // {t}  (user pressed stop in-page)
   STATUS: 'status', // {t, paired:[...], pending:[...]}  (ext → host, on connect)
 };

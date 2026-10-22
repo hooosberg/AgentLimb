@@ -3,9 +3,11 @@
  *
  * Two states, one responsibility each:
  *   unpaired → copy the connection prompt (that's all)
- *   paired   → a chat window with the connected AI (+ local quick actions)
+ *   paired   → a chat window ON the agent, plus a live feed of what it does
  *
  * The panel is NOT required for control. Opening it only checks pairing state.
+ * Every message the user sends carries the current page (text + interactive
+ * refs) so the agent can answer "translate this" without a round trip.
  */
 
 import { MESSAGE_TYPES, STORAGE_KEYS } from '../../kernel/shared/constants.js';
@@ -32,6 +34,7 @@ const els = {
 };
 
 let lastStatus = null;
+let chatSignature = '';
 
 // ── status polling + broadcasts ───────────────────────────────────────────────
 async function refreshStatus() {
@@ -48,11 +51,11 @@ async function refreshStatus() {
 
 chrome.runtime.onMessage.addListener((message) => {
   if (message.type === MESSAGE_TYPES.NOTIFY_STATUS) {
-    lastStatus = message;
+    lastStatus = { ...(lastStatus || {}), ...message };
     render();
   }
   if (message.type === MESSAGE_TYPES.NOTIFY_CHAT) {
-    appendMessage(message.message);
+    refreshStatus();
   }
 });
 
@@ -70,6 +73,7 @@ function render() {
     els.stateUnpaired.hidden = true;
     els.statePaired.hidden = false;
     renderChips(paired);
+    syncChat();
   } else {
     els.stateUnpaired.hidden = false;
     els.statePaired.hidden = true;
@@ -91,6 +95,34 @@ function renderChips(paired) {
     chip.innerHTML = `<span class="dot"></span>正在与 ${escapeHtml(c.name)} 驱动浏览器`;
     els.clientChips.appendChild(chip);
   }
+}
+
+/** The SW owns the transcript; the panel just mirrors it (survives close/reopen). */
+function syncChat() {
+  const list = lastStatus?.chat || [];
+  const last = list[list.length - 1];
+  const sig = `${list.length}:${last?.at || ''}:${last?.text || ''}`;
+  if (sig === chatSignature) return;
+  chatSignature = sig;
+  els.chatLog.innerHTML = '';
+  for (const entry of list) appendMessage(entry);
+}
+
+function appendMessage(message) {
+  if (!message) return;
+  const div = document.createElement('div');
+  const from = message.from || 'system';
+  div.className = `msg ${from}`;
+  if (message.image) {
+    const img = document.createElement('img');
+    img.src = message.image;
+    img.alt = 'screenshot';
+    div.appendChild(img);
+  } else if (message.text) {
+    div.textContent = message.text;
+  }
+  els.chatLog.appendChild(div);
+  els.chatLog.scrollTop = els.chatLog.scrollHeight;
 }
 
 // ── copy prompt ───────────────────────────────────────────────────────────────
@@ -144,14 +176,11 @@ els.chatForm.addEventListener('submit', async (event) => {
   const text = els.chatInput.value.trim();
   if (!text) return;
   els.chatInput.value = '';
-  appendMessage({ from: 'user', text, at: new Date().toISOString() });
   try {
+    // The SW attaches the current page and pushes the entry into the transcript.
     const res = await chrome.runtime.sendMessage({ type: MESSAGE_TYPES.CHAT_SEND, text });
-    if (res?.ok) {
-      appendMessage({ from: 'system', text: '已送达 AI', at: new Date().toISOString() });
-    } else {
-      appendMessage({ from: 'system', text: `发送失败：${res?.error || 'unknown'}`, at: new Date().toISOString() });
-    }
+    if (res?.ok) refreshStatus();
+    else appendMessage({ from: 'system', text: `发送失败：${res?.error || 'unknown'}`, at: new Date().toISOString() });
   } catch (error) {
     appendMessage({ from: 'system', text: `发送失败：${error.message}`, at: new Date().toISOString() });
   }
@@ -169,65 +198,6 @@ els.btnStop.addEventListener('click', async () => {
   await chrome.runtime.sendMessage({ type: MESSAGE_TYPES.STOP_AGENT });
   appendMessage({ from: 'system', text: '已请求停止', at: new Date().toISOString() });
 });
-
-// quick actions — direct local control, no agent round trip
-document.querySelectorAll('[data-quick]').forEach((btn) => {
-  btn.addEventListener('click', async () => {
-    const action = btn.dataset.quick;
-    try {
-      let res;
-      if (action === 'screenshot') {
-        res = await chrome.runtime.sendMessage({ type: MESSAGE_TYPES.QUICK_ACTION, tool: 'computer', args: { action: 'screenshot' } });
-        const image = res?.result?.image;
-        if (image) {
-          appendMessage({
-            from: 'system',
-            text: '',
-            image: `data:${image.mimeType};base64,${image.data}`,
-            at: new Date().toISOString(),
-          });
-        } else {
-          appendMessage({ from: 'system', text: '截图失败', at: new Date().toISOString() });
-        }
-      } else if (action === 'tabs') {
-        res = await chrome.runtime.sendMessage({ type: MESSAGE_TYPES.QUICK_ACTION, tool: 'tabs_context', args: {} });
-        const lines = (res?.result?.tabs || []).map((t) =>
-          `${t.active ? '▶' : ' '} #${t.id} ${t.title || '(无标题)'} — ${shortUrl(t.url)}`);
-        appendMessage({ from: 'system', text: lines.join('\n') || '（无标签）', at: new Date().toISOString() });
-      } else if (action === 'read_page') {
-        res = await chrome.runtime.sendMessage({ type: MESSAGE_TYPES.QUICK_ACTION, tool: 'read_page', args: {} });
-        const tree = res?.result?.tree || '';
-        appendMessage({ from: 'system', text: tree.slice(0, 2000), at: new Date().toISOString() });
-      }
-    } catch (error) {
-      appendMessage({ from: 'system', text: `操作失败：${error.message}`, at: new Date().toISOString() });
-    }
-  });
-});
-
-function appendMessage(message) {
-  if (!message) return;
-  const div = document.createElement('div');
-  div.className = `msg ${message.from === 'user' ? 'user' : 'system'}`;
-  if (message.image) {
-    const img = document.createElement('img');
-    img.src = message.image;
-    img.alt = 'screenshot';
-    div.appendChild(img);
-  } else if (message.text) {
-    div.textContent = message.text;
-  }
-  els.chatLog.appendChild(div);
-  els.chatLog.scrollTop = els.chatLog.scrollHeight;
-}
-
-function shortUrl(url) {
-  try {
-    return new URL(url).hostname + new URL(url).pathname.slice(0, 30);
-  } catch (_) {
-    return String(url).slice(0, 50);
-  }
-}
 
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({

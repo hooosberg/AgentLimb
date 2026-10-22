@@ -39,29 +39,25 @@
     </details>
   </section>
 
-  <!-- ═══ 已配对：聊天窗 ═══ -->
+  <!-- ═══ 已配对：聊天窗（等价于 AI 的聊天窗，且默认看得见当前页面）═══ -->
   <section id="state-paired" class="state" hidden>
     <header class="chat-header">
       <div id="client-chips" class="client-chips"></div>
-      <button id="btn-disconnect" class="btn-ghost btn-sm" title="断开当前 AI（需重新配对）">断开</button>
+      <div class="header-actions">
+        <button id="btn-stop" class="btn-ghost btn-sm btn-stop" title="停止 AI 当前操作">停止</button>
+        <button id="btn-disconnect" class="btn-ghost btn-sm" title="断开当前 AI（需重新配对）">断开</button>
+      </div>
     </header>
 
     <p class="panel-hint paired-hint">可以关掉侧栏——它不影响 AI 控制浏览器，只在聊天时用。</p>
 
     <div id="chat-log" class="chat-log"></div>
 
-    <div class="quick-actions">
-      <button class="btn-ghost btn-sm" data-quick="screenshot">截图</button>
-      <button class="btn-ghost btn-sm" data-quick="tabs">标签列表</button>
-      <button class="btn-ghost btn-sm" data-quick="read_page">读取页面</button>
-      <button id="btn-stop" class="btn-ghost btn-sm btn-stop" title="停止 AI 当前操作">停止</button>
-    </div>
-
     <form id="chat-form" class="chat-form">
-      <input id="chat-input" type="text" placeholder="给智能体发消息（指令会送达 Agent）…" autocomplete="off">
+      <input id="chat-input" type="text" placeholder="问它当前页面的事，或让它去操作…" autocomplete="off">
       <button type="submit" class="btn-primary btn-send">发送</button>
     </form>
-    <div class="chat-note">消息将送达已连接的智能体；它的下一次工具调用会带上它。</div>
+    <div class="chat-note">它会自动看到你当前标签页的内容。</div>
   </section>
 
   <script type="module" src="sidepanel.js"></script>

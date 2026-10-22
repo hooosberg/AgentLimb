@@ -370,6 +370,42 @@
     };
   }
 
+  // ── panel-chat page context ────────────────────────────────────────────────
+  /**
+   * "What the user is looking at" bundle attached to every side-panel message.
+   * The agent can answer "translate this page" with zero extra round trips, and
+   * the refs it gets back are already usable with computer/form_input.
+   */
+  function pageSnapshot(options = {}) {
+    const maxText = Math.min(Number(options.maxText) || 2500, 6000);
+    const maxEls = Math.min(Number(options.maxElements) || 30, 80);
+    const text = String((document.body && document.body.innerText) || '')
+      .replace(/[ \t]+/g, ' ')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim()
+      .slice(0, maxText);
+    const interactive = [];
+    const nodes = document.querySelectorAll(
+      'a[href], button, input, textarea, select, [role="button"], [role="link"], [role="checkbox"], [contenteditable="true"], [onclick]',
+    );
+    for (const el of nodes) {
+      if (interactive.length >= maxEls) break;
+      if (isHidden(el)) continue;
+      interactive.push({
+        ref: refFor(el),
+        role: roleOf(el),
+        name: (accessibleName(el) || '').slice(0, 80),
+      });
+    }
+    return {
+      ok: true,
+      url: location.href,
+      title: document.title,
+      text,
+      interactive,
+    };
+  }
+
   // ── form input ─────────────────────────────────────────────────────────────
   async function formInput(options = {}) {
     let el = null;
@@ -508,6 +544,8 @@
             return resolveRef(message.ref);
           case 'AGENTLIMB_RESOLVE_SELECTOR':
             return resolveSelector(message.selector);
+          case 'AGENTLIMB_PAGE_SNAPSHOT':
+            return pageSnapshot(message.options || {});
           case 'AGENTLIMB_FORM_INPUT':
             return formInput(message.options || {});
           case 'AGENTLIMB_WAIT':

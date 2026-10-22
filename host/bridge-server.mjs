@@ -284,10 +284,15 @@ export function createBridge({ clientId, clientName = 'AI Agent', clientKind = '
         break;
 
       case WIRE.USER_MESSAGE: {
-        log('info', `user message: ${frame.text}`);
-        onUserMessage?.(frame.text);
+        log('info', `user message: ${frame.text}${frame.page ? ` (page: ${frame.page.url})` : ''}`);
+        onUserMessage?.(frame.text, frame.page);
         // Relay to every browser so the panel chat and tool-result queues see it.
-        broadcast({ t: WIRE.USER_MESSAGE, text: frame.text, at: frame.at || new Date().toISOString() });
+        broadcast({
+          t: WIRE.USER_MESSAGE,
+          text: frame.text,
+          at: frame.at || new Date().toISOString(),
+          page: frame.page,
+        });
         break;
       }
 
@@ -403,6 +408,20 @@ export function createBridge({ clientId, clientName = 'AI Agent', clientKind = '
     if (server) server.close();
   }
 
+  /**
+   * Agent → panel chat. Called by the `say` tool: the reply shows up in the
+   * side panel as a normal assistant message, so the panel really is a chat
+   * window on the agent, not a one-way command box.
+   */
+  function sayToUser(text) {
+    const clean = String(text || '').trim();
+    if (!clean) return false;
+    const at = new Date().toISOString();
+    broadcast({ t: WIRE.AGENT_MESSAGE, text: clean, at });
+    log('info', `agent → panel: ${clean.slice(0, 120)}`);
+    return true;
+  }
+
   return {
     start,
     setClientName(name) {
@@ -414,6 +433,7 @@ export function createBridge({ clientId, clientName = 'AI Agent', clientKind = '
     },
     stop,
     callTool,
+    sayToUser,
     waitForPairing,
     isPaired,
     getPort: () => port,

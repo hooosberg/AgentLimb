@@ -18,13 +18,13 @@ test('tool catalog: unique names and valid schemas', () => {
   }
 });
 
-test('tool catalog: the lean 15-tool set', () => {
+test('tool catalog: the lean 16-tool set', () => {
   assert.deepEqual(
     HOST_TOOLS.map((t) => t.name).sort(),
     [
       'browser_batch', 'computer', 'find', 'form_input', 'javascript_eval',
       'navigate', 'ping', 'read_console_messages', 'read_network_requests',
-      'read_page', 'tab_activate', 'tab_close', 'tab_new', 'tabs_context', 'wait',
+      'read_page', 'say', 'tab_activate', 'tab_close', 'tab_new', 'tabs_context', 'wait',
     ].sort(),
   );
   assert.ok(findTool('computer'));

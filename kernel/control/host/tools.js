@@ -243,6 +243,19 @@ export const HOST_TOOLS = [
     },
   },
   {
+    name: 'say',
+    description:
+      'Reply to the user in the browser side panel chat. Use it whenever the user messages you from the panel (their messages arrive with the current page context), and to report a short result when a browser task is done. Keep it brief, in the user\'s language.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        text: { type: 'string', description: 'Message shown in the side panel chat.' },
+      },
+      required: ['text'],
+      additionalProperties: false,
+    },
+  },
+  {
     name: 'ping',
     description: 'Health check between the MCP host and the browser extension.',
     inputSchema: { type: 'object', properties: {}, additionalProperties: false },

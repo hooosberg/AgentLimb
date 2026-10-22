@@ -24,7 +24,8 @@ SSE 帧格式：`data: <json>\n\n`，连接时先发 `retry: 2000\n\n`。
 | `tool_call` | `tool_use_id`, `tool`, `args`, `tabId?`, `client_id` | 执行工具，必须回 `tool_result` |
 | `ping` | — | 心跳（25s）。回 `pong` |
 | `pairing_revoked` | `client_id` | 宿主侧撤销了配对 |
-| `user_message` | `text`, `at` | 转发：面板聊天 → 扩展入队，随下次 tool_result 送达 |
+| `user_message` | `text`, `at`, `page?` | 转发：面板聊天 → 扩展入队，随下次 tool_result 送达 |
+| `agent_message` | `text`, `at` | 智能体经 `say` 工具回话 → 扩展写进侧栏聊天流 |
 
 ### 扩展 → host（POST）
 
@@ -34,7 +35,7 @@ SSE 帧格式：`data: <json>\n\n`，连接时先发 `retry: 2000\n\n`。
 | `pairing_response` | `request_id`, `ok`, `name` | 用户在配对页点了允许/忽略 |
 | `tool_result` | `tool_use_id`, `ok`, `result?`, `error?`, `userMessages?[]` | 工具执行结果 |
 | `pong` | `at` | 心跳回应 |
-| `user_message` | `text`, `at` | 侧栏聊天发出（host 转发给 agent + 广播给扩展） |
+| `user_message` | `text`, `at`, `page?` | 侧栏聊天发出（host 转发给 agent + 广播给扩展） |
 | `stop_agent` | — | 用户点了页面内「停止智能体」 |
 | `pairing_revoked` | `client_id` | 侧栏点「断开」 |
 | `status` | `paired:[id...]` | 扩展上报自己信任的客户端列表 |
@@ -58,7 +59,34 @@ SSE 帧格式：`data: <json>\n\n`，连接时先发 `retry: 2000\n\n`。
 `tools/call` 结果映射：
 - `result.image` 存在 → `[{type:'image',data,mimeType}, {type:'text',text:'screenshot captured…'}]`
 - 其余 → `[{type:'text', text: JSON.stringify(result)}]`
-- `userMessages[]` → 每个追加一个 text block：`User message (<at>): <text>`
+- `userMessages[]` → 每个追加一个 text block，内容见下（带页面上下文）
+
+### 面板消息的 `page` 载荷
+
+侧栏发出的每条 `user_message` 都带当前标签页上下文（见 `docs/product.md` 核心承诺 3），
+host 把它格式化进 MCP 通知与 tool_result 的 userMessages：
+
+```json
+{
+  "t": "user_message", "text": "这个页面讲什么", "at": "2026-10-22T09:00:00Z",
+  "page": {
+    "tabId": 123,
+    "url": "https://example.com/",
+    "title": "Example Domain",
+    "text": "可见文本摘录（≤2500 字）",
+    "interactive": [{ "ref": 12, "role": "link", "name": "Learn more" }]
+  }
+}
+```
+
+`interactive[].ref` 是**可直接用**的：`computer{ref:12}` / `form_input{ref:12}` 立即可执行，
+不需要先 `read_page`。这就是"默认看得见眼前页面"的实现方式。
+
+### `say` 工具是宿主本地的
+
+`say` 不发给扩展执行：host 直接把 `agent_message` 帧广播给浏览器，
+扩展写进侧栏聊天流（并持久化到 `chrome.storage.local`）。
+所以智能体说一句话不需要经过 CDP，也不占一次浏览器往返。
 
 ## 工具参数速查
 

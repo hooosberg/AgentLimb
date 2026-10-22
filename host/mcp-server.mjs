@@ -29,13 +29,13 @@ const bridge = createBridge({
   onLog: (level, message) => {
     notify('notifications/message', { level, logger: 'agentlimb', data: message });
   },
-  onUserMessage: (text) => {
+  onUserMessage: (text, page) => {
     // Panel chat → agent. Logged immediately AND attached to the next tool
     // result, so delivery is guaranteed even mid-turn.
     notify('notifications/message', {
       level: 'info',
       logger: 'agentlimb-chat',
-      data: `User message from browser panel: ${text}`,
+      data: formatUserMessage({ text, at: new Date().toISOString(), page }),
     });
   },
   onStop: () => {
@@ -48,6 +48,28 @@ const bridge = createBridge({
 });
 
 // ── MCP stdio plumbing ────────────────────────────────────────────────────────
+/**
+ * A panel message always carries the page the user was looking at, so the agent
+ * can answer "translate this" / "what is this" without a single round trip.
+ */
+function formatUserMessage(msg) {
+  const lines = [`User message from the browser side panel (${msg.at || ''}): ${msg.text}`];
+  const page = msg.page;
+  if (page) {
+    lines.push('');
+    lines.push(`Current tab: ${page.title || '(untitled)'} — ${page.url}`);
+    if (page.text) {
+      lines.push('Visible page text (excerpt):');
+      lines.push(page.text);
+    }
+    if (Array.isArray(page.interactive) && page.interactive.length) {
+      lines.push('Interactive elements (these refs work with computer/form_input):');
+      for (const el of page.interactive) lines.push(`- ref=${el.ref} ${el.role} "${el.name}"`);
+    }
+  }
+  return lines.join('\n');
+}
+
 function send(payload) {
   process.stdout.write(`${JSON.stringify(payload)}\n`);
 }
@@ -114,6 +136,16 @@ async function handleToolCall(request) {
     return;
   }
 
+  // `say` never touches the browser — it writes into the side panel chat, which
+  // is what makes the panel a real conversation with the agent.
+  if (name === 'say') {
+    const ok = bridge.sayToUser(args.text);
+    reply(request.id, {
+      content: [{ type: 'text', text: ok ? 'Delivered to the user\'s side panel.' : 'Empty message ignored.' }],
+    });
+    return;
+  }
+
   try {
     const { result, userMessages } = await bridge.callTool(name, args);
     const content = [];
@@ -125,7 +157,7 @@ async function handleToolCall(request) {
       content.push({ type: 'text', text: JSON.stringify(result) });
     }
     for (const msg of userMessages || []) {
-      content.push({ type: 'text', text: `User message (${msg.at}): ${msg.text}` });
+      content.push({ type: 'text', text: formatUserMessage(msg) });
     }
     reply(request.id, { content });
   } catch (error) {

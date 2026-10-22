@@ -103,8 +103,32 @@ function bootstrap() {
     return true;
   });
 
-  async function handleMessage(message = {}, sender) {
-    switch (message.type) {
+  /**
+   * The page the user is looking at, attached to every panel chat message.
+   * Text + interactive refs let the agent answer immediately ("translate this",
+   * "what is this page") without calling tabs_context/read_page first.
+   */
+  async function collectPageContext() {
+    try {
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      if (!tab) return null;
+      const base = { tabId: tab.id, url: tab.url || '', title: tab.title || '' };
+      if (!/^https?:/i.test(base.url)) return base;
+      const snap = await chrome.tabs.sendMessage(
+        tab.id,
+        { type: 'AGENTLIMB_PAGE_SNAPSHOT', options: { maxText: 2500, maxElements: 30 } },
+        { frameId: 0 },
+      );
+      if (snap?.ok) {
+        return { ...base, text: snap.text, interactive: snap.interactive };
+      }
+      return base;
+    } catch (_) {
+      return null; // no content script (chrome:// page, PDF, etc.)
+    }
+  }
+
+  async function handleMessage(message = {}, sender) {    switch (message.type) {
       case MESSAGE_TYPES.GET_STATUS:
         return { ok: true, ...bridge.getStatus() };
 
@@ -112,15 +136,10 @@ function bootstrap() {
         return bridge.respondPairing(message.request_id, message.ok !== false, message.name);
 
       case MESSAGE_TYPES.CHAT_SEND: {
-        const result = await bridge.sendUserMessage(message.text);
-        if (result.ok) {
-          // Local receipt so the panel can render immediately.
-          chrome.runtime.sendMessage({
-            type: MESSAGE_TYPES.NOTIFY_CHAT,
-            message: { from: 'user', text: message.text, at: new Date().toISOString() },
-          }).catch(() => {});
-        }
-        return result;
+        // The panel is a chat window ON the agent, and every message carries the
+        // page the user is looking at — "translate this" needs no round trip.
+        const page = await collectPageContext();
+        return bridge.sendUserMessage(message.text, page);
       }
 
       case MESSAGE_TYPES.QUICK_ACTION: {
