@@ -24,7 +24,7 @@ function createChromeStub() {
       onMessage: { addListener: (fn) => listeners.message.push(fn) },
       onInstalled: { addListener: () => {} },
       sendMessage: () => Promise.resolve(),
-      getManifest: () => ({ version: '0.3.1' }),
+      getManifest: () => ({ version: '0.3.2' }),
       getURL: (p) => `chrome-extension://stub/${p}`,
       getContexts: async (filter) =>
         (filter?.contextTypes?.includes('SIDE_PANEL') ? sidePanelContexts : []),
@@ -136,4 +136,33 @@ test('panel behavior does not consume the action click', async () => {
   const last = stub.calls.panelBehavior.at(-1);
   assert.ok(last, 'setPanelBehavior called');
   assert.equal(last.openPanelOnActionClick, false);
+});
+
+test('tab_new returns only after the new tab commits a URL', async () => {
+  // Real Chrome reports url:'' for a freshly created background tab. Returning
+  // that immediately made the next tool call fail with
+  // "tab is not an http(s)/file page: (empty)".
+  const { createRouter } = await import('../kernel/control/background/router.js');
+  const saved = { create: stub.chrome.tabs.create, get: stub.chrome.tabs.get };
+  let reads = 0;
+  stub.chrome.tabs.create = async () => ({ id: 42, windowId: 10, active: false, url: '', status: 'loading' });
+  stub.chrome.tabs.get = async (id) => {
+    reads += 1;
+    const committed = reads > 2;
+    return {
+      id, windowId: 10, active: false, title: committed ? 'Example Domain' : '',
+      url: committed ? 'https://example.com/' : '',
+      status: committed ? 'complete' : 'loading',
+    };
+  };
+  try {
+    const router = createRouter({ debugger: { status: () => ({}) }, indicator: null });
+    const res = await router.execute('tab_new', { url: 'https://example.com' });
+    assert.equal(res.ok, true);
+    assert.equal(res.tab.url, 'https://example.com/', 'tab_new must not hand back an empty url');
+    assert.ok(reads >= 3, 'waited for the URL to commit');
+  } finally {
+    stub.chrome.tabs.create = saved.create;
+    stub.chrome.tabs.get = saved.get;
+  }
 });

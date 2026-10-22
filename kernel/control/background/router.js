@@ -50,11 +50,16 @@ export function createRouter({ debugger: dbg, indicator }) {
   // ── helpers ────────────────────────────────────────────────────────────────
   async function resolveTab(tabId) {
     if (tabId != null) {
+      let tab;
       try {
-        return await chrome.tabs.get(tabId);
+        tab = await chrome.tabs.get(tabId);
       } catch (_) {
         throw new Error(`tab ${tabId} not found`);
       }
+      // A tab created microseconds ago reports url:'' until the navigation
+      // commits. Waiting here makes every tool usable right after tab_new.
+      if (!tab.url) tab = (await waitForTabUrl(tabId, { timeoutMs: 4000 })) || tab;
+      return tab;
     }
     const [active] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (!active) {
@@ -65,9 +70,20 @@ export function createRouter({ debugger: dbg, indicator }) {
     return active;
   }
 
+  /** Poll until a tab has a committed URL (or give up after timeoutMs). */
+  async function waitForTabUrl(tabId, { timeoutMs = 3000 } = {}) {
+    const deadline = Date.now() + timeoutMs;
+    let tab = await chrome.tabs.get(tabId).catch(() => null);
+    while (tab && !tab.url && Date.now() < deadline) {
+      await new Promise((r) => setTimeout(r, 120));
+      tab = await chrome.tabs.get(tabId).catch(() => null);
+    }
+    return tab;
+  }
+
   function assertInjectable(tab) {
     if (!INJECTABLE.test(tab.url || '')) {
-      throw new Error(`tab is not an http(s)/file page: ${tab.url || '(empty)'}`);
+      throw new Error(`tab is not an http(s)/file page: ${tab.url || '(still initializing — retry in a moment)'}`);
     }
   }
 
@@ -208,7 +224,10 @@ export function createRouter({ debugger: dbg, indicator }) {
     },
 
     async tab_new({ url, active = false } = {}) {
-      const tab = await chrome.tabs.create({ url: url || 'about:blank', active: active === true });
+      const created = await chrome.tabs.create({ url: url || 'about:blank', active: active === true });
+      // Don't hand back a tab whose url is still '' — the very next tool call
+      // (read_page / wait / computer) would be rejected by assertInjectable.
+      const tab = (await waitForTabUrl(created.id, { timeoutMs: url ? 10000 : 1500 })) || created;
       return { ok: true, tab: describeTab(tab) };
     },
 
