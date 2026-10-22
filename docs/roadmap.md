@@ -1,34 +1,37 @@
 # 路线图与已知边界
 
+> 产品目标与「明确不做」见 [product.md](./product.md)。这里只排执行顺序。
+
 ## 当前状态（2026-10-22）
 
-协议层与模块加载 9/9 测试通过；浏览器内行为**未经真机验证**。按优先级排下一步。
+- 单元/协议/模块测试 11/11
+- Chrome for Testing 149 真机自测 11/11：SW 注册、配对页、工具链、**侧栏聊天闭环**
+  （页面上下文 → agent → `say` 回显）
+- 系统 Chrome 155 里的人工走查清单见 `development.md`（待跑）
 
-## P0 — 真机验证（阻塞「可用」结论）
+## P0 — 你机器上的人工走查（阻塞「可用」结论）
 
-- [ ] 按 `docs/development.md` 真机清单过 8 项
-- [ ] 重点验证：`Emulation.setFocusEmulationEnabled` 在常用站点
-      （YouTube / GitHub / 表单页）的后台控制是否真的生效
-- [ ] 验证 DevTools 打开时 debugger 冲突的错误提示是否可读
+- [ ] 按 `docs/development.md` 手动清单 1-9 过一遍
+- [ ] 重点：`Emulation.setFocusEmulationEnabled` 在常用站点（视频站 / 表单站）的后台控制
+- [ ] DevTools 打开时 debugger 冲突的错误提示是否可读
 
 ## P1 — 控制链路补强
 
-- [ ] `computer.type` 对 React/Vue 受控输入：`Input.insertText` 是否触发
-      框架的合成事件；不生效则退化为「聚焦 + dispatchKeyEvent 逐字符」
 - [ ] ref 失效的自动恢复：`unknown ref` 时 agent 要重读整页，考虑
       SW 侧缓存「上次 read_page 的 selector 路径」按路径重定位
-- [ ] 跨域 iframe 内的元素（现在只读 URL，不可操作）：考虑给每个 frame
+- [ ] 跨域 iframe 内的元素（现在只读 URL，不可操作）：给每个 frame
       分配 frame 局部 ref 并在 tool_call 里带 frameId
 - [ ] 截图带视口元数据（width/height/dpr），agent 做坐标换算时要用
-- [ ] `read_console_messages` / `read_network_requests` 真机验证
-      （依赖 Runtime/Network 域常驻捕获）
+- [ ] `read_console_messages` / `read_network_requests` 真机核对
+- [ ] `computer.type` 逐字符路径在富文本编辑器（ProseMirror/Slate）里的行为
 
 ## P2 — 侧栏体验
 
-- [ ] 已配对态的「AI 正在操作第 N 个标签」轻提示（无步骤语义，一行字）
-- [ ] 聊天消息按 client 分色/分节（多 agent 场景）
-- [ ] agent→面板消息：加 `say_to_user` 工具（D6 里预留的方向）
-- [ ] 侧栏主题跟随系统（CSS 已用 prefers-color-scheme，需真机核对）
+- [ ] 标签栏级的运行指示（Claude Code 那种"沙漏"）：现在只有工具栏图标徽标 `…`
+- [ ] AI 回复流式输出（`say` 多次调用 + 前端合并成一条）
+- [ ] 操作日志可折叠（现在默认全显示）
+- [ ] 多标签上下文一次带入（用户说"这几个标签分别是什么"时自动带 N 个快照）
+- [ ] 聊天消息按 client 分节（多 agent 场景）
 
 ## P3 — 分发与生态
 
@@ -43,7 +46,7 @@
 | 边界 | 说明 |
 |---|---|
 | 单活跃浏览器 | 多 Chrome profile 同连，最后配对的胜出 |
-| 聊天是留言语义 | agent 空闲时面板消息不主动触达（D6） |
+| 面板消息不主动唤醒 | agent 空闲时消息挂在队列里，等它下次调用工具才送达 |
 | 首次连接有唤醒延迟 | SW 休眠时最长 ~1 分钟自动连上；开侧栏可立即触发 |
 | 仅 frameId 0 | 跨域 iframe 内容当前只读不可操作（P1 有解） |
 | 工具上限 20/批 | browser_batch 防 agent 把整任务塞一帧 |
