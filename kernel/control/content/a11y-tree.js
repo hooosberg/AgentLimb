@@ -341,6 +341,35 @@
     };
   }
 
+  // ── selector resolution ────────────────────────────────────────────────────
+  // Same contract as resolveRef: scroll the target into view FIRST, then report
+  // viewport coordinates. Without the scroll, elements below the fold produced
+  // coordinates outside the viewport and the click silently landed on <html>.
+  async function resolveSelector(selector) {
+    let el;
+    try {
+      el = document.querySelector(selector);
+    } catch (error) {
+      return { ok: false, error: `bad selector: ${error.message}` };
+    }
+    if (!el) return { ok: false, error: `selector not found: ${selector}` };
+    el.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' });
+    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+    const rect = el.getBoundingClientRect();
+    if (rect.width === 0 && rect.height === 0) {
+      return { ok: false, error: 'element has zero size (hidden?)' };
+    }
+    return {
+      ok: true,
+      x: Math.round(rect.left + rect.width / 2),
+      y: Math.round(rect.top + rect.height / 2),
+      w: Math.round(rect.width),
+      h: Math.round(rect.height),
+      tag: el.tagName.toLowerCase(),
+      name: accessibleName(el),
+    };
+  }
+
   // ── form input ─────────────────────────────────────────────────────────────
   async function formInput(options = {}) {
     let el = null;
@@ -463,6 +492,8 @@
             return findElements(message.options || {});
           case 'AGENTLIMB_RESOLVE_REF':
             return resolveRef(message.ref);
+          case 'AGENTLIMB_RESOLVE_SELECTOR':
+            return resolveSelector(message.selector);
           case 'AGENTLIMB_FORM_INPUT':
             return formInput(message.options || {});
           case 'AGENTLIMB_WAIT':

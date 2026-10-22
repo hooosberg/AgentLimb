@@ -126,13 +126,11 @@ export function createRouter({ debugger: dbg, indicator }) {
       return { x: res.x, y: res.y };
     }
     if (selector) {
-      const res = await pageMessage(tab, {
-        type: 'AGENTLIMB_FIND',
-        options: { selector, limit: 1 },
-      });
-      if (!res.ok || !res.matches.length) throw new Error(`selector not found: ${selector}`);
-      const m = res.matches[0];
-      return { x: m.rect.x + Math.round(m.rect.w / 2), y: m.rect.y + Math.round(m.rect.h / 2) };
+      // Resolve inside the page: it scrolls the element into view first, so the
+      // coordinates are always inside the viewport.
+      const res = await pageMessage(tab, { type: 'AGENTLIMB_RESOLVE_SELECTOR', selector });
+      if (!res.ok) throw new Error(res.error || `selector not found: ${selector}`);
+      return { x: res.x, y: res.y };
     }
     throw new Error('provide ref, selector, or x/y coordinates');
   }
