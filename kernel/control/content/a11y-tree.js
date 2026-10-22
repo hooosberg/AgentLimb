@@ -407,10 +407,24 @@
     }
     // text-like inputs & textarea
     el.focus();
-    el.value = String(value);
+    setNativeValue(el, String(value));
     fire(el, 'input');
     fire(el, 'change');
     return { ok: true, value: el.value };
+  }
+
+  /**
+   * React/Vue hook the `value` property through the prototype setter and ignore
+   * a plain `el.value = x` (their internal state stays stale). Going through the
+   * native setter makes the framework's onChange fire like real typing.
+   */
+  function setNativeValue(el, value) {
+    const proto = el.tagName.toLowerCase() === 'textarea'
+      ? HTMLTextAreaElement.prototype
+      : HTMLInputElement.prototype;
+    const desc = Object.getOwnPropertyDescriptor(proto, 'value');
+    if (desc && desc.set) desc.set.call(el, value);
+    else el.value = value;
   }
 
   function fire(el, type) {
