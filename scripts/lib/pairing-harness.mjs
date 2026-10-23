@@ -195,8 +195,9 @@ export async function occupyPort(port, { looksLikeAgentlimb = false } = {}) {
  * `pairedClients` / `onboardUntil` seed chrome.storage.local exactly like a
  * previous session would have.
  */
-export async function createBrowser({ pairedClients, onboardUntil, discoveryIntervalMs, onToolCall, ports = TEST_BRIDGE_PORTS } = {}) {
-  const seed = {};
+export async function createBrowser({ pairedClients, onboardUntil, discoveryIntervalMs, onToolCall, autoTrust = false, ports = TEST_BRIDGE_PORTS } = {}) {
+  // Strict copy-window mode unless a test opts in: the harness exists to exercise the window.
+  const seed = { [STORAGE_KEYS.autoTrust]: autoTrust };
   if (pairedClients) seed[STORAGE_KEYS.pairedClients] = pairedClients;
   if (onboardUntil != null) seed[STORAGE_KEYS.onboardUntil] = onboardUntil;
   const mock = createChromeMock(seed);

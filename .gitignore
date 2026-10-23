@@ -26,6 +26,7 @@ coverage/
 # ── 运行时状态 ─────────────────────────────────────────
 .agentlimb/
 .muscle/
+.tmp-test/
 **/.mvp-terminal-session.json
 /.workbuddy/
 /.workbuddy-ai/

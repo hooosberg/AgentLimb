@@ -104,7 +104,7 @@ function runAgent(stage, prompt, mcpConfig, tools, allowed) {
 
 try {
   mkdirSync(home);
-  cpSync(root, source, { recursive: true, filter: (src) => !/\/(\.git|忽略上传|node_modules)(\/|$)/.test(src) });
+  cpSync(root, source, { recursive: true, filter: (src) => !/\/(\.git|忽略上传|node_modules|\.tmp-test)(\/|$)/.test(src) });
   const [debugPort, bridgePort] = await ports();
   cdpBase = `http://127.0.0.1:${debugPort}`;
   const constants = join(source, 'kernel/shared/constants.js');
@@ -198,6 +198,33 @@ try {
   } finally { session.close(); }
   check('sidebar_shows_success_and_next_action_while_connected', sawConnectedGuidance);
   check('real_ai_used_ping_and_tabs', verify.stdout.includes('mcp__agentlimb__ping') && verify.stdout.includes('mcp__agentlimb__tabs_context'));
+
+  // ── 网站记忆：安装即带目录 → 真模型写一次 → 新会话读回来 ────────────────
+  // 这一段是「越用越快」的唯一可信证明：不是模型自称记住了，而是磁盘上有
+  // 文件，且一个全新的会话能把它读出来。
+  const memoryRoot = join(home, '.agentlimb/memory');
+  check('site_memory_seeded_by_install', existsSync(join(memoryRoot, '.agentlimb-kb')));
+
+  const memoryStage = await runAgent('memory', `现在测试「网站记忆」。你刚刚操作过 ${url}（域名 127.0.0.1）。只调用 site_memory，不要操作浏览器：
+1) {action:"brief", site:"127.0.0.1"} —— 此时应为 NO_PLAYBOOK。
+2) {action:"record", site:"127.0.0.1", status:"success", title:"AgentLimb 验收页", entry:"${url}", steps:"1) 打开页面 2) 点 #increment 按钮 3) 在 #name 输入框填值", selectors:"#increment → button#increment → 页面唯一的按钮；#name → label 内的 input", pitfalls:"无", note:"计数从 0 变 1 且 #name 的值等于输入值"}
+3) 再次 {action:"brief", site:"127.0.0.1"} —— 此时应能读到第 2 步写的内容。
+完成后用 say 汇报 MEMORY_OK。不要编造，工具报错就原样报告。`, configFile, '', 'mcp__agentlimb__*');
+  check('real_ai_memory_stage_exited', memoryStage.code === 0, `exit=${memoryStage.code}`);
+  check('real_ai_called_site_memory', memoryStage.stdout.includes('mcp__agentlimb__site_memory'));
+  const playbookFile = join(memoryRoot, 'knowledge/sites/127.0.0.1/PLAYBOOK.md');
+  check('playbook_written_to_disk', existsSync(playbookFile));
+  const playbook = existsSync(playbookFile) ? readFileSync(playbookFile, 'utf8') : '';
+  check('playbook_records_entry_and_selector', playbook.includes(url) && /#increment/.test(playbook));
+  check('playbook_status_verified', /status: verified/.test(playbook));
+  check('playbook_stores_no_secrets', !/(password|passwd|cookie|authorization|bearer)/i.test(playbook));
+  check('run_logged_as_one_small_file', existsSync(join(memoryRoot, 'knowledge/sites/127.0.0.1/sessions')));
+
+  // 全新会话：这就是"下次不用摸索"。
+  const reuse = await runAgent('memory-reuse', `这是一个全新的对话，没有任何上一轮的上下文。只调用一次 site_memory {action:"brief", site:"127.0.0.1"}，然后把工具返回的入口 URL 原样复述。不要操作浏览器，不要凭印象编造；如果工具返回 NO_PLAYBOOK 就照实说。`, configFile, '', 'mcp__agentlimb__*');
+  check('new_session_reads_the_playbook', reuse.stdout.includes('PLAYBOOK: 127.0.0.1'), 'a fresh session must get the record back');
+  check('new_session_gets_the_direct_entry', reuse.stdout.includes(url));
+  check('no_playbook_leftover_for_other_sites', !existsSync(join(memoryRoot, 'knowledge/sites/example.com')));
 } catch (error) {
   console.error(error.stack || error.message);
   results.push({ name: 'fatal', ok: false, detail: error.message });
@@ -207,8 +234,19 @@ try {
   await sleep(800);
   if (browser) { try { process.kill(-browser.pid, 'SIGKILL'); } catch {} }
   site?.close();
-  for (const path of [home, profile, source, configFile]) rmSync(path, { recursive: true, force: true });
-  results.push({ name: 'cleaned_install_client_and_browser_state', ok: [home, profile, source, configFile].every((p) => !existsSync(p)) });
+  // Best-effort: a locked profile or a sandboxed filesystem must not turn a
+  // finished run into a crash before the summary is written.
+  // AGENTLIMB_TEST_KEEP=1 keeps the evidence folder (and skips the cleanup
+  // check) for environments where recursive deletes are blocked.
+  const keep = process.env.AGENTLIMB_TEST_KEEP === '1';
+  if (!keep) {
+    for (const path of [home, profile, source, configFile]) {
+      try { rmSync(path, { recursive: true, force: true }); } catch { /* left for manual cleanup */ }
+    }
+    results.push({ name: 'cleaned_install_client_and_browser_state', ok: [home, profile, source, configFile].every((p) => !existsSync(p)) });
+  } else {
+    results.push({ name: 'cleanup_skipped_AGENTLIMB_TEST_KEEP', ok: true, detail: work });
+  }
   writeFileSync(join(work, 'summary.json'), JSON.stringify({ model, results }, null, 2));
   console.log(`Final ${results.filter((r) => r.ok).length}/${results.length}; ${work}/summary.json`);
 }

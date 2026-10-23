@@ -8,8 +8,8 @@
 export const APP_ID = 'agentlimb.chrome';
 export const APP_NAME = 'AgentLimb';
 /** Display version. `manifest.json`, `package.json` and the docs mirror these two. */
-export const APP_VERSION = '0.5.7';
-export const APP_BUILD = 'l8';
+export const APP_VERSION = '0.6.4';
+export const APP_BUILD = 'l13';
 export const USER_STOP_MESSAGE = '用户请求停止当前任务：请停止后续浏览器操作，并用 say 回复确认。';
 
 /** Local bridge defaults. The host picks the first free port in the range. */
@@ -83,6 +83,7 @@ export const DISCOVERY = {
 /** chrome.storage.local keys */
 export const STORAGE_KEYS = {
   onboardUntil: 'agentlimb.onboardUntil', // epoch ms; while in the future, the next unknown client is trusted
+  autoTrust: 'agentlimb.autoTrust', // default ON: any local MCP host that says hello is trusted; false restores the copy-prompt window
   pairedClients: 'agentlimb.pairedClients', // { [clientId]: {id,name,kind,pairedAt} }
   lastClient: 'agentlimb.lastClient',
   hostPath: 'agentlimb.hostPath', // user-overridable MCP command path

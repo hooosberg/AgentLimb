@@ -22,6 +22,7 @@ import { mkdirSync, readFileSync, writeFileSync, existsSync, renameSync, rmSync 
 import { randomUUID, createHash } from 'node:crypto';
 
 import { BRIDGE_HOST, HOME_DIR_NAME, APP_VERSION, APP_BUILD, WIRE, resolveBridgePorts } from '../kernel/shared/constants.js';
+import { ensureMemory, memoryState, stats, writeMemoryConfig } from './memory.mjs';
 
 export function agentlimbHome() {
   return join(process.env.HOME || process.env.USERPROFILE || homedir(), HOME_DIR_NAME);
@@ -218,6 +219,42 @@ export function createBridge({ clientId, clientName = 'AI Agent', clientKind = '
         stage: activeConnection() ? 'ready' : sseClients.size ? 'awaiting_authorization' : 'awaiting_extension',
         client: { id: clientId, name: effectiveClientName, kind: clientKind },
       }));
+      return;
+    }
+
+    // 网站记忆: the side panel is the only UI, but the host owns the files.
+    // Keeping this on the bridge means the panel never needs to know a path
+    // twice, and a setting survives even if the panel is closed.
+    if (url.pathname === '/api/memory' && (req.method === 'GET' || req.method === 'POST')) {
+      try {
+        if (req.method === 'POST') {
+          const chunks = [];
+          for await (const chunk of req) chunks.push(chunk);
+          const body = chunks.length ? JSON.parse(Buffer.concat(chunks).toString('utf8')) : {};
+          const patch = {};
+          if (body.enabled !== undefined) patch.enabled = Boolean(body.enabled);
+          if (body.root !== undefined) patch.root = String(body.root || '');
+          writeMemoryConfig(patch);
+        }
+        const state = memoryState();
+        if (state.configured) ensureMemory(state.root);
+        const fresh = memoryState();
+        const summary = stats(fresh.root);
+        res.writeHead(200, { ...cors, 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+          ok: true,
+          enabled: fresh.enabled,
+          configured: fresh.configured,
+          root: fresh.root,
+          exists: fresh.exists,
+          sites: summary.sites,
+          runs: summary.sessions,
+          latest: summary.latest || null,
+        }));
+      } catch (error) {
+        res.writeHead(200, { ...cors, 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: false, error: error.message }));
+      }
       return;
     }
 

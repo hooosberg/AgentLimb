@@ -1,7 +1,7 @@
 {
   "name": "agentlimb",
-  "version": "0.5.7",
-  "agentlimbBuild": "l8",
+  "version": "0.6.4",
+  "agentlimbBuild": "l13",
   "private": true,
   "type": "module",
   "engines": {
@@ -13,6 +13,9 @@
     "monkey": "node scripts/pairing-monkey.mjs",
     "monkey:panel": "node scripts/panel-monkey.mjs",
     "smoke:panel": "node scripts/smoke-client-list.mjs",
+    "smoke:memory": "node scripts/memory-smoke.mjs",
+    "monkey:memory": "node scripts/memory-monkey.mjs",
+    "live:memory": "node scripts/memory-live.mjs",
     "mcp": "node bin/agentlimb.mjs mcp",
     "bridge": "node bin/agentlimb.mjs bridge"
   }

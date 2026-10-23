@@ -7,7 +7,7 @@
 
 **官网 / 产品页（落地页）→ https://hooosberg.com/apps/agentlimb/** · [下载最新版](https://github.com/hooosberg/AgentLimb/releases/latest) · [旧版官网](https://agentlimb.com/)
 
-当前源码版本：**0.5.7 / l8**（变更记录见 [CHANGELOG.md](./CHANGELOG.md)）。
+当前源码版本：**0.6.4 / l13**（变更记录见 [CHANGELOG.md](./CHANGELOG.md)）。
 
 通用浏览器控制插件：给任意支持 MCP 的智能体软件装上「手」，让它能控制你的 Chrome。
 
@@ -119,13 +119,24 @@ npm test                         # 协议端到端测试（含模拟扩展）
 其他细节：CDP 命令全部带超时；console/network 在持久会话上常驻捕获（环形缓冲 200 条）；
 密码/敏感字段在 a11y 树里直接脱敏；同源 iframe 与 shadow DOM 可走入树并带坐标偏移。
 
-## 工具清单（16 个，含本地 `say` 与连通检查 `ping`）
+## 工具清单（17 个，含本地 `say`、连通检查 `ping` 与 `site_memory`）
 
 `tabs_context` `tab_new` `tab_close` `tab_activate` `read_page` `find` `computer`
 `form_input` `navigate` `javascript_eval` `wait` `read_console_messages`
-`read_network_requests` `browser_batch` `say` `ping`
+`read_network_requests` `browser_batch` `say` `site_memory` `ping`
 
 目录定义在 `kernel/control/host/tools.js`，扩展和 MCP 宿主共用同一份——改一处，两端同步。
+`site_memory` 不碰浏览器，只读写下面的网站记忆。
+
+## 网站记忆（Site memory）
+
+本机的一个纯 Markdown 文件夹，让任何接了 MCP 的 AI 复用「这个网站怎么操作」：直达 URL、元素锚点、坑、成功判定。
+
+- **安装即带**：`agentlimb install` 默认在 `~/.agentlimb/memory` 建库（`--memory-root <目录>` 改位置，`--no-memory` 跳过）；`agentlimb memory` 查看位置与已记录站点。
+- **以软提示词注入，不是插件功能**：开启时 MCP `initialize` 的 `instructions` 会带上「先查手册 → 再动手 → 按增量写回」。任何 MCP 客户端连上就收到，**不需要给每个 AI 工具单独装 skill**；在侧栏关掉，这段提示立刻消失。
+- **一个网站一个文件，约 100 行**：入口、步骤、锚点、坑、成功判定。运行日志每次一行、不参与检索——`brief` 只读一个文件（433 站实测约 13ms），**记录再多也不会拖慢操作**。
+- **不绑定 AgentLimb**：目录就是合法的 `kb` 库布局，换浏览器 MCP、换 AI 工具、或独立的 CLI 都能读同一份。
+- **只记操作知识**：不记账号、密码、Cookie、Token、验证码，也不记网站上抓到的内容。连续失败 2 次自动标 `stale`，下次先验锚点再照做。
 
 ## 目录
 
@@ -155,7 +166,8 @@ tests/                         Node 原生 test runner，含端到端协议测�
 ## 验收边界
 
 - `npm test` 是自动化协议和模块测试；`node scripts/live-test.mjs` 使用独立临时 HOME、Chrome profile、扩展副本及端口进行浏览器/MCP 集成测试，并清理本轮临时数据，不触碰日常 `~/.agentlimb` 安装。
-- 已有 81/81 的 live 报告属于此前单客户端基线，不代表当前 0.5.7/l8 的多客户端 Chrome 验收。当前自动化单元测试为 82/82；多客户端真实 Chrome 验收仍在进行，尚无结果可报告。
+- 已有 81/81 的 live 报告属于此前单客户端基线，不代表当前 0.6.4/l13 的多客户端 Chrome 验收。当前自动化单元测试为 107/107；多客户端真实 Chrome 验收仍在进行，尚无结果可报告。
+- 网站记忆有独立的真实模型冒烟（不需要浏览器）：`npm run smoke:memory`（czen/hy3，20/20）。它证明模型真的调用 `site_memory`、手册真的落盘（入口/锚点/坑齐全且无凭据）、**全新会话能读回来**、关掉开关后工具会明确拒绝。浏览器那一半（配对 → 点击 → 输入）仍在 `node scripts/ai-onboarding-test.mjs`。
 - 真实智能体客户端中的配置加载/信任，以及指定模型和猴子测试仍需独立验收；没有观测证据时不宣称通过。
 
 ## 已知边界

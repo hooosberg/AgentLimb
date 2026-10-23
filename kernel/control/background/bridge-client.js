@@ -387,7 +387,11 @@ export function createBridgeClient({ onStatus, onToolCall, onAgentMessage, disco
         // A remembered client that merely reconnects must NOT steal the chat
         // window from whoever owns it — only a fresh grant takes over.
         const remembered = record.paired;
-        if (remembered || await onboarding.consume()) {
+        // Installing the host is the user's consent: by default a local MCP host
+        // that connects is trusted without any click. The copy-prompt window is
+        // only the stricter mode, for users who switch auto-authorize off.
+        const auto = !remembered && (await chrome.storage.local.get(STORAGE_KEYS.autoTrust))[STORAGE_KEYS.autoTrust] !== false;
+        if (remembered || auto || await onboarding.consume()) {
           await trust(record, channel, { takeOver: !remembered });
         } else {
           unauthorized.set(client.id, { id: client.id, name: record.name, kind: record.kind, at: new Date().toISOString() });

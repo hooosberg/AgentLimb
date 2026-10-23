@@ -17,7 +17,7 @@
  * trip and no screenshot button.
  */
 
-import { DISCOVERY, MESSAGE_TYPES, STORAGE_KEYS } from '../../kernel/shared/constants.js';
+import { BRIDGE_HOST, DISCOVERY, MESSAGE_TYPES, STORAGE_KEYS, resolveBridgePorts } from '../../kernel/shared/constants.js';
 import { buildConnectionPrompt } from '../../kernel/prompt/build-prompt.js';
 import { panelState } from '../../kernel/shared/panel-state.js';
 
@@ -71,6 +71,11 @@ let copyingPrompt = false;
 let clientManagerSignature = '';
 let settingsPage = 'home';
 let toastTimer = null;
+// Site memory snapshot from the host (null = bridge not reachable yet). Declared
+// up here because applyLanguage() re-renders it on every language switch.
+let memoryInfo = null;
+let memoryHostOld = false;
+const DEFAULT_MEMORY_PATH = '~/.agentlimb/memory';
 // Last time the panel saw a live connection. A brief drop (worker suspended,
 // SSE torn down) must not bounce the user back to the "not connected" screen
 // and wipe the chat they were reading — that looks like the connection was lost
@@ -110,6 +115,7 @@ const text = (key) => ({
     connect: english ? 'Connect another AI' : '连接其他 AI',
     clients: english ? 'Connected AI' : '已连接的 AI',
     language: english ? 'Language' : '界面语言',
+    memory: english ? 'Site memory' : '网站记忆',
     advanced: english ? 'Advanced' : '高级',
     about: english ? 'About' : '关于',
   },
@@ -152,6 +158,60 @@ const text = (key) => ({
   pathHint: english ? 'The installer places the MCP host in ~/.agentlimb/. If you chose another location, enter it here; copied prompts will use it.' : '安装脚本默认把 MCP 主机放在 ~/.agentlimb/。如自定义了位置，在此修改，复制出的提示词会带上它。',
   save: english ? 'Save' : '保存',
   saved: english ? 'Saved' : '已保存',
+  // site memory / 网站记忆
+  memoryLabel: english ? 'Site memory' : '网站记忆',
+  memoryRowDesc: english ? 'Let the AI remember how each site is operated' : '让 AI 记住每个网站怎么操作',
+  memoryRowOn: (n) => english ? `${n} site${n === 1 ? '' : 's'}` : `${n} 个网站`,
+  memoryRowOff: english ? 'Off' : '已关闭',
+  memoryToggle: english ? 'Enable site memory' : '启用网站记忆',
+  memoryWhat: english
+    ? 'A folder of plain Markdown files on this machine. Before the AI operates a website it reads that site\'s page; after it finishes, it writes back what was new — so the next run (or the next AI tool) does not have to explore the page again.'
+    : '本机的一个纯 Markdown 文件夹。AI 操作某个网站前先读这个站的记录，操作完把新学到的写回去；下次（或者换一个 AI 工具）就不用重新摸索这个网站了。',
+  memoryHowTitle: english ? 'HOW IT WORKS' : '怎么工作',
+  memoryHow: english ? [
+    'The prompt is injected automatically: every MCP client receives these rules when it connects, so nothing needs installing per AI tool.',
+    'One file per site: direct URL, element anchors, pitfalls, and how to verify success — about 100 lines, never a screen recording.',
+    'Reading is one file read (~10ms); logs are one small file per run and never slow an operation down.',
+  ] : [
+    '提示词自动注入：任何 MCP 客户端连上时都会收到这几条规则，不需要给每个 AI 工具单独装东西。',
+    '一个网站一个文件：直达 URL、元素锚点、坑、成功判定，约 100 行；不记操作录像。',
+    '读取只读一个文件（约 10ms）；日志是每次一行的小文件，不参与检索，不会拖慢操作。',
+  ],
+  memoryWhyTitle: english ? 'WHY' : '有什么用',
+  memoryWhy: english ? [
+    'Repeat runs are 5–8× cheaper: the AI stops re-exploring the page structure and gets straight to the action.',
+    'Pitfalls survive: second confirms, captchas and A/B renames are written down once instead of being rediscovered.',
+    'It is not tied to AgentLimb: the knowledge lives on disk, so another browser MCP or another AI tool can use it too.',
+  ] : [
+    '重复操作快 5–8 倍：AI 不用再重新认识页面结构，直接照步骤做。',
+    '坑只踩一次：二次确认、验证码、改版后的按钮改名，记下来就不会反复踩。',
+    '不绑定 AgentLimb：知识在磁盘上，换浏览器 MCP、换 AI 工具都能接着用。',
+  ],
+  memoryPathLabel: english ? 'Folder' : '保存位置',
+  copyPath: english ? 'Copy' : '复制',
+  savePath: english ? 'Save folder' : '保存路径',
+  memoryPathHint: english
+    ? 'Takes effect for the next MCP session (restart the AI tool or its MCP process). The folder is plain Markdown — back it up or move it any time.'
+    : '对下一个 MCP 会话生效（重开 AI 工具或重启它的 MCP 进程）。这个文件夹就是普通 Markdown，随时可以备份或搬走。',
+  memoryPrivacy: english
+    ? 'Stores operation knowledge only: entry URLs, selectors, pitfalls. Never accounts, passwords, cookies, tokens, verification codes, or data copied from the site.'
+    : '只存操作知识：入口 URL、选择器、坑。绝不存账号、密码、Cookie、Token、验证码，也不存网站上抓到的内容。',
+  memoryStatusOn: (sites, runs, latest) => english
+    ? `On · ${sites} site${sites === 1 ? '' : 's'} remembered · ${runs} run${runs === 1 ? '' : 's'} logged${latest ? ` · latest ${latest}` : ''}`
+    : `已启用 · 已记录 ${sites} 个网站 · ${runs} 次操作${latest ? ` · 最近 ${latest}` : ''}`,
+  memoryStatusOff: english ? 'Off · nothing is read or written' : '已关闭 · 不读也不写任何文件',
+  memoryOffline: english ? 'Local bridge is not running — start your AI client to read the folder.' : '本地桥接未运行 — 启动 AI 客户端后才能读取这个文件夹。',
+  memoryHostOld: english
+    ? 'Site memory is on by default (folder below), but the installed AgentLimb host is older than this extension. Click "Copy prompt" in Connect and let your AI re-run the install — pairings are kept.'
+    : '网站记忆默认开启（位置见下），但本机已安装的 AgentLimb 宿主比当前插件旧。到「连接」页点「复制提示词」，让 AI 重新安装一次即可，配对会保留。',
+  memoryRowOld: english ? 'Host needs update' : '宿主需更新',
+  autoTrustLabel: english ? 'Auto-authorize AI tools' : '自动授权 AI 工具',
+  autoTrustHint: english
+    ? 'On (default): an AI tool whose MCP host you installed is trusted the moment it connects — no copy-prompt click. Off: each new AI needs a Copy click first. You can always remove a trusted AI under Connected AIs.'
+    : '开启（默认）：你装了 MCP 宿主的 AI 工具一连上就受信，不用再点复制提示词。关闭后每个新 AI 都要先点一次复制。已授权的 AI 随时可在「已连接」里移除。',
+  memoryOnToast: english ? 'Site memory is on. It applies from the next MCP session.' : '网站记忆已开启，下一个 MCP 会话生效。',
+  memoryOffToast: english ? 'Site memory is off. Nothing will be recorded.' : '网站记忆已关闭，之后不再记录。',
+  memoryPathSaved: english ? 'Folder saved' : '路径已保存',
   aboutRow: english ? 'About AgentLimb' : '关于 AgentLimb',
   about: english ? 'AgentLimb connects AI assistants to Chrome so they can view pages and perform browser tasks with your authorization. Everything stays on your machine.' : 'AgentLimb 把 AI 助手连接到 Chrome，让它在你的授权下查看页面并执行浏览器任务。所有数据都留在本机。',
   version: english ? 'Version' : '版本',
@@ -660,7 +720,7 @@ $('btn-copy-hero').addEventListener('click', () => copyConnectionPrompt($('btn-c
 $('btn-copy-page').addEventListener('click', () => copyConnectionPrompt($('btn-copy-page')));
 
 // ── settings navigation ───────────────────────────────────────────────────────
-const SETTINGS_PAGES = ['connect', 'clients', 'language', 'advanced', 'about'];
+const SETTINGS_PAGES = ['connect', 'clients', 'language', 'memory', 'advanced', 'about'];
 
 function openSettings(page = 'home') {
   els.settingsView.hidden = false;
@@ -678,6 +738,7 @@ function showSettingsPage(page) {
   $('settings-title').textContent = text('pageTitles')[settingsPage];
   els.settingsContent.scrollTop = 0;
   $('btn-settings-back').setAttribute('aria-label', settingsPage === 'home' ? text('settings') : text('back'));
+  if (settingsPage === 'memory') void loadMemory();
 }
 $('btn-settings').addEventListener('click', () => openSettings('home'));
 $('btn-settings-back').addEventListener('click', () => {
@@ -713,6 +774,15 @@ function applyLanguage() {
   }
   for (const el of document.querySelectorAll('[data-i18n-title]')) el.title = text(el.dataset.i18nTitle);
   for (const el of document.querySelectorAll('[data-i18n-aria]')) el.setAttribute('aria-label', text(el.dataset.i18nAria));
+  for (const el of document.querySelectorAll('[data-i18n-list]')) {
+    const items = text(el.dataset.i18nList);
+    if (!Array.isArray(items)) continue;
+    el.replaceChildren(...items.map((item) => {
+      const li = document.createElement('li');
+      li.textContent = item;
+      return li;
+    }));
+  }
 
   text('languageValues').forEach((value, index) => { $('language-select').options[index].textContent = value; });
   $('row-language-value').textContent = text('languageNames')[selected] || text('languageNames').auto;
@@ -724,6 +794,7 @@ function applyLanguage() {
   clientManagerSignature = '';
   renderManager(lastStatus?.clients || [], lastStatus?.connectedClientId);
   setClientFeedback('');
+  renderMemory();
   render();
   if (!els.statePaired.hidden) void updatePageNote();
 }
@@ -743,8 +814,109 @@ els.btnSaveSource.addEventListener('click', async () => {
   setTimeout(() => { els.btnSaveSource.textContent = text('save'); }, 1200);
 });
 
+chrome.storage.local.get(STORAGE_KEYS.autoTrust).then((r) => { $('auto-trust-toggle').checked = r[STORAGE_KEYS.autoTrust] !== false; });
+$('auto-trust-toggle').addEventListener('change', () => {
+  void chrome.storage.local.set({ [STORAGE_KEYS.autoTrust]: $('auto-trust-toggle').checked });
+});
 loadHostPath().then((p) => { els.inputHostPath.value = p; });
 loadSourcePath().then((p) => { els.inputSourcePath.value = p; });
+
+// ── site memory / 网站记忆 ────────────────────────────────────────────────────
+/**
+ * The panel is only the window: the folder, the toggle and the counters all
+ * live on the host, which is also what the AI reads. So this talks to the
+ * bridge's /api/memory instead of keeping a second copy in chrome.storage —
+ * two sources of truth for "where are the notes" is exactly how they drift.
+ */
+async function bridgeJson(path, init) {
+  for (const port of resolveBridgePorts()) {
+    try {
+      const response = await fetch(`http://${BRIDGE_HOST}:${port}${path}`, {
+        ...init,
+        signal: AbortSignal.timeout(1500),
+      });
+      if (response.ok) return await response.json();
+    } catch (_) {
+      // Not this port — the bridge may be on another one (several AI clients).
+    }
+  }
+  return null;
+}
+
+function renderMemory() {
+  const toggle = $('memory-toggle');
+  const status = $('memory-status');
+  if (!memoryInfo) {
+    // Default is ON with the default folder. Show that truthfully even while the
+    // host is unreachable, instead of an empty switch that looks like "off".
+    toggle.disabled = true;
+    toggle.checked = true;
+    if (!$('input-memory-path').value) $('input-memory-path').value = DEFAULT_MEMORY_PATH;
+    status.dataset.state = 'off';
+    status.textContent = memoryHostOld ? text('memoryHostOld') : text('memoryOffline');
+    $('row-memory-value').textContent = memoryHostOld ? text('memoryRowOld') : '—';
+    return;
+  }
+  toggle.disabled = false;
+  toggle.checked = Boolean(memoryInfo.enabled);
+  $('input-memory-path').value = memoryInfo.root || '';
+  $('row-memory-value').textContent = memoryInfo.enabled
+    ? text('memoryRowOn')(memoryInfo.sites || 0)
+    : text('memoryRowOff');
+  status.dataset.state = memoryInfo.enabled ? 'on' : 'off';
+  status.textContent = memoryInfo.enabled
+    ? text('memoryStatusOn')(memoryInfo.sites || 0, memoryInfo.runs || 0, memoryInfo.latest)
+    : text('memoryStatusOff');
+}
+
+async function loadMemory() {
+  memoryInfo = await bridgeJson('/api/memory');
+  // A reachable bridge without /api/memory is a pre-0.6 host: say so, don't call it "not running".
+  memoryHostOld = !memoryInfo && Boolean(await bridgeJson('/health'));
+  renderMemory();
+}
+
+$('memory-toggle').addEventListener('change', async () => {
+  const enabled = $('memory-toggle').checked;
+  const result = await bridgeJson('/api/memory', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ enabled }),
+  });
+  if (!result?.ok) {
+    $('memory-toggle').checked = !enabled;
+    showToast(text('memoryOffline'), false);
+    return;
+  }
+  memoryInfo = result;
+  renderMemory();
+  showToast(enabled ? text('memoryOnToast') : text('memoryOffToast'), true);
+});
+
+$('btn-save-memory-path').addEventListener('click', async () => {
+  const root = $('input-memory-path').value.trim();
+  const result = await bridgeJson('/api/memory', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ root, enabled: true }),
+  });
+  if (!result?.ok) {
+    showToast(text('memoryOffline'), false);
+    return;
+  }
+  memoryInfo = result;
+  renderMemory();
+  const button = $('btn-save-memory-path');
+  button.textContent = text('memoryPathSaved');
+  setTimeout(() => { button.textContent = text('savePath'); }, 1400);
+});
+
+$('btn-copy-memory-path').addEventListener('click', async () => {
+  const ok = await copyText($('input-memory-path').value);
+  showToast(ok ? text('memoryPathSaved') : text('copyFailed'), ok);
+});
+
+void loadMemory();
 
 async function copyText(text) {
   try {

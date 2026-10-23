@@ -228,8 +228,10 @@ export function createRouter({ debugger: dbg, indicator }) {
       }
       const created = await chrome.tabs.create({ url: targetUrl, active: active === true });
       // Mark only AI-created tabs. Never regroup the user's existing tabs.
-      const groups = await chrome.tabGroups.query({ windowId: created.windowId, title: 'AgentLimb' });
-      const existing = groups.find((group) => group.color === 'orange');
+      // While the agent works the group is titled "⏳ AgentLimb" (see service-worker
+      // setBusy), so match both spellings or every busy moment would spawn a second group.
+      const groups = await chrome.tabGroups.query({ windowId: created.windowId });
+      const existing = groups.find((group) => group.color === 'orange' && /^(⏳ )?AgentLimb$/.test(group.title || ''));
       const groupId = await chrome.tabs.group({
         tabIds: [created.id],
         ...(existing ? { groupId: existing.id } : { createProperties: { windowId: created.windowId } }),

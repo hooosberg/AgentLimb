@@ -71,15 +71,22 @@ function bootstrap() {
     });
   });
 
-  /** Toolbar badge = "the agent is doing something right now". */
+  /** Tab-group hourglass = "the agent is doing something right now" (extension icon stays clean). */
   function setBusy(on) {
+    void markTabGroups(on);
+  }
+
+  /** Hourglass on the tab-strip chip: visible even when the user is looking at another tab. */
+  async function markTabGroups(on) {
     try {
-      if (!chrome.action?.setBadgeText) return;
-      Promise.resolve(chrome.action.setBadgeText({ text: on ? '…' : '' })).catch(() => {});
-      if (on && chrome.action.setBadgeBackgroundColor) {
-        Promise.resolve(chrome.action.setBadgeBackgroundColor({ color: '#d97757' })).catch(() => {});
+      if (!chrome.tabGroups?.query) return;
+      const groups = await chrome.tabGroups.query({});
+      for (const group of groups) {
+        if (group.color !== 'orange' || !/^(⏳ )?AgentLimb$/.test(group.title || '')) continue;
+        const title = on ? '⏳ AgentLimb' : 'AgentLimb';
+        if (group.title !== title) await chrome.tabGroups.update(group.id, { title });
       }
-    } catch (_) { /* badge unavailable */ }
+    } catch (_) { /* grouping is cosmetic */ }
   }
 
   function setPanelBehavior() {    chrome.sidePanel?.setPanelBehavior?.({ openPanelOnActionClick: false }).catch(() => {});

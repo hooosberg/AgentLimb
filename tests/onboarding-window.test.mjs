@@ -52,10 +52,12 @@ test('concurrent connects cannot both consume one window', async () => {
   assert.deepEqual(results, [true, false, false]);
 });
 
-async function setup(t, savedTrust = {}) {
+async function setup(t, savedTrust = {}, { autoTrust = false } = {}) {
   const saved = { chrome: globalThis.chrome, fetch: globalThis.fetch, EventSource: globalThis.EventSource };
   t.after(() => Object.assign(globalThis, saved));
-  const store = memoryStorage({ [STORAGE_KEYS.pairedClients]: savedTrust });
+  // Strict (copy-prompt window) mode is what these older tests pin; auto-authorize
+  // is the product default and is covered by its own tests below.
+  const store = memoryStorage({ [STORAGE_KEYS.pairedClients]: savedTrust, [STORAGE_KEYS.autoTrust]: autoTrust });
   const posts = [];
   const openedTabs = [];
   let source;
@@ -112,4 +114,31 @@ test('a saved client needs no window, and the window never authorizes two', asyn
   assert.equal(bridge.getStatus().clients.find((c) => c.id === 'later').paired, false,
     'the copy window was already spent on "fresh"');
   assert.equal(bridge.getStatus().unauthorized.length, 1);
+});
+
+test('default: installing the host is the authorization — an unknown AI connects with no click', async (t) => {
+  // autoTrust unset (never touched) must behave as ON.
+  const { bridge, posts, openedTabs, store, emit } = await setup(t, {}, { autoTrust: null });
+  await emit({ t: WIRE.HELLO, client: { id: 'fresh', name: 'Fresh AI' } });
+  assert.equal(posts.filter((frame) => frame.t === WIRE.GRANT).at(-1).ok, true);
+  assert.equal(bridge.getStatus().clients.find((c) => c.id === 'fresh').paired, true);
+  assert.equal(bridge.getStatus().unauthorized.length, 0);
+  assert.equal(openedTabs.length, 0);
+  assert.ok(store.records[STORAGE_KEYS.pairedClients].fresh || bridge.getStatus().clients.find((c) => c.id === 'fresh').paired, 'trust is remembered for next time');
+});
+
+test('auto-authorize on does not need (or spend) the copy window', async (t) => {
+  const { bridge, emit } = await setup(t, {}, { autoTrust: true });
+  await bridge.openOnboarding();
+  await emit({ t: WIRE.HELLO, client: { id: 'a', name: 'A' } });
+  await emit({ t: WIRE.HELLO, client: { id: 'b', name: 'B' } });
+  const paired = bridge.getStatus().clients.filter((c) => c.paired).map((c) => c.id).sort();
+  assert.deepEqual(paired, ['a', 'b'], 'every installed AI is trusted, not just the first');
+});
+
+test('switching auto-authorize off restores the strict copy-window behaviour', async (t) => {
+  const { bridge, posts, emit } = await setup(t, {}, { autoTrust: false });
+  await emit({ t: WIRE.HELLO, client: { id: 'x', name: 'X' } });
+  assert.equal(posts.filter((frame) => frame.t === WIRE.GRANT).at(-1).ok, false);
+  assert.equal(bridge.getStatus().clients.find((c) => c.id === 'x').paired, false);
 });

@@ -213,7 +213,7 @@ test('full authorized tool-call loop over the local bridge', { timeout: 60000 },
   mcp.notify('notifications/initialized');
 
   const list = await mcp.request('tools/list');
-  assert.equal(list.result.tools.length, 16);
+  assert.equal(list.result.tools.length, 17);
 
   // 2. Bridge comes up; a "browser" connects over SSE
   const { port, body } = await discoverPort('Agent One');

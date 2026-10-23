@@ -110,6 +110,14 @@
             <span id="row-language-value" class="settings-row-value"></span>
             <span class="settings-row-caret">›</span>
           </button>
+          <button class="settings-row" data-page="memory" type="button">
+            <span class="settings-row-main">
+              <span class="settings-row-label" data-i18n="memoryLabel">网站记忆</span>
+              <span class="settings-row-desc" data-i18n="memoryRowDesc"></span>
+            </span>
+            <span id="row-memory-value" class="settings-row-value"></span>
+            <span class="settings-row-caret">›</span>
+          </button>
           <button class="settings-row" data-page="advanced" type="button">
             <span class="settings-row-main"><span class="settings-row-label" data-i18n="advanced">高级</span></span>
             <span class="settings-row-value" data-i18n="advancedRowValue"></span>
@@ -153,6 +161,36 @@
         <p class="settings-note" data-i18n="languageHint"></p>
       </div>
 
+      <!-- 子页：网站记忆 -->
+      <div id="page-memory" class="settings-page" hidden>
+        <div class="switch-row">
+          <span class="settings-row-label" data-i18n="memoryToggle">启用网站记忆</span>
+          <label class="switch">
+            <input id="memory-toggle" type="checkbox">
+            <span class="switch-track" aria-hidden="true"></span>
+          </label>
+        </div>
+
+        <p class="settings-lead" data-i18n="memoryWhat"></p>
+
+        <p class="settings-group" data-i18n="memoryHowTitle">怎么工作</p>
+        <ol class="settings-list" data-i18n-list="memoryHow"></ol>
+
+        <p class="settings-group" data-i18n="memoryWhyTitle">有什么用</p>
+        <ul class="settings-list" data-i18n-list="memoryWhy"></ul>
+
+        <label for="input-memory-path" data-i18n="memoryPathLabel">保存位置</label>
+        <div class="path-row">
+          <input id="input-memory-path" type="text" spellcheck="false" placeholder="~/.agentlimb/memory">
+          <button id="btn-copy-memory-path" class="btn-ghost" type="button" data-i18n="copyPath">复制</button>
+        </div>
+        <button id="btn-save-memory-path" class="btn-ghost" type="button" data-i18n="savePath">保存路径</button>
+        <p class="settings-note" data-i18n="memoryPathHint"></p>
+
+        <p id="memory-status" class="settings-note"></p>
+        <p class="settings-note" data-i18n="memoryPrivacy"></p>
+      </div>
+
       <!-- 子页：高级 -->
       <div id="page-advanced" class="settings-page" hidden>
         <label for="input-source-path" data-i18n="sourcePathLabel"></label>
@@ -163,6 +201,14 @@
         <p class="settings-note" data-i18n="pathHint"></p>
         <input id="input-host-path" type="text" spellcheck="false" placeholder="~/.agentlimb/host/mcp-server.mjs">
         <button id="btn-save-path" class="btn-ghost" type="button" data-i18n="save">保存</button>
+        <div class="switch-row">
+          <span data-i18n="autoTrustLabel"></span>
+          <label class="switch">
+            <input id="auto-trust-toggle" type="checkbox">
+            <span class="switch-track" aria-hidden="true"></span>
+          </label>
+        </div>
+        <p class="settings-note" data-i18n="autoTrustHint"></p>
       </div>
 
       <!-- 子页：关于 -->
