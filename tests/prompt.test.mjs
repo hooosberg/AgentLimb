@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 
 import { buildConnectionPrompt } from '../kernel/prompt/build-prompt.js';
 import {
@@ -65,16 +66,19 @@ test('a saved install source is embedded but must still hash to the extension ID
   assert.match(prompt, /the saved path points at a copy/);
 });
 
-test('Chrome ID algorithm matches the IDs Chrome actually assigned on this machine', () => {
-  // Recorded from two real profiles (Secure Preferences → extensions.settings).
-  assert.equal(
-    chromeExtensionId('/Users/maohuhu/进行中的项目/编程项目/开发项目/chrome插件/cowork_lite'),
-    'poiblbjgbeecibjhnadcpmleigpopllj',
-  );
-  assert.equal(
-    chromeExtensionId('/Users/maohuhu/进行中的项目/编程项目/开发项目/chrome插件/cowork_local'),
-    'ideicnclmcbcbkpmifakpaofkipgeljn',
-  );
+test('Chrome ID algorithm: SHA-256 of the folder path, 16 bytes mapped to a-p', () => {
+  // Known-answer vectors for neutral paths. Never bake a contributor's real
+  // home folder into a test: it leaks their machine layout and fails for
+  // everyone else. Windows UTF-16LE hashing is covered further down.
+  assert.equal(chromeExtensionId('/Users/me/Projects/agentlimb'), 'aiobobplkekcfjkfahdpajnpkbiplljb');
+  assert.equal(chromeExtensionId('/home/me/projects/agentlimb'), 'clllelmbloadhiegnkieggbeecpmbfef');
+
+  // Re-derive the mapping independently, so a silent change to the helper
+  // cannot be blessed by the helper itself.
+  const hex = createHash('sha256').update('/Users/me/Projects/agentlimb').digest('hex').slice(0, 32);
+  const expected = [...hex].map((c) => String.fromCharCode(97 + parseInt(c, 16))).join('');
+  assert.equal(chromeExtensionId('/Users/me/Projects/agentlimb'), expected);
+  assert.match(expected, /^[a-p]{32}$/, 'unpacked IDs use the letters a-p only');
 });
 
 test('step 1 reads back the folder Chrome recorded for that ID', { skip: posixOnly }, () => {

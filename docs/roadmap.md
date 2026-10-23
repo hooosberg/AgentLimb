@@ -2,14 +2,14 @@
 
 > 产品目标与「明确不做」见 [product.md](./product.md)。这里只排执行顺序。
 
-## 当前状态（2026-10-22）
+## 当前状态（0.5.7 / l8）
 
-- 单元/协议/模块测试 11/11
-- Chrome for Testing 149 真机自测 11/11：SW 注册、无确认页授权、工具链、**侧栏聊天闭环**
+- 自动化测试 82/82（`npm test`，CI 上 Ubuntu + Windows 双跑）
+- Chrome for Testing 真机自测：SW 注册、无确认页授权、工具链、**侧栏聊天闭环**
   （页面上下文 → agent → `say` 回显）
-- 系统 Chrome 155 里的人工走查清单见 `development.md`（待跑）
+- 多客户端真实 Chrome 验收仍在进行，尚无结果可报告
 
-## P0 — 你机器上的人工走查（阻塞「可用」结论）
+## P0 — 人工走查（阻塞「可用」结论）
 
 - [ ] 按 `docs/development.md` 手动清单 1-9 过一遍
 - [ ] 重点：`Emulation.setFocusEmulationEnabled` 在常用站点（视频站 / 表单站）的后台控制
@@ -39,7 +39,7 @@
       —— 注意权限里有 `debugger`，需要向审核解释用途
 - [ ] `npx` 分发宿主：`npx agentlimb-mcp`（把四个 .mjs 打成一个包发布）
 - [ ] Windows 安装脚本实机验证（install.ps1 只做过语法检查）
-- [ ] 从 `workspace` 分支迁回 muscle 记忆作为 opt-in 模块（D8）
+- [ ] 从 `archive/cowork-local` 分支迁回 muscle 记忆作为 opt-in 模块（D8）
 
 ## 已知边界（非 bug，设计使然）
 
@@ -52,10 +52,10 @@
 | 工具上限 20/批 | browser_batch 防 agent 把整任务塞一帧 |
 | 无云端通道 | 纯本地；远程控制不在本期范围 |
 
-## 从 workspace 分支可迁回的资产
+## 从 archive/cowork-local 分支可迁回的资产
 
 需要时按需搬，不要整体合：
 - muscle 记忆三件套（`kernel/muscle/` + 三个工具 + 桌面 JSON 存储）
 - 任务进度机制（`kernel/prompt/` 旧版 + 侧栏进度渲染）
 - 12 语言 i18n（`_locales/`）
-- 官网（`website/`，独立部署，与插件代码无耦合）
+- 旧版官网（`website/`，0.2 时代；现官网在 `hooosberg-site` 仓库）

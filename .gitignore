@@ -1,12 +1,33 @@
-.DS_Store
-node_modules/
-coverage/
-*.log
-
-# Everything in this directory is local-only and never uploaded.
+# ── 本地专用（永远不入库） ──────────────────────────────
+# 个人参考、旧 worktree、私有材料与生成的发布产物都放在这里。
 /忽略上传/
 
-# Local environment and credentials
+# ── AI 编码助手的本地工作文件 ───────────────────────────
+# 给本机 agent 看的操作说明，不属于产品内容，不进公开仓库。
+AGENTS.md
+CLAUDE.md
+.claude/
+.cursor/
+.aider*
+.codex/
+.windsurf/
+
+# ── 依赖与构建产物 ─────────────────────────────────────
+node_modules/
+dist/
+build/
+coverage/
+*.zip
+*.crx
+
+# ── 运行时状态 ─────────────────────────────────────────
+.agentlimb/
+.muscle/
+**/.mvp-terminal-session.json
+/.workbuddy/
+/.workbuddy-ai/
+
+# ── 凭据与密钥 ─────────────────────────────────────────
 .env
 .env.*
 !.env.example
@@ -18,7 +39,17 @@ coverage/
 secrets/
 credentials/
 
-# Runtime state
-.muscle/
-**/.mvp-terminal-session.json
-/.workbuddy/
+# ── 日志与临时文件 ─────────────────────────────────────
+*.log
+npm-debug.log*
+*.tmp
+*.bak
+*.swp
+*~
+
+# ── 操作系统与编辑器 ───────────────────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.code-workspace
