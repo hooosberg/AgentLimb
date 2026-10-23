@@ -49,7 +49,8 @@ test('the changelog documents the current version', () => {
 
 test('the docs quote the current version, not a stale one', () => {
   // CHANGELOG.md is exempt: it intentionally records old versions.
-  for (const doc of ['README.md', 'docs/development.md', 'docs/onboarding.md']) {
+  // Only published docs are checked — internal notes live outside the repo.
+  for (const doc of ['README.md', 'README.zh-CN.md']) {
     const text = read(doc);
     assert.ok(text.includes(`${APP_VERSION} / ${APP_BUILD}`) || text.includes(`${APP_VERSION}-${APP_BUILD}`),
       `${doc} must quote the current version`);

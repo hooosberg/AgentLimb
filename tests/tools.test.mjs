@@ -56,7 +56,7 @@ test('connection prompt: generic, English only, embeds host path', () => {
     assert.ok(!prompt.includes(brand), `prompt must not mention ${brand}`);
   }
   assert.match(prompt, /agent software/);
-  // The prompt is English-only by product decision (docs/product.md).
+  // The prompt is English-only by product decision.
   assert.ok(!/[\u4e00-\u9fff]/.test(prompt), 'prompt must not contain CJK characters');
   assert.ok(!/[「」【】（）、，。：；]/.test(prompt), 'prompt must not contain CJK punctuation');
 });

@@ -1,5 +1,5 @@
 /**
- * Copyable onboarding instructions (English only — see docs/product.md).
+ * Copyable onboarding instructions (English only, by product decision).
  *
  * The prompt must answer three questions before an agent touches anything:
  *   1. Where is the installer?  (Gate 0 — extension-ID fingerprint)

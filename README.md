@@ -34,7 +34,7 @@ bash scripts/install.sh --client-name "WorkBuddy" --client-kind "workbuddy"
 # 4. Call AgentLimb ping and tabs_context from the agent session to verify; no confirmation page appears
 ```
 
-The installer only places the host files and prints JSON — it never writes another app's own configuration. The intake window opened by Copy lasts 30 minutes and authorizes exactly one AI; if it expires, click Copy again — no config change, no restart. Config format and the MCP enable/trust entry point are decided by each client; never read the generic JSON example as "already enabled". Full step-by-step and evidence-based troubleshooting: [onboarding](./docs/onboarding.md).
+The installer only places the host files and prints JSON — it never writes another app's own configuration. The intake window opened by Copy lasts 30 minutes and authorizes exactly one AI; if it expires, click Copy again — no config change, no restart. Config format and the MCP enable/trust entry point are decided by each client; never read the generic JSON example as "already enabled".
 
 Local debugging (works without Claude Code):
 
@@ -43,6 +43,20 @@ node bin/agentlimb.mjs mcp       # stdio MCP; starts the bridge after initialize
 node bin/agentlimb.mjs status    # probe whether the bridge is online
 npm test                         # end-to-end protocol tests (with a simulated extension)
 ```
+
+## When it does not connect
+
+Check in this order. Each step rules out one stage, and passing one stage says nothing about the next.
+
+| Symptom | What it means | What to do |
+|---|---|---|
+| A tool call returns "not authorized" | The 30-minute intake window expired, or another AI already used it | Click Copy connection prompt again — no config change, no restart |
+| The app lists AgentLimb but tools never answer | The MCP entry is merged but not enabled/trusted by that app, or its process is not running | Enable and trust MCP in the app, then restart its MCP process |
+| Nothing happens at all | The host may not be where the config points | `node bin/agentlimb.mjs status`, then confirm `~/.agentlimb/host/mcp-server.mjs` exists |
+| A second AI cannot take over | One controller holds the browser task lock while the first AI is busy | Wait for the current task; a switch while busy is refused by design |
+| The first connection takes a while | The service worker was asleep | Open the side panel to wake it; otherwise expect up to about a minute |
+
+`ping` and `tabs_context` succeeding in the session you actually care about is the only proof the connection works. A reachable port, a trust file, or another client's success never substitutes for it.
 
 ---
 
@@ -71,7 +85,7 @@ Three roles, zero dependencies (Node built-ins and plain JS only — no npm pack
 
 The installer deploys `~/.agentlimb` and prints the `mcpServers.agentlimb` block. After merging it into the target app's real config, the user still has to enable/trust MCP as that app requires. Copy connection prompt in the side panel performs the authorization in the same gesture: the extension opens a 30-minute window and the first unknown AI to connect inside it is trusted — **no confirmation page, no pairing code**. If the window expired or was already consumed, tool calls immediately return "not authorized" so the user can copy again, with no config change and no restart. Only a successful `ping` and `tabs_context` from the current target session proves the connection works.
 
-The host keeps a stable identity file per client name + kind combination; the old shared `client-id.json` does not inherit trust. A known identity with saved trust reconnects automatically and never steals the current chat window; a new identity needs one intake window. An old runtime directory, a reachable port, a trust file, or another client's success can never prove, on their own, that the current client is connected. Full steps: [onboarding](./docs/onboarding.md).
+The host keeps a stable identity file per client name + kind combination; the old shared `client-id.json` does not inherit trust. A known identity with saved trust reconnects automatically and never steals the current chat window; a new identity needs one intake window. An old runtime directory, a reachable port, a trust file, or another client's success can never prove, on their own, that the current client is connected.
 
 The extension connects up to six MCP hosts at once and keeps their trust separately; `connectedClientId` marks the single controller. A trusted client's handshake never takes control automatically — an explicit switch only applies while the task is idle, and a switch while busy is refused. Non-`ping` tools from other clients queue until the host deadline and are dropped if they expire.
 
