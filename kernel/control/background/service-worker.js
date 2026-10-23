@@ -2,7 +2,7 @@
  * AgentLimb service worker
  *
  * The SW is the control plane. It is completely independent from the side
- * panel: pairing, tool execution and the in-page indicator work whether or
+ * panel: authorization, tool execution and the in-page indicator work whether or
  * not the panel is open (the panel is only a status/chat surface).
  */
 
@@ -22,21 +22,18 @@ function bootstrap() {
   const bridge = createBridgeClient({
     onStatus: (snapshot) => {
       runtime.lastStatus = snapshot;
+      const working = snapshot.operating || snapshot.busy;
+      setBusy(working);
+      if (!working) router.stopAllDriving();
     },
     onToolCall: async ({ tool, args, timeoutMs }) => {
-      setBusy(true);
-      try {
-        return await Promise.race([
-          router.execute(tool, args),
-          new Promise((_, reject) =>
-            setTimeout(() => reject(new Error(`tool ${tool} timed out after ${timeoutMs}ms`)), timeoutMs),
-          ),
-        ]);
-      } finally {
-        setBusy(false);
-      }
+      return Promise.race([
+        router.execute(tool, args),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error(`tool ${tool} timed out after ${timeoutMs}ms`)), timeoutMs),
+        ),
+      ]);
     },
-    onPairingRequest: () => {},
   });
 
   runtime.debugger = debuggerManager;
@@ -46,13 +43,15 @@ function bootstrap() {
 
   void bridge.start();
 
-  // MV3 keep-alive: the SW suspends when idle; the alarm re-opens the SSE
-  // stream and keeps the pairing/tool loop alive. (Chrome clamps to ≥1min in
-  // packed extensions; unpacked dev builds honor sub-minute periods.)
-  chrome.alarms.create('agentlimb-bridge-keepalive', { periodInMinutes: 0.4 });
+  // MV3 keep-alive floor: the worker is killed after ~30 s idle, which also
+  // tears down the SSE stream. Chrome clamps alarms to 30 s, so this is the
+  // fastest possible revival with the panel closed. With the panel open the
+  // panel itself drives discovery (MESSAGE_TYPES.ENSURE), which is both faster
+  // and immune to suspension.
+  chrome.alarms.create('agentlimb-bridge-keepalive', { periodInMinutes: 0.5 });
   chrome.alarms.onAlarm.addListener((alarm) => {
     if (alarm.name === 'agentlimb-bridge-keepalive') {
-      bridge.ensure();
+      void bridge.ensure();
     }
   });
 
@@ -111,7 +110,7 @@ function bootstrap() {
     }
   }
 
-  // ── runtime messages (panel / pairing page / content scripts) ──────────────
+  // ── runtime messages (panel / content scripts) ────────────────────────────
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     handleMessage(message, sender)
       .then(sendResponse)
@@ -163,22 +162,39 @@ function bootstrap() {
       case MESSAGE_TYPES.GET_STATUS:
         return { ok: true, ...bridge.getStatus() };
 
-      case MESSAGE_TYPES.PAIRING_RESPONSE:
-        return bridge.respondPairing(message.request_id, message.ok !== false, message.name);
+      case MESSAGE_TYPES.ENSURE:
+        // Sent by the side panel while it waits for a bridge. Receiving the
+        // message already wakes a suspended worker, and awaiting the scan means
+        // the panel gets the post-scan truth instead of a stale snapshot.
+        await bridge.ensure();
+        return { ok: true, ...bridge.getStatus() };
+
+      case MESSAGE_TYPES.COPY_PROMPT:
+        // Copying is the authorization step: it opens the window in which the
+        // next unknown AI client is trusted. Nothing secret is returned.
+        return { ok: true, ...await bridge.openOnboarding() };
+
+      case MESSAGE_TYPES.CANCEL_COPY:
+        await bridge.closeOnboarding();
+        return { ok: true };
 
       case MESSAGE_TYPES.CHAT_SEND: {
         // The panel is a chat window ON the agent, and every message carries the
         // page the user is looking at — "translate this" needs no round trip.
-        const page = await collectPageContext();
-        return bridge.sendUserMessage(message.text, page);
+        return bridge.sendUserMessage(message.text, collectPageContext);
       }
+
+      case MESSAGE_TYPES.SELECT_CLIENT:
+        return bridge.selectClient(message.clientId);
 
       case MESSAGE_TYPES.DISCONNECT_CLIENT: {
         // Disconnect is not a "flow": revoke the trust, tell the agent in plain
         // words, and drop the in-page indicators. Nothing else to unwind.
-        router.stopAllDriving();
         return bridge.disconnectClient(message.clientId);
       }
+
+      case MESSAGE_TYPES.CHAT_STOP:
+        return bridge.requestStop();
 
       default:
         return { ok: false, error: `unknown message: ${message.type || '(empty)'}` };

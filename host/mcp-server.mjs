@@ -19,26 +19,59 @@ import { APP_NAME, APP_VERSION, APP_BUILD, MCP_PROTOCOL_VERSION } from '../kerne
 const CLIENT_NAME = process.env.AGENTLIMB_CLIENT_NAME || 'AI Agent';
 const CLIENT_KIND = process.env.AGENTLIMB_CLIENT_KIND || 'generic';
 // An explicit env name wins; otherwise we adopt initialize.clientInfo.name so
-// the pairing page / side panel can say exactly which software connected.
+// the side panel can say exactly which software connected.
 const EXPLICIT_CLIENT_NAME = !!process.env.AGENTLIMB_CLIENT_NAME;
 
-const bridge = createBridge({
-  clientId: loadOrCreateClientId(),
-  clientName: CLIENT_NAME,
-  clientKind: CLIENT_KIND,
-  onLog: (level, message) => {
-    notify('notifications/message', { level, logger: 'agentlimb', data: message });
-  },
-  onUserMessage: (text, page) => {
-    // Panel chat → agent. Logged immediately AND attached to the next tool
-    // result, so delivery is guaranteed even mid-turn.
+let bridge;
+let starting;
+async function startBridge(clientInfo) {
+  const name = EXPLICIT_CLIENT_NAME ? CLIENT_NAME : String(clientInfo?.name || CLIENT_NAME).trim() || CLIENT_NAME;
+  bridge = createBridge({
+    clientId: loadOrCreateClientId(name, CLIENT_KIND),
+    clientName: name,
+    clientKind: CLIENT_KIND,
+    onLog: (level, message) => {
+      notify('notifications/message', { level, logger: 'agentlimb', data: message });
+    },
+    onAuthorized: ({ client, at, status }) => {
+      // The moment the browser grants trust. Without this the agent has no way
+      // to learn it is connected except by calling a tool and guessing, which
+      // is why it kept re-running installation after every restart even though
+      // trust is persistent. Distinct logger + `CONNECTED` prefix so it stands
+      // out from routine bridge logs.
+      notify('notifications/message', {
+        level: 'info',
+        logger: 'agentlimb-status',
+        data: [
+          `CONNECTED — the browser authorized this AI as "${client}" at ${at}.`,
+          'Trust is saved and will be reused automatically in every later session; nothing needs to be re-paired, restarted or approved.',
+          'Call the ping tool once to confirm end-to-end. When it returns a pong, tell the user "Connected" and stop any setup steps.',
+        ].join(' '),
+      });
+    },
+    onUserMessage: (text, page) => {
+      // Panel chat → agent. Logged immediately AND attached to the next tool
+      // result, so delivery is guaranteed even mid-turn.
+      notify('notifications/message', {
+        level: 'info',
+        logger: 'agentlimb-chat',
+        data: formatUserMessage({ text, at: new Date().toISOString(), page }),
+      });
+    },
+  });
+  const port = await bridge.start();
+  console.error(`[agentlimb] MCP server ready — bridge on 127.0.0.1:${port}, client=${name} (${CLIENT_KIND})`);
+  console.error(`[agentlimb] saved trust: ${bridge.isPaired() ? 'yes' : 'no'}; live browser authorization is verified by the GRANT reply and tools/call ping`);
+  // A restart restores trust silently. If the browser is already there, the
+  // agent should hear about it now rather than discovering it by accident.
+  if (bridge.isPaired()) {
     notify('notifications/message', {
       level: 'info',
-      logger: 'agentlimb-chat',
-      data: formatUserMessage({ text, at: new Date().toISOString(), page }),
+      logger: 'agentlimb-status',
+      data: `Saved pairing found for "${name}". Trust is persistent — if the browser authorizes this session you will not need to pair again. Call ping to check the live connection state.`,
     });
-  },
-});
+  }
+}
 
 // ── MCP stdio plumbing ────────────────────────────────────────────────────────
 /**
@@ -91,13 +124,31 @@ async function handleRequest(request) {
 
   switch (request.method) {
     case 'initialize':
-      // The agent software tells us its own name here — the pairing UI and the
-      // side panel then show "正在与 <name> 驱动浏览器" with no user input.
-      if (!EXPLICIT_CLIENT_NAME) bridge.setClientName(request.params?.clientInfo?.name);
+      // The agent software tells us its own name here — the side panel then shows
+      // "正在与 <name> 驱动浏览器" with no user input. Identify the actual MCP
+      // client BEFORE the extension sees the first HELLO.
+      starting ||= startBridge(request.params?.clientInfo);
+      await starting;
       reply(request.id, {
         protocolVersion: MCP_PROTOCOL_VERSION,
         capabilities: { tools: {}, logging: {} },
         serverInfo: { name: 'agentlimb', version: `${APP_VERSION}-${APP_BUILD}` },
+        instructions: [
+          'AgentLimb controls the user\'s Chrome through a local bridge.',
+          '',
+          'Connection state — read this before anything else:',
+          '- Trust is PERSISTENT. Once the user has paired this AI, every later session (including after a restart of your software) is authorized automatically. There is no approval page and no code to paste, ever.',
+          '- Therefore: whenever you are unsure whether you are connected, or the user asks anything like "are you connected", "连接", "did it work", "is it ready" — call the `ping` tool FIRST. Do not read install docs, do not run a doctor command, do not re-do configuration. One ping answers it.',
+          '- A pong means end-to-end success: you can control Chrome. Reply "Connected. You can now ask me directly, for example to summarize the current page or open a webpage." and stop. Never ask for another restart, approval, or re-pairing after a successful ping.',
+          '- If ping reports not authorized, ask the user to click the copy-prompt button in the AgentLimb side panel and retry the same call. If it reports no browser, ask them to keep Chrome running with the extension enabled and open the side panel once.',
+          '',
+          'Using the tools:',
+          '- On your first browser task in a session, call `ping` then `tabs_context` once to confirm the link, then get to work.',
+          '- Reply to side-panel messages with `say`; finish every browser task with `say` so the panel shows your answer.',
+          '- Panel messages arrive on your next tool result and already carry the user\'s current page context.',
+          '- If the user presses STOP, halt further browser actions and acknowledge with `say`.',
+          '- Reply in the user\'s language.',
+        ].join('\n'),
       });
       return;
 
@@ -125,6 +176,11 @@ async function handleRequest(request) {
 }
 
 async function handleToolCall(request) {
+  if (!starting) {
+    replyError(request.id, -32002, 'Initialize MCP before calling tools.');
+    return;
+  }
+  await starting;
   const name = request.params?.name;
   const args = request.params?.arguments || {};
   const tool = HOST_TOOLS.find((t) => t.name === name);
@@ -145,6 +201,12 @@ async function handleToolCall(request) {
 
   try {
     const { result, userMessages } = await bridge.callTool(name, args);
+    // `ping` is the connection self-check. The pong proves the round trip; the
+    // host-side snapshot proves the pairing, so one call answers "am I
+    // connected?" without the agent having to infer anything.
+    if (name === 'ping' && result && typeof result === 'object') {
+      result.connection = bridge.connectionStatus();
+    }
     const content = [];
     if (result && result.image && result.image.data) {
       content.push({ type: 'image', data: result.image.data, mimeType: result.image.mimeType });
@@ -172,10 +234,6 @@ async function handleToolCall(request) {
 
 // ── main ──────────────────────────────────────────────────────────────────────
 async function main() {
-  const port = await bridge.start();
-  console.error(`[agentlimb] MCP server ready — bridge on 127.0.0.1:${port}, client=${CLIENT_NAME} (${CLIENT_KIND})`);
-  console.error(`[agentlimb] paired: ${bridge.isPaired() ? 'yes (auto-reconnect)' : 'no — confirm in the browser pairing tab'}`);
-
   const rl = readline.createInterface({ input: process.stdin, terminal: false });
   rl.on('line', (line) => {
     const trimmed = line.trim();
@@ -195,12 +253,18 @@ async function main() {
   });
 
   rl.on('close', () => {
-    bridge.stop();
+    bridge?.stop();
     process.exit(0);
   });
 
-  process.on('SIGINT', () => { bridge.stop(); process.exit(0); });
-  process.on('SIGTERM', () => { bridge.stop(); process.exit(0); });
+  process.stdin.on('end', () => { bridge?.stop(); process.exit(0); });
+  process.stdin.on('error', () => { bridge?.stop(); process.exit(0); });
+  process.stdout.on('error', () => { bridge?.stop(); process.exit(0); });
+  process.on('SIGINT', () => { bridge?.stop(); process.exit(0); });
+  process.on('SIGTERM', () => { bridge?.stop(); process.exit(0); });
+  if (process.platform !== 'win32') {
+    process.on('SIGHUP', () => { bridge?.stop(); process.exit(0); });
+  }
 }
 
 main().catch((error) => {

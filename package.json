@@ -1,14 +1,18 @@
 {
   "name": "agentlimb",
-  "version": "0.5.0",
-  "agentlimbBuild": "l1",
+  "version": "0.5.7",
+  "agentlimbBuild": "l8",
   "private": true,
   "type": "module",
   "engines": {
     "node": ">=18"
   },
   "scripts": {
-    "test": "node --test --test-force-exit tests/*.test.mjs",
+    "test": "node --test --test-force-exit --test-concurrency=1 tests/*.test.mjs",
+    "bench": "node scripts/pairing-bench.mjs",
+    "monkey": "node scripts/pairing-monkey.mjs",
+    "monkey:panel": "node scripts/panel-monkey.mjs",
+    "smoke:panel": "node scripts/smoke-client-list.mjs",
     "mcp": "node bin/agentlimb.mjs mcp",
     "bridge": "node bin/agentlimb.mjs bridge"
   }

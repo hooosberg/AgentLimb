@@ -53,7 +53,8 @@
       return 'textbox';
     }
     return {
-      a: 'link', button: 'button', select: 'combobox', textarea: 'textbox',
+      a: 'link', button: 'button', select: 'combobox', option: 'option', textarea: 'textbox',
+      summary: 'button', label: 'label',
       h1: 'heading', h2: 'heading', h3: 'heading', h4: 'heading', h5: 'heading', h6: 'heading',
       img: 'image', nav: 'navigation', main: 'main', header: 'banner', footer: 'contentinfo',
       section: 'region', article: 'article', aside: 'complementary', form: 'form',
@@ -70,10 +71,14 @@
 
   function directText(el) {
     let out = '';
-    for (const node of el.childNodes) {
+    for (const node of el.childNodes || []) {
       if (node.nodeType === Node.TEXT_NODE) out += node.textContent;
     }
     return out.replace(/\s+/g, ' ').trim();
+  }
+
+  function fullText(el) {
+    return String(el.innerText || el.textContent || '').replace(/\s+/g, ' ').trim();
   }
 
   function labelFor(el) {
@@ -83,14 +88,14 @@
       try {
         const lbl = el.getRootNode().querySelector(`label[for="${CSS.escape(el.id)}"]`);
         if (lbl) {
-          const t = directText(lbl);
+          const t = directText(lbl) || fullText(lbl);
           if (t) return t;
         }
       } catch (_) { /* invalid id selector */ }
     }
     const wrapping = el.closest && el.closest('label');
     if (wrapping) {
-      const t = directText(wrapping);
+      const t = directText(wrapping) || fullText(wrapping);
       if (t) return t;
     }
     const placeholder = el.getAttribute('placeholder');
@@ -108,7 +113,7 @@
       const parts = labelledby.split(/\s+/).map((id) => {
         try {
           const target = el.getRootNode().getElementById(id);
-          return target ? directText(target) : '';
+          return target ? (directText(target) || fullText(target)) : '';
         } catch (_) { return ''; }
       });
       const joined = parts.filter(Boolean).join(' ').trim();
@@ -128,6 +133,13 @@
     if (tag === 'img') return '';
     const own = directText(el);
     if (own) return own.slice(0, MAX_TEXT);
+    // Modern web apps commonly wrap button/link/heading text in inner <span>s.
+    // Falling back to fullText for interactive elements and headings prevents
+    // unnamed `- ref=N button` entries in read_page and missed matches in find.
+    if (isInteractive(el) || /^h[1-6]$/.test(tag)) {
+      const nested = fullText(el);
+      if (nested) return nested.slice(0, MAX_TEXT);
+    }
     return '';
   }
 
@@ -144,13 +156,16 @@
 
   // ── visibility ─────────────────────────────────────────────────────────────
   function isHidden(el) {
+    if (el.hidden || (el.getAttribute && el.getAttribute('aria-hidden') === 'true')) return true;
     const style = el.ownerDocument.defaultView.getComputedStyle(el);
     if (!style) return false;
     if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') return true;
+    const tag = el.tagName ? el.tagName.toLowerCase() : '';
+    if (tag === 'option') return false;
     const rect = el.getBoundingClientRect();
     if (rect.width === 0 && rect.height === 0) {
-      const tag = el.tagName ? el.tagName.toLowerCase() : '';
-      // Zero-size elements can still be meaningful (e.g. <br>, script, style).
+      if (el.offsetParent === null && style.position !== 'fixed' && tag !== 'body' && tag !== 'html') return true;
+      // Zero-size non-interactive elements can be pruned.
       if (!INTERACTIVE_TAGS.has(tag)) return true;
     }
     return false;
@@ -185,6 +200,12 @@
 
     function walkContainer(container, depth, frameOffset) {
       if (depth > maxDepth) return;
+      if (container.shadowRoot) {
+        for (const node of Array.from(container.shadowRoot.children || [])) {
+          if (budget-- <= 0) { truncated = true; return; }
+          walkElement(node, depth, frameOffset);
+        }
+      }
       for (const node of Array.from(container.children || [])) {
         if (budget-- <= 0) { truncated = true; return; }
         walkElement(node, depth, frameOffset);
@@ -214,14 +235,14 @@
       }
 
       const hidden = isHidden(el);
-      const interactive = !hidden && isInteractive(el);
+      if (hidden) return;
+      const interactive = isInteractive(el);
 
       if (filter === 'interactive' && !interactive) {
-        // Still descend — interactive elements may live inside plain containers.
+        // Still descend — interactive elements may live inside plain visible containers.
         walkContainer(el, depth, frameOffset);
         return;
       }
-      if (hidden) return;
 
       const ref = refFor(el, frameOffset);
       const role = roleOf(el);
@@ -237,7 +258,11 @@
         else if (el.value) attrs.push(`value="${escapeAttr(el.value.slice(0, 40))}"`);
         if (el.checked) attrs.push('checked');
       }
+      if ((tag === 'input' || tag === 'textarea') && el.placeholder && el.placeholder.trim() && el.placeholder.trim() !== name) {
+        attrs.push(`placeholder="${escapeAttr(el.placeholder.trim().slice(0, 40))}"`);
+      }
       if (tag === 'select') attrs.push(`value="${escapeAttr(el.value)}"`);
+      if (tag === 'option' && el.selected) attrs.push('selected');
       if (el.disabled) attrs.push('disabled');
 
       let line = `${'  '.repeat(depth)}- ref=${ref} ${role}`;
@@ -293,10 +318,13 @@
       const q = String(options.query).toLowerCase();
       candidates = Array.from(document.querySelectorAll('body *')).filter((el) => {
         if (isHidden(el)) return false;
+        const tag = el.tagName ? el.tagName.toLowerCase() : '';
         return directText(el).toLowerCase().includes(q)
+          || ((isInteractive(el) || /^h[1-6]$/.test(tag)) && accessibleName(el).toLowerCase().includes(q))
           || (el.value && String(el.value).toLowerCase().includes(q))
           || (el.getAttribute('aria-label') || '').toLowerCase().includes(q)
-          || (el.getAttribute('placeholder') || '').toLowerCase().includes(q);
+          || (el.getAttribute('placeholder') || '').toLowerCase().includes(q)
+          || (el.getAttribute('title') || '').toLowerCase().includes(q);
       });
     } else {
       return { ok: false, error: 'find requires query or selector' };
@@ -476,11 +504,13 @@
 
     return new Promise((resolve) => {
       const timer = setTimeout(() => {
+        clearInterval(poll);
         observer.disconnect();
         resolve({ ok: false, error: `timeout after ${timeout}ms waiting for ${condition}` });
       }, timeout);
 
       const observer = new MutationObserver(check);
+      const poll = setInterval(check, 200);
       function check() {
         let satisfied = false;
         try {
@@ -512,6 +542,7 @@
 
         if (satisfied || Date.now() - started >= timeout) {
           clearTimeout(timer);
+          clearInterval(poll);
           observer.disconnect();
           resolve({ ok: satisfied, condition, waitedMs: Date.now() - started });
         }

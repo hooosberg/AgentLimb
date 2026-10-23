@@ -1,49 +1,41 @@
 #!/usr/bin/env node
-/**
- * AgentLimb CLI
- *
- *   agentlimb mcp                 run the MCP server (what AI agents spawn)
- *   agentlimb install             install the host to ~/.agentlimb + print MCP config
- *   agentlimb uninstall           remove ~/.agentlimb
- *   agentlimb status              probe the local bridge
- *   agentlimb pair-status         show persisted pairings
- */
+/** AgentLimb CLI. */
 
-import { spawn } from 'node:child_process';
-import { existsSync, mkdirSync, copyFileSync, rmSync, readdirSync, statSync } from 'node:fs';
-import { join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { homedir } from 'node:os';
+import { existsSync, readFileSync, rmSync } from 'node:fs';
+import { join } from 'node:path';
 
-import { BRIDGE_PORTS, BRIDGE_HOST, APP_VERSION } from '../kernel/shared/constants.js';
+import { BRIDGE_HOST, APP_VERSION, resolveBridgePorts } from '../kernel/shared/constants.js';
 import { agentlimbHome } from '../host/bridge-server.mjs';
+import { installHost, makeMcpConfig } from '../host/install.mjs';
 
-const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const [command = 'help', ...args] = process.argv.slice(2);
+let options;
 
 try {
+  options = parseOptions(args);
   switch (command) {
     case 'mcp':
     case 'serve':
       await import('../host/mcp-server.mjs');
       break;
-
     case 'install':
       await install();
       break;
-
+    case 'config':
+      printConfig();
+      break;
+    case 'doctor':
+      await doctor();
+      break;
     case 'uninstall':
       await uninstall();
       break;
-
     case 'status':
       await status();
       break;
-
     case 'pair-status':
       await pairStatus();
       break;
-
     default:
       printHelp();
   }
@@ -52,37 +44,50 @@ try {
   process.exitCode = 1;
 }
 
-// ── commands ─────────────────────────────────────────────────────────────────
-async function install() {
-  const home = agentlimbHome();
-  // Mirror the repo layout so the installed host's relative imports resolve.
-  const layout = [
-    ['host/mcp-server.mjs', 'host/mcp-server.mjs'],
-    ['host/bridge-server.mjs', 'host/bridge-server.mjs'],
-    ['kernel/shared/constants.js', 'kernel/shared/constants.js'],
-    ['kernel/control/host/tools.js', 'kernel/control/host/tools.js'],
-  ];
-  for (const [from, to] of layout) {
-    const target = join(home, to);
-    mkdirSync(dirname(target), { recursive: true });
-    copyFileSync(join(root, from), target);
+function parseOptions(argv) {
+  const result = {};
+  for (let i = 0; i < argv.length; i += 1) {
+    const key = argv[i];
+    if (['--client-name', '--client-kind'].includes(key)) {
+      const value = argv[i + 1];
+      if (!value || value.startsWith('--')) throw new Error(`${key} requires a value`);
+      result[{ '--client-name': 'clientName', '--client-kind': 'clientKind' }[key]] = value;
+      i += 1;
+    } else {
+      throw new Error(`Unknown option: ${key}`);
+    }
   }
-  const mcpPath = join(home, 'host', 'mcp-server.mjs');
+  return result;
+}
+
+function clientOptions() {
+  return {
+    clientName: options.clientName || process.env.AGENTLIMB_CLIENT_NAME || undefined,
+    clientKind: options.clientKind || process.env.AGENTLIMB_CLIENT_KIND || undefined,
+  };
+}
+
+async function install() {
+  const home = await installHost();
   console.log(`AgentLimb host installed to ${home}`);
-  console.log('');
-  console.log('Add this MCP server to your agent software (any MCP-capable client):');
-  console.log('');
-  console.log('  {');
-  console.log('    "mcpServers": {');
-  console.log('      "agentlimb": {');
-  console.log('        "command": "node",');
-  console.log(`        "args": ["${mcpPath}"]`);
-  console.log('      }');
-  console.log('    }');
-  console.log('  }');
-  console.log('');
-  console.log('Then open the extension side panel, copy the connection prompt,');
-  console.log('and paste it into your agent software. Pairing confirms on first connect.');
+  console.log('Existing pairing data and other client configuration were preserved.');
+  console.log('Copy this JSON into the target client\'s MCP settings (adapt the format if needed):');
+  console.log(JSON.stringify(makeMcpConfig({ ...clientOptions(), home }), null, 2));
+  console.log('In the target software, enable/trust this MCP entry if required, then reload MCP or restart the software.');
+  console.log('Clicking Copy connection prompt in the AgentLimb side panel authorizes the next AI for 30 minutes — no browser popup, no code.');
+  console.log('Then call AgentLimb ping and tabs_context in this AI session, report success with say and tell the user they can start a browser task.');
+  console.log('Client Trust/Enable and browser authorization are separate steps. A saved pairing alone does not prove a live connection.');
+  console.log('A leftover runtime folder is not evidence that the current install completed.');
+}
+
+function printConfig() {
+  console.log(JSON.stringify(makeMcpConfig({ ...clientOptions(), home: agentlimbHome() }), null, 2));
+}
+
+async function doctor() {
+  const { diagnose } = await import('../host/diagnostics.mjs');
+  const report = await diagnose(clientOptions());
+  console.log(JSON.stringify(report, null, 2));
 }
 
 async function uninstall() {
@@ -97,20 +102,17 @@ async function uninstall() {
 }
 
 async function status() {
-  for (const port of BRIDGE_PORTS) {
+  for (const port of resolveBridgePorts()) {
     try {
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), 800);
       const res = await fetch(`http://${BRIDGE_HOST}:${port}/health`, { signal: controller.signal });
       clearTimeout(timer);
       if (res.ok) {
-        const body = await res.json();
-        console.log(JSON.stringify(body, null, 2));
+        console.log(JSON.stringify(await res.json(), null, 2));
         return;
       }
-    } catch (_) {
-      // try next port
-    }
+    } catch (_) { /* try next port */ }
   }
   console.log('AgentLimb bridge is not running.');
   console.log('Start it via your AI agent (it spawns the MCP server automatically),');
@@ -130,10 +132,14 @@ function printHelp() {
   console.log([
     `AgentLimb ${APP_VERSION}`,
     '',
-    '  agentlimb install      install the host to ~/.agentlimb and print MCP setup',
-    '  agentlimb mcp          run the MCP server (stdio) — used by AI agents',
+    '  agentlimb install      install host files and print MCP setup JSON',
+    '  agentlimb config       print MCP JSON for the installed host path',
+    '  agentlimb doctor       print a JSON connection diagnostic report',
+    '  agentlimb mcp          run the MCP server (stdio)',
     '  agentlimb status       probe the local bridge',
     '  agentlimb pair-status  show persisted pairings',
     '  agentlimb uninstall    remove ~/.agentlimb',
+    '',
+    '  --client-name NAME --client-kind KIND  set the target client identity labels',
   ].join('\n'));
 }

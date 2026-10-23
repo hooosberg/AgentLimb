@@ -52,12 +52,14 @@ function createChromeStub() {
       get: async (id) => ({ id, windowId: 10, active: true, url: 'https://example.com', status: 'complete' }),
       sendMessage: async () => ({}),
       create: async () => ({}),
+      group: async () => 7,
       update: async () => ({}),
       remove: async () => ({}),
       goBack: async () => {},
       goForward: async () => {},
       onUpdated: { addListener: () => {} },
     },
+    tabGroups: { query: async () => [], update: async () => ({}) },
     windows: { update: async () => ({}) },
     debugger: {
       attach: async () => {},
@@ -94,6 +96,7 @@ test('extension modules import cleanly under a chrome stub', async () => {
 
   // Pure modules first (no chrome usage at import time).
   await import('../kernel/shared/constants.js');
+  await import('../kernel/shared/onboarding-window.js');
   await import('../kernel/control/host/tools.js');
   await import('../kernel/prompt/build-prompt.js');
   await import('../kernel/control/background/bridge-client.js');
@@ -174,7 +177,7 @@ test('a bridge outage must not forget trusted (paired) clients', async () => {
   }
 });
 
-test('only the most recent pairing survives (single tenant)', async () => {
+test('remembered clients survive offline switching without erasing authorization', async () => {
   // Regression: paired clients accumulated, so the panel showed a growing stack
   // of "正在与 X 驱动浏览器" chips after switching agent software.
   const { createBridgeClient } = await import('../kernel/control/background/bridge-client.js');
@@ -198,16 +201,11 @@ test('only the most recent pairing survives (single tenant)', async () => {
   try {
     const bridge = createBridgeClient({});
     await bridge.start();
-    // Both trusted clients load (never drop trust on load — that would force a
-    // needless re-pair), but once one of them actually shows up it owns the
-    // browser and the rest are forgotten.
-    assert.equal(bridge.getStatus().clients.length, 2, 'both remembered clients load');
-    await bridge.keepOnlyPaired('new-client');
-    const status = bridge.getStatus();
-    assert.equal(status.clients.length, 1, 'only one paired client may remain');
-    assert.equal(status.clients[0].id, 'new-client', 'the connected client wins');
-    const persisted = writes.at(-1)?.[STORAGE_KEYS.pairedClients];
-    assert.deepEqual(Object.keys(persisted || {}), ['new-client'], 'stale pairing erased from storage');
+    assert.equal(bridge.getStatus().clients.length, 2);
+    const result = bridge.selectClient('new-client');
+    assert.equal(result.ok, false, 'offline client cannot take control');
+    assert.equal(bridge.getStatus().clients.filter((c) => c.paired).length, 2, 'switching must retain both authorizations');
+    assert.ok(bridge.getStatus().clients.every((c) => c.online === false));
   } finally {
     stub.chrome.storage.local.get = savedGet;
     stub.chrome.storage.local.set = savedSet;
@@ -237,9 +235,99 @@ test('tab_new returns only after the new tab commits a URL', async () => {
     const res = await router.execute('tab_new', { url: 'https://example.com' });
     assert.equal(res.ok, true);
     assert.equal(res.tab.url, 'https://example.com/', 'tab_new must not hand back an empty url');
+    assert.deepEqual(res.group, { id: 7, title: 'AgentLimb', color: 'orange' });
     assert.ok(reads >= 3, 'waited for the URL to commit');
   } finally {
     stub.chrome.tabs.create = saved.create;
     stub.chrome.tabs.get = saved.get;
+  }
+});
+
+test('harness: navigate auto-prepends https://, computer type presses Enter on newline, and screenshot hides indicator', async () => {
+  const { createRouter } = await import('../kernel/control/background/router.js');
+  const sentCdp = [];
+  const sentTabMessages = [];
+  const savedUpdate = stub.chrome.tabs.update;
+  const savedSendMessage = stub.chrome.tabs.sendMessage;
+  let updatedUrl = '';
+  stub.chrome.tabs.update = async (_id, patch) => {
+    if (patch.url) updatedUrl = patch.url;
+    return { id: 1, url: updatedUrl };
+  };
+  stub.chrome.tabs.sendMessage = async (_id, msg) => {
+    sentTabMessages.push(msg);
+    return { ok: true, x: 50, y: 60 };
+  };
+  const fakeDbg = {
+    attach: async () => {},
+    send: async (_tabId, method, params) => { sentCdp.push({ method, params }); return {}; },
+    screenshot: async () => {
+      sentTabMessages.push({ type: 'CAPTURE_MOMENT' });
+      return { data: 'base64data', format: 'jpeg', quality: 75 };
+    },
+    setFocusEmulation: async () => {},
+    muteForControl: async () => {},
+    restoreMute: () => {},
+    status: () => ({}),
+  };
+  try {
+    const router = createRouter({ debugger: fakeDbg, indicator: null });
+    const nav = await router.execute('navigate', { url: 'www.baidu.com', waitForLoad: false });
+    assert.equal(nav.ok, true);
+    assert.equal(nav.url, 'https://www.baidu.com');
+    assert.equal(updatedUrl, 'https://www.baidu.com');
+
+    await router.execute('computer', { action: 'type', ref: 1, text: 'AgentLimb\n' });
+    assert.ok(sentCdp.some((c) => c.method === 'Input.insertText' && c.params.text === 'AgentLimb'));
+    assert.ok(sentCdp.some((c) => c.method === 'Input.dispatchKeyEvent' && c.params.key === 'Enter'));
+
+    sentTabMessages.length = 0;
+    const shot = await router.execute('computer', { action: 'screenshot' });
+    assert.equal(shot.ok, true);
+    assert.deepEqual(
+      sentTabMessages.map((m) => m.type),
+      ['AGENTLIMB_HIDE_INDICATOR', 'CAPTURE_MOMENT', 'AGENTLIMB_SHOW_INDICATOR'],
+      'indicator is hidden before capture and restored after',
+    );
+  } finally {
+    stub.chrome.tabs.update = savedUpdate;
+    stub.chrome.tabs.sendMessage = savedSendMessage;
+  }
+});
+
+test('harness: debugger auto-reattaches and retries once when session was detached mid-navigation', async () => {
+  const { createDebuggerManager } = await import('../kernel/control/background/debugger.js');
+  const savedAttach = stub.chrome.debugger.attach;
+  const savedSend = stub.chrome.debugger.sendCommand;
+  let attachCalls = 0;
+  let evalCalls = 0;
+  stub.chrome.debugger.attach = (_target, _ver, cb) => {
+    attachCalls += 1;
+    stub.chrome.runtime.lastError = null;
+    cb();
+  };
+  stub.chrome.debugger.sendCommand = (_target, method, _params, cb) => {
+    if (method === 'Runtime.evaluate') {
+      evalCalls += 1;
+      if (evalCalls === 1) {
+        stub.chrome.runtime.lastError = { message: 'Debugger is not attached to the tab with given id' };
+        cb();
+        stub.chrome.runtime.lastError = null;
+        return;
+      }
+    }
+    stub.chrome.runtime.lastError = null;
+    cb({ result: { value: 42 } });
+  };
+  try {
+    const dbg = createDebuggerManager();
+    const res = await dbg.send(1, 'Runtime.evaluate', { expression: '21 * 2' });
+    assert.equal(res.result.value, 42);
+    assert.equal(attachCalls, 2, 're-attached automatically after stale debugger error');
+    assert.equal(evalCalls, 2, 'retried Runtime.evaluate once');
+  } finally {
+    stub.chrome.debugger.attach = savedAttach;
+    stub.chrome.debugger.sendCommand = savedSend;
+    stub.chrome.runtime.lastError = null;
   }
 });

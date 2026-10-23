@@ -222,11 +222,23 @@ export function createRouter({ debugger: dbg, indicator }) {
     },
 
     async tab_new({ url, active = false } = {}) {
-      const created = await chrome.tabs.create({ url: url || 'about:blank', active: active === true });
+      let targetUrl = url || 'about:blank';
+      if (targetUrl !== 'about:blank' && !/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(targetUrl)) {
+        targetUrl = `https://${targetUrl}`;
+      }
+      const created = await chrome.tabs.create({ url: targetUrl, active: active === true });
+      // Mark only AI-created tabs. Never regroup the user's existing tabs.
+      const groups = await chrome.tabGroups.query({ windowId: created.windowId, title: 'AgentLimb' });
+      const existing = groups.find((group) => group.color === 'orange');
+      const groupId = await chrome.tabs.group({
+        tabIds: [created.id],
+        ...(existing ? { groupId: existing.id } : { createProperties: { windowId: created.windowId } }),
+      });
+      if (!existing) await chrome.tabGroups.update(groupId, { title: 'AgentLimb', color: 'orange', collapsed: false });
       // Don't hand back a tab whose url is still '' — the very next tool call
       // (read_page / wait / computer) would be rejected by assertInjectable.
       const tab = (await waitForTabUrl(created.id, { timeoutMs: url ? 10000 : 1500 })) || created;
-      return { ok: true, tab: describeTab(tab) };
+      return { ok: true, tab: describeTab(tab), group: { id: groupId, title: 'AgentLimb', color: 'orange' } };
     },
 
     async tab_close({ tabId }) {
@@ -278,18 +290,28 @@ export function createRouter({ debugger: dbg, indicator }) {
 
       if (action === 'screenshot') {
         await dbg.attach(tab.id);
-        const shot = await dbg.screenshot(tab.id, {
-          format: args.format || 'jpeg',
-          fullPage: args.fullPage === true,
-        });
-        return {
-          ok: true,
-          image: {
-            data: shot.data,
-            mimeType: `image/${shot.format}`,
-            quality: shot.quality,
-          },
-        };
+        const wasDriving = driving.has(tab.id);
+        if (wasDriving) {
+          await chrome.tabs.sendMessage(tab.id, { type: 'AGENTLIMB_HIDE_INDICATOR' }, { frameId: 0 }).catch(() => {});
+        }
+        try {
+          const shot = await dbg.screenshot(tab.id, {
+            format: args.format || 'jpeg',
+            fullPage: args.fullPage === true,
+          });
+          return {
+            ok: true,
+            image: {
+              data: shot.data,
+              mimeType: `image/${shot.format}`,
+              quality: shot.quality,
+            },
+          };
+        } finally {
+          if (wasDriving) {
+            chrome.tabs.sendMessage(tab.id, { type: 'AGENTLIMB_SHOW_INDICATOR', tabId: tab.id }, { frameId: 0 }).catch(() => {});
+          }
+        }
       }
 
       await prepareForInput(tab);
@@ -300,11 +322,16 @@ export function createRouter({ debugger: dbg, indicator }) {
         // Focus the target first when a ref/selector is given.
         if (args.ref != null || args.selector) {
           const point = await resolvePoint(tab, args);
-          await dispatchMouse(tab, 'mousePressed', point.x, point.y);
-          await dispatchMouse(tab, 'mouseReleased', point.x, point.y);
+          await dispatchMouse(tab, 'mousePressed', point.x, point.y, { buttons: 1 });
+          await dispatchMouse(tab, 'mouseReleased', point.x, point.y, { buttons: 0 });
         }
-        await dbg.send(tab.id, 'Input.insertText', { text: String(text) });
-        return { ok: true, typed: String(text).length };
+        const raw = String(text);
+        const parts = raw.split('\n');
+        for (let i = 0; i < parts.length; i++) {
+          if (parts[i]) await dbg.send(tab.id, 'Input.insertText', { text: parts[i] });
+          if (i < parts.length - 1) await pressKey(tab, 'Enter');
+        }
+        return { ok: true, typed: raw.length };
       }
 
       if (action === 'key') {
@@ -345,11 +372,12 @@ export function createRouter({ debugger: dbg, indicator }) {
         await dispatchMouse(tab, 'mouseMoved', point.x, point.y);
         return { ok: true, ...point };
       }
-      const clickCount = action === 'double_click' ? 2 : 1;
+      const clickCount = action === 'triple_click' ? 3 : action === 'double_click' ? 2 : 1;
       const button = action === 'right_click' ? 'right' : 'left';
+      const buttons = button === 'right' ? 2 : 1;
       await dispatchMouse(tab, 'mouseMoved', point.x, point.y);
-      await dispatchMouse(tab, 'mousePressed', point.x, point.y, { button, clickCount });
-      await dispatchMouse(tab, 'mouseReleased', point.x, point.y, { button, clickCount });
+      await dispatchMouse(tab, 'mousePressed', point.x, point.y, { button, buttons, clickCount });
+      await dispatchMouse(tab, 'mouseReleased', point.x, point.y, { button, buttons: 0, clickCount });
       return { ok: true, ...point, action };
     },
 
@@ -376,13 +404,17 @@ export function createRouter({ debugger: dbg, indicator }) {
         if (waitForLoad) await waitForTabLoad(tab.id, timeout);
         return { ok: true, url: (await chrome.tabs.get(tab.id)).url };
       }
-      if (!/^https?:\/\//i.test(url)) throw new Error(`navigate requires an absolute http(s) URL: ${url}`);
-      await chrome.tabs.update(tab.id, { url });
+      let targetUrl = String(url || '').trim();
+      if (targetUrl && !/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(targetUrl)) {
+        targetUrl = `https://${targetUrl}`;
+      }
+      if (!/^https?:\/\//i.test(targetUrl)) throw new Error(`navigate requires an absolute http(s) URL: ${url}`);
+      await chrome.tabs.update(tab.id, { url: targetUrl });
       if (waitForLoad) {
         const load = await waitForTabLoad(tab.id, timeout);
-        if (!load.ok) return { ok: true, url, warning: load.error };
+        if (!load.ok) return { ok: true, url: targetUrl, warning: load.error };
       }
-      return { ok: true, url };
+      return { ok: true, url: targetUrl };
     },
 
     async javascript_eval({ expression, tabId } = {}) {

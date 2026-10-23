@@ -22,7 +22,7 @@ export const HOST_TOOLS = [
   {
     name: 'tab_new',
     description:
-      'Open a new tab (background by default — it does NOT steal focus from the user). Returns the new tab id for subsequent tool calls.',
+      'Open a new tab in the orange AgentLimb group (background by default — no focus stealing). Returns the tab id. Finish every browser task with say to release the side-panel input.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -98,6 +98,7 @@ export const HOST_TOOLS = [
           enum: [
             'click',
             'double_click',
+            'triple_click',
             'right_click',
             'hover',
             'type',
@@ -245,7 +246,7 @@ export const HOST_TOOLS = [
   {
     name: 'say',
     description:
-      'Reply to the user in the browser side panel chat. Use it whenever the user messages you from the panel (their messages arrive with the current page context), and to report a short result when a browser task is done. Keep it brief, in the user\'s language.',
+      'Finish the current browser task or answer a side-panel message. REQUIRED once every browser task is complete (including tasks started in the AI app, and failures). This releases the side-panel input. Call after all browser actions finish; do not use for progress updates. Keep the final reply brief, in the user\'s language.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -257,7 +258,11 @@ export const HOST_TOOLS = [
   },
   {
     name: 'ping',
-    description: 'Health check between the MCP host and the browser extension.',
+    description: [
+      'Check whether the browser connection is live and authorized. Returns a pong plus the pairing state.',
+      'Call this FIRST whenever you are unsure whether you are connected, or when the user asks about connection status ("are you connected", "连接", "did it work").',
+      'Trust persists across restarts, so a successful ping means you are ready — never re-run installation, configuration or pairing for it.',
+    ].join(' '),
     inputSchema: { type: 'object', properties: {}, additionalProperties: false },
   },
 ];

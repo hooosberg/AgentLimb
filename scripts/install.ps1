@@ -1,28 +1,15 @@
-# AgentLimb host installer (Windows)
-# Mirrors the repo layout into %USERPROFILE%\.agentlimb so relative imports keep working.
-$ErrorActionPreference = "Stop"
+# AgentLimb installer (Windows). All install logic lives in the Node CLI.
+$ErrorActionPreference = 'Stop'
+
+$Node = Get-Command node -ErrorAction SilentlyContinue
+if (-not $Node) {
+  throw 'Node.js 18 or newer is required. Install Node.js, then run this script again.'
+}
+$VersionText = (& $Node.Source -p 'process.versions.node')
+if ($LASTEXITCODE -ne 0 -or $VersionText -notmatch '^([0-9]+)\.' -or [int]$Matches[1] -lt 18) {
+  throw "Node.js 18 or newer is required (found $VersionText)."
+}
 
 $Root = Split-Path -Parent $PSScriptRoot
-$HomeDir = Join-Path $env:USERPROFILE ".agentlimb"
-
-New-Item -ItemType Directory -Force -Path "$HomeDir\host", "$HomeDir\kernel\shared", "$HomeDir\kernel\control\host" | Out-Null
-Copy-Item "$Root\host\mcp-server.mjs"    "$HomeDir\host\mcp-server.mjs" -Force
-Copy-Item "$Root\host\bridge-server.mjs" "$HomeDir\host\bridge-server.mjs" -Force
-Copy-Item "$Root\kernel\shared\constants.js"   "$HomeDir\kernel\shared\constants.js" -Force
-Copy-Item "$Root\kernel\control\host\tools.js" "$HomeDir\kernel\control\host\tools.js" -Force
-
-$McpPath = "$HomeDir\host\mcp-server.mjs"
-Write-Host "AgentLimb host installed to $HomeDir"
-Write-Host ""
-Write-Host "Add this MCP server to your agent software (any MCP-capable client):"
-Write-Host ""
-Write-Host "  {"
-Write-Host "    `"mcpServers`": {"
-Write-Host "      `"agentlimb`": {"
-Write-Host "        `"command`": `"node`","
-Write-Host "        `"args`": [`"$McpPath`"]"
-Write-Host "      }"
-Write-Host "    }"
-Write-Host "  }"
-Write-Host ""
-Write-Host "Then: open the extension side panel, copy the connection prompt, paste it into your agent software."
+& $Node.Source (Join-Path $Root 'bin/agentlimb.mjs') install @args
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

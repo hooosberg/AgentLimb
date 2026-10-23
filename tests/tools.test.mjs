@@ -31,22 +31,46 @@ test('tool catalog: the lean 16-tool set', () => {
   assert.equal(findTool('nope'), null);
 });
 
-test('connection prompt: generic, no vendor branding, embeds host path', () => {
-  const prompt = buildConnectionPrompt({ hostPath: '~/.agentlimb/host/mcp-server.mjs', lang: 'zh' });
+test('connection prompt: generic, English only, embeds host path', () => {
+  const prompt = buildConnectionPrompt({ hostPath: '~/.agentlimb/host/mcp-server.mjs' });
   assert.match(prompt, /~\/\.agentlimb\/host\/mcp-server\.mjs/);
   assert.match(prompt, /mcpServers/);
-  // The ~ placeholder must come with an explicit "replace with absolute path"
-  // warning — JSON configs are spawned without a shell, ~ is NOT expanded.
-  assert.match(prompt, /替换成用户主目录的绝对路径/);
-  assert.match(prompt, /重启智能体软件/);
+  // The ~ placeholder must come with an explicit "expand it yourself" warning —
+  // MCP servers are spawned without a shell, ~ is NOT expanded.
+  assert.match(prompt, /expand `~` into the user's absolute home directory/);
+  // Restart comes BEFORE any "look for it in a UI" instruction: most products
+  // only read MCP config at startup, so asking the user to find a connector
+  // first shows them an empty list and looks like a failed install.
+  assert.match(prompt, /restart the software \(or run its "reload MCP servers" action\) first/i);
+  assert.match(prompt, /Never quote a menu path that belongs to a different product/);
+  assert.match(prompt, /no_matching_mcp/);
+  assert.match(prompt, /Name the exact place for the software you are running in one sentence/);
+  assert.match(prompt, /trusted automatically/);
+  assert.match(prompt, /Connected\. You can now ask me directly/);
+  assert.match(prompt, /Do not mechanically request another restart/);
+  assert.match(prompt, /install --client-name/);
+  assert.match(prompt, /tools\/call/);
+  assert.match(prompt, /proves this agent can control Chrome/);
   // Product is vendor-neutral: no third-party agent brands anywhere in user-facing copy.
   for (const brand of ['claude', 'Claude', 'cursor', 'Cursor', 'windsurf', 'Windsurf']) {
     assert.ok(!prompt.includes(brand), `prompt must not mention ${brand}`);
   }
-  assert.match(prompt, /智能体软件/);
-  const en = buildConnectionPrompt({ lang: 'en' });
-  assert.match(en, /agent software/);
-  assert.match(en, /replace `~` with the user's absolute home directory path/i);
-  assert.match(en, /restart the agent software/i);
-  assert.ok(!en.includes('claude'));
+  assert.match(prompt, /agent software/);
+  // The prompt is English-only by product decision (docs/product.md).
+  assert.ok(!/[\u4e00-\u9fff]/.test(prompt), 'prompt must not contain CJK characters');
+  assert.ok(!/[「」【】（）、，。：；]/.test(prompt), 'prompt must not contain CJK punctuation');
+});
+
+test('the prompt never sends the agent to an approval page or a pasted code', () => {
+  // Even if a caller still passes a token, nothing secret may leak into the
+  // prompt: authorization happens in the side panel, not in a config file.
+  const prompt = buildConnectionPrompt({ pairingToken: 'f'.repeat(64) });
+  assert.ok(!prompt.includes('f'.repeat(64)));
+  assert.ok(!/AGENTLIMB_PAIRING_TOKEN|--pairing-token/.test(prompt));
+  assert.match(prompt, /30-minute authorization window/);
+  assert.match(prompt, /never wait for an approval page/);
+  assert.match(prompt, /not authorized/);
+  assert.match(prompt, /click the copy-prompt button/);
+  assert.ok(!/pairing page/.test(prompt));
+  assert.ok(!/[\u4e00-\u9fff]/.test(prompt));
 });

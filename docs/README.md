@@ -21,6 +21,13 @@
 # 也会真正 import 全部扩展模块——SW 注册类错误在这里就会暴露
 npm test
 
+# 配对速度基准：9 个场景的毫秒数（--cadence 2000 可对比旧行为）
+npm run bench
+
+# 配对状态混沌 + 侧栏聊天混沌（不变量检查，不是顺序断言）
+npm run monkey
+npm run monkey:panel
+
 # 起 MCP + 桥接（模拟智能体接入，浏览器未连时会报 no paired browser）
 node bin/agentlimb.mjs mcp
 
@@ -30,11 +37,13 @@ node bin/agentlimb.mjs mcp
 
 ## 当前状态（2026-10-22）
 
-- [x] MV3 扩展骨架：SW / 侧栏双状态 / 配对页 / 两个内容脚本
+- [x] MV3 扩展骨架：SW / 侧栏双状态 / 两个内容脚本
 - [x] 本地桥接：HTTP+SSE、端口发现、配对注册表（`~/.agentlimb/paired-clients.json`）
 - [x] MCP stdio 服务器 + **16 工具**（含 `say`，扩展/宿主同源）
 - [x] 持久 CDP debugger、焦点模拟、自适应截图、console/network 捕获
-- [x] 测试 11/11 通过（协议端到端 + 扩展模块冒烟 + 图标开关 + 信任持久化 + tab_new 竞态）
+- [x] 测试 62/62 通过（协议端到端 + 扩展模块冒烟 + 图标开关 + 信任持久化 + tab_new 竞态 + 配对速度预算 + 侧栏文案接线）
+- [x] **配对速度有实测基线**：`npm run bench` 九场景（首次配对 ~257 ms，旧固定 2 s 扫描 ~1970 ms）；
+      `npm run monkey` 配对状态混沌 + 六条不变量，`npm run monkey:panel` 侧栏聊天混沌 + 四条不变量
 - [x] **SW 注册已在真实 Chrome 内核验证**（Chrome for Testing 149 + `--load-extension`）
 - [x] **侧栏聊天闭环自测 11/11**（CfT）：面板发消息 → agent 收到页面上下文（url/title/正文/refs）
       → `say` 回话 → 侧栏出现 AI 气泡（截图见 `docs/product.md` 验收标准 3/4）
@@ -50,8 +59,8 @@ kernel/control/host/tools.js   ★ 工具目录唯一来源（改工具只改这
 kernel/control/background/     SW：service-worker(装配) / bridge-client(SSE) / debugger(CDP) / router(执行)
 kernel/control/content/        a11y-tree(document_start 常驻) / indicator(辉光+幽灵光标)
 kernel/prompt/build-prompt.js  侧栏「复制提示词」内容生成
-ui/sidepanel/  ui/pairing/     双状态侧栏 / 配对确认页
-host/bridge-server.mjs         HTTP+SSE 桥接（配对注册表、tool_call 关联）
+ui/sidepanel/                  双状态侧栏（无确认页）
+host/bridge-server.mjs         HTTP+SSE 桥接（信任注册表、tool_call 关联）
 host/mcp-server.mjs            stdio MCP ↔ 桥接
 bin/agentlimb.mjs              CLI
 tests/                         node:test，protocol.test.mjs 是端到端核心

@@ -1,7 +1,8 @@
 {
   "manifest_version": 3,
   "name": "AgentLimb",
-  "version": "0.5.0",
+  "version": "0.5.7",
+  "version_name": "0.5.7-l8",
   "description": "Let any MCP AI agent control your browser. Pair once, then the agent drives its own tabs — the side panel is only a chat window. 100% local.",
   "minimum_chrome_version": "116",
   "permissions": [
@@ -43,22 +44,34 @@
   },
   "content_scripts": [
     {
-      "js": ["kernel/control/content/a11y-tree.js"],
-      "matches": ["<all_urls>"],
+      "js": [
+        "kernel/control/content/a11y-tree.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ],
       "run_at": "document_start",
       "all_frames": true
     },
     {
-      "js": ["kernel/control/content/indicator.js"],
-      "matches": ["<all_urls>"],
+      "js": [
+        "kernel/control/content/indicator.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ],
       "run_at": "document_idle",
       "all_frames": false
     }
   ],
   "web_accessible_resources": [
     {
-      "resources": ["icons/icon.svg"],
-      "matches": ["<all_urls>"]
+      "resources": [
+        "icons/icon.svg"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
     }
   ],
   "content_security_policy": {

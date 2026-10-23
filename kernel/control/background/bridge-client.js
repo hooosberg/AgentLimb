@@ -1,452 +1,556 @@
-/**
- * AgentLimb bridge client (extension side)
- *
- * Transport: the local bridge (embedded in the MCP host process) exposes
- *   GET  /health        — liveness + port discovery
- *   GET  /events        — SSE stream, host → extension push
- *   POST /api/message   — extension → host frames
- *
- * Why SSE+POST instead of a WebSocket client: identical push latency over
- * loopback, zero protocol risk (Node's http module is battle-tested), and the
- * browser handles SSE reconnection for us. A cloud-bridge reference design
- * uses a WebSocket; on loopback the SSE channel is strictly simpler.
- *
- * Lifecycle:
- *   discover port → open SSE → hello → pairing_request (first time only)
- *   → tool_call / tool_result frames → (SW suspend) → alarm wakes us → retry
- */
-
-import { BRIDGE_PORTS, STORAGE_KEYS, WIRE } from '../../shared/constants.js';
+/** Multi-client local MCP transport. Trust survives switching; one channel owns a task. */
+import { BRIDGE_PORTS, DISCOVERY, STORAGE_KEYS, WIRE, USER_STOP_MESSAGE } from '../../shared/constants.js';
+import { createOnboardingWindow } from '../../shared/onboarding-window.js';
+import { panelState } from '../../shared/panel-state.js';
+import { CHAT_RECORD_LIMIT, sanitizeChatRecord, sanitizeChatRecords } from '../../shared/chat-records.js';
 
 const TOOL_TIMEOUT_MS = 65000;
 
-export function createBridgeClient({ onStatus, onToolCall, onPairingRequest, onAgentMessage }) {
-  let port = null;
-  let eventSource = null;
-  let status = 'disconnected'; // disconnected | connecting | connected
-  // Per-SW-session browser token so the host can attribute POST frames to the
-  // right SSE connection (survives EventSource auto-reconnects).
-  const browserId = `b_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
-  /** @type {Map<string, {id:string,name:string,kind:string,paired:boolean}>} */
+/**
+ * A reply that never comes must not leave the panel waiting forever. These are
+ * deadlines, not locks: once they pass the state simply stops claiming that a
+ * reply is owed, and a one-line system note explains it. Settling on read
+ * (instead of with timers) matters because an MV3 worker loses its timers when
+ * it sleeps — and a worker that is sleeping is exactly when this happens.
+ */
+const REPLY_TIMEOUT_MS = 60000;
+const STOP_TIMEOUT_MS = 20000;
+const TASK_IDLE_MS = 30000;
+
+/** Exported so tests and the panel monkey can assert "nothing is owed past this". */
+export const PANEL_WAIT_LIMITS = { replyMs: REPLY_TIMEOUT_MS, stopMs: STOP_TIMEOUT_MS, taskIdleMs: TASK_IDLE_MS };
+
+/**
+ * @param discoveryIntervalMs pin the scan cadence (tests / diagnostics).
+ *        Omit it in production: the cadence adapts to whether anything is
+ *        connected yet — see DISCOVERY in shared/constants.js.
+ * @param ports override the scan range (tests use TEST_BRIDGE_PORTS so a real
+ *        browser in the same machine cannot attach to a test host).
+ */
+export function createBridgeClient({ onStatus, onToolCall, onAgentMessage, discoveryIntervalMs, ports } = {}) {
+  const candidates = ports?.length ? ports : BRIDGE_PORTS;
+  const onboarding = createOnboardingWindow(chrome.storage.local);
   const clients = new Map();
-  /** @type {Map<string, {client:object, receivedAt:string}>} */
-  const pending = new Map();
-  /** @type {Map<string, Array<{text:string,at:string}>>} */
+  const channels = new Map(); // port -> {source, browserId, clientId, online}
+  // Clients that connected but were not trusted: shown in the panel so the user
+  // knows one Copy click is all that is missing. Never persisted.
+  const unauthorized = new Map();
   const userMessageQueues = new Map();
-  const openPairingTabs = new Map(); // request_id -> tabId
-  let toolChain = Promise.resolve();
-  /**
-   * Panel chat transcript: {from:'user'|'agent'|'activity', text, at}.
-   * Persisted so closing/reopening the panel keeps the conversation.
-   */
+  const transcripts = {};
   const chatLog = [];
-  /**
-   * Timestamp of a panel message that has not been answered yet. Drives the
-   * "正在思考…" bubble — the only liveness signal the user gets when the agent
-   * is silent.
-   */
+  const waitingTools = new Map();
+  let preferredNext = null;
+  let activeChannel = null;
+  let selectedId = null;
+  let rememberedId = null;
   let pendingReplyAt = null;
-  /** True while a tool call is executing — the panel says "操作页面中" then. */
-  let busy = false;
+  let activeTools = 0;
+  /**
+   * Channels with an open task. A task opens when the agent drives the browser
+   * and closes only when that agent says it is done (`say`) — so a sequence of
+   * tool calls holds control, and another AI's calls queue behind it.
+   *
+   * Per channel, not a single boolean: the old boolean leaked whenever the
+   * channel that opened the task was no longer the active one (control had
+   * moved on) and then dropped, which pinned the panel to "operating" forever.
+   */
+  const taskChannels = new Set();
+  /** Channels with a browser-driving tool literally in flight right now. */
+  const operatingChannels = new Set();
+  /** Timestamp when a channel in taskChannels finished its last in-flight tool. */
+  const taskIdleAt = new Map();
+  let sending = false;
+  let stopRequest = null;
+  let stopRequestedAt = 0;
+  let connectionEpoch = 0;
+  let toolChain = Promise.resolve();
+  let scanPromise;
+  let discoveryTimer = null;
+  let stopped = false;
+
+  const live = (channel) => channel?.online && channels.get(channel.port) === channel;
+  const channelFor = (id) => live(activeChannel) && activeChannel.clientId === id ? activeChannel
+    : [...channels.values()].find((channel) => live(channel) && channel.clientId === id);
+  // Only a running task locks the browser. "Waiting for a reply" is a hint: the
+  // agent may never answer, and locking control on it is what made the panel
+  // (and AI switching) freeze after a side-panel message.
+  const locked = () => activeTools > 0 || taskChannels.size > 0 || operatingChannels.size > 0 || sending;
 
   function persistChat() {
-    const durable = chatLog.filter((m) => m.from !== 'activity').slice(-60);
-    chrome.storage.local.set({ [STORAGE_KEYS.chatLog]: durable }).catch(() => {});
+    if (selectedId) transcripts[selectedId] = chatLog.slice();
+    chrome.storage.local.set({ [STORAGE_KEYS.chatLog]: chatLog.slice(), [STORAGE_KEYS.chatLogs]: { ...transcripts } }).catch(() => {});
   }
-
-  function pushChat(entry) {
-    chatLog.push(entry);
-    if (chatLog.length > 120) chatLog.splice(0, chatLog.length - 120);
-    if (entry.from !== 'activity') persistChat();
-    chrome.runtime.sendMessage({ type: 'AGENTLIMB_NOTIFY_CHAT', message: entry }).catch(() => {});
+  function pushChat(entry, id = selectedId) {
+    const clean = sanitizeChatRecord(entry);
+    if (!clean || !id) return;
+    if (id === selectedId) {
+      chatLog.push(clean);
+      if (chatLog.length > CHAT_RECORD_LIMIT) chatLog.splice(0, chatLog.length - CHAT_RECORD_LIMIT);
+    } else transcripts[id] = [...(transcripts[id] || []), clean].slice(-CHAT_RECORD_LIMIT);
+    persistChat();
+    return clean;
   }
-
-  /** Wipe the transcript (disconnect, or a different agent took over). */
   function clearChat() {
-    pendingReplyAt = null;
-    if (!chatLog.length) return;
+    pendingReplyAt = null; stopRequest = null; stopRequestedAt = 0;
     chatLog.length = 0;
     persistChat();
-    chrome.runtime.sendMessage({ type: 'AGENTLIMB_NOTIFY_CHAT' }).catch(() => {});
   }
-
-  async function loadChatLog() {
-    try {
-      const store = await chrome.storage.local.get(STORAGE_KEYS.chatLog);
-      const saved = store[STORAGE_KEYS.chatLog];
-      if (Array.isArray(saved) && saved.length) {
-        chatLog.splice(0, chatLog.length, ...saved.slice(-60));
+  /**
+   * Called before every status snapshot. If the agent never answered, stop
+   * claiming it owes an answer — with a note so the user knows why the panel
+   * unblocked instead of wondering.
+   */
+  function settleWaits() {
+    const now = Date.now();
+    if (pendingReplyAt != null && now - pendingReplyAt > REPLY_TIMEOUT_MS) {
+      pendingReplyAt = null;
+      pushChat({ from: 'system', text: 'AI 还没有回复。消息已经送到，它下次操作时会看到；你可以继续发送。', at: new Date().toISOString() });
+    }
+    if (stopRequest && now - stopRequestedAt > STOP_TIMEOUT_MS) {
+      stopRequest = null; stopRequestedAt = 0;
+      pushChat({ from: 'system', text: '停止请求已发出，但没有收到确认。你可以继续操作。', at: new Date().toISOString() });
+    }
+    for (const channel of [...taskChannels]) {
+      if (!operatingChannels.has(channel)) {
+        const idleSince = taskIdleAt.get(channel);
+        if (idleSince != null && now - idleSince > TASK_IDLE_MS) {
+          taskChannels.delete(channel);
+          taskIdleAt.delete(channel);
+        }
       }
-    } catch (_) { /* storage unavailable */ }
+    }
+  }
+  async function loadState() {
+    try {
+      const paired = (await chrome.storage.local.get(STORAGE_KEYS.pairedClients))[STORAGE_KEYS.pairedClients] || {};
+      for (const [id, info] of Object.entries(paired)) clients.set(id, { ...info, id, paired: true });
+      rememberedId = (await chrome.storage.local.get(STORAGE_KEYS.lastClient))[STORAGE_KEYS.lastClient] || null;
+      const saved = (await chrome.storage.local.get(STORAGE_KEYS.chatLogs))[STORAGE_KEYS.chatLogs];
+      if (saved && typeof saved === 'object') for (const [id, records] of Object.entries(saved)) transcripts[id] = sanitizeChatRecords(records);
+      const legacy = (await chrome.storage.local.get(STORAGE_KEYS.chatLog))[STORAGE_KEYS.chatLog];
+      if (rememberedId && !transcripts[rememberedId]) transcripts[rememberedId] = sanitizeChatRecords(legacy);
+      const fallbackId = (rememberedId && clients.get(rememberedId)?.paired)
+        ? rememberedId
+        : visibleClients().find((c) => c.paired)?.id || null;
+      if (!selectedId && fallbackId) {
+        selectedId = fallbackId;
+        rememberedId = fallbackId;
+        chatLog.splice(0, chatLog.length, ...sanitizeChatRecords(transcripts[selectedId] || legacy));
+      }
+    } catch (_) { /* unavailable storage */ }
   }
 
-  /** Human-readable one-liner for the panel's activity feed. */
-  const ACTIVITY_LABELS = {
-    tabs_context: '查看标签列表',
-    tab_new: '新建标签',
-    tab_close: '关闭标签',
-    tab_activate: '切换标签',
-    read_page: '读取页面结构',
-    find: '查找页面元素',
-    computer: '操作页面',
-    form_input: '填写表单',
-    navigate: '导航',
-    javascript_eval: '执行页面脚本',
-    wait: '等待页面条件',
-    read_console_messages: '读取控制台',
-    read_network_requests: '读取网络请求',
-    browser_batch: '批量操作',
-    ping: '检查连接',
-  };
-
-  function pushActivity(tool, args = {}) {
-    const label = ACTIVITY_LABELS[tool] || tool;
-    let detail = '';
-    if (tool === 'navigate' && args.url) detail = ` → ${String(args.url).slice(0, 60)}`;
-    else if (tool === 'tab_new' && args.url) detail = ` → ${String(args.url).slice(0, 60)}`;
-    else if (tool === 'computer' && args.action) detail = ` · ${args.action}`;
-    pushChat({ from: 'activity', text: `${label}${detail}`, at: new Date().toISOString() });
+  /**
+   * One row per AI *software* in the panel, not per historical identity.
+   *
+   * A client's id comes from a file under ~/.agentlimb. When that folder is reset
+   * (reinstall, moved to Trash, a second machine) the id changes while the
+   * software name and kind stay the same — so the panel grew a row per reinstall
+   * and showed "WorkBuddy AI" three times, all offline. To the user that is one
+   * AI, so the panel must show one row.
+   *
+   * Identities are NOT deleted. Every one of them still holds saved trust, and
+   * dropping one would force a re-pairing for a process that is running right
+   * now. Collapsing happens on read instead: a live identity always wins,
+   * otherwise the most recently paired one represents the software.
+   *
+   * A client with a live channel is always listed as itself, even when it is not
+   * paired yet — that is exactly the "connected but waiting for one Copy" case
+   * the panel has to show.
+   */
+  function visibleClients() {
+    const keyOf = (client) => `${String(client.name || client.id)}\u0000${String(client.kind || 'generic')}`;
+    const pending = [];
+    const best = new Map();
+    for (const client of clients.values()) {
+      const live = !!channelFor(client.id);
+      // Connected but not paired yet: always its own row, that is the
+      // "waiting for one Copy click" case the panel must show.
+      if (live && !client.paired) { pending.push(client); continue; }
+      if (!client.paired) continue;
+      const at = Date.parse(client.pairedAt || '') || 0;
+      const seen = best.get(keyOf(client));
+      if (!seen || (live && !seen.live) || (live === seen.live && at >= seen.at)) {
+        best.set(keyOf(client), { client, live, at });
+      }
+    }
+    return [...pending, ...[...best.values()].map((entry) => entry.client)];
   }
 
-  // ── status ─────────────────────────────────────────────────────────────────
+  async function persistPaired() {
+    // Bounded, newest first, but never evicting an identity that is connected
+    // right now — that would silently revoke a live session's trust.
+    const kept = [...clients.values()]
+      .filter((client) => client.paired)
+      .sort((a, b) => (Date.parse(b.pairedAt || '') || 0) - (Date.parse(a.pairedAt || '') || 0));
+    const records = {};
+    for (const client of kept) {
+      if (Object.keys(records).length >= 10 && !channelFor(client.id)) continue;
+      records[client.id] = { id: client.id, name: client.name, kind: client.kind, pairedAt: client.pairedAt };
+    }
+    await chrome.storage.local.set({ [STORAGE_KEYS.pairedClients]: records });
+  }
   function getStatus() {
+    settleWaits();
+    const connected = live(activeChannel) && clients.get(selectedId)?.paired;
+    const anyOnline = [...channels.values()].some(live);
     return {
-      status,
-      port,
-      clients: [...clients.values()],
-      pending: [...pending.entries()].map(([request_id, p]) => ({
-        request_id,
-        name: p.client.name,
-        kind: p.client.kind,
-      })),
-      chat: chatLog.slice(-60),
-      pendingReplyAt,
-      busy,
+      status: anyOnline ? 'connected' : 'disconnected',
+      port: connected ? activeChannel.port : null,
+      connectedClientId: connected ? selectedId : null,
+      clients: visibleClients().map((client) => ({ ...client, online: !!channelFor(client.id),
+        waiting: preferredNext?.clientId === client.id || [...waitingTools.values()].some((item) => item.channel.clientId === client.id) })),
+      unauthorized: [...unauthorized.values()],
+      chat: chatLog.slice(), pendingReplyAt, busy: activeTools > 0, operating: taskChannels.size > 0 || operatingChannels.size > 0, sending, stopRequested: !!stopRequest,
     };
   }
-
   function broadcast() {
     const snapshot = getStatus();
     onStatus?.(snapshot);
     chrome.runtime.sendMessage({ type: 'AGENTLIMB_NOTIFY_STATUS', ...snapshot }).catch(() => {});
   }
-
-  function setStatus(next) {
-    if (status !== next) {
-      status = next;
-      broadcast();
+  function activate(channel) {
+    if (!live(channel) || !clients.get(channel.clientId)?.paired) return false;
+    if (activeChannel === channel && selectedId === channel.clientId) return true;
+    persistChat();
+    connectionEpoch++;
+    activeChannel = channel;
+    selectedId = channel.clientId;
+    rememberedId = selectedId;
+    const target = clients.get(selectedId);
+    if (!transcripts[selectedId]?.length && target) {
+      const sibling = [...clients.values()].find((other) => other.paired
+        && other.id !== selectedId
+        && String(other.name || other.id) === String(target.name || target.id)
+        && String(other.kind || 'generic') === String(target.kind || 'generic')
+        && transcripts[other.id]?.length);
+      if (sibling) transcripts[selectedId] = transcripts[sibling.id].slice();
     }
+    pendingReplyAt = null; stopRequest = null; stopRequestedAt = 0; sending = false; taskChannels.clear(); operatingChannels.clear(); taskIdleAt.clear();
+    chatLog.splice(0, chatLog.length, ...sanitizeChatRecords(transcripts[selectedId]));
+    chrome.storage.local.set({ [STORAGE_KEYS.lastClient]: selectedId }).catch(() => {});
+    broadcast();
+    return true;
   }
-
-  // ── storage: paired clients ────────────────────────────────────────────────
-  // Single-tenant by design: one browser is driven by one AI client. A new
-  // pairing replaces the previous one, so switching from software A to B leaves
-  // a clean panel instead of a growing stack of "正在与 … 驱动浏览器" chips.
-  async function loadPaired() {
-    try {
-      const store = await chrome.storage.local.get(STORAGE_KEYS.pairedClients);
-      const map = store[STORAGE_KEYS.pairedClients] || {};
-      // Load everything we remember: pruning happens when a client actually
-      // shows up (HELLO) or when a new pairing is confirmed, never on load —
-      // dropping a trusted id here would force a needless re-pair.
-      for (const [id, info] of Object.entries(map)) {
-        clients.set(id, { ...info, id, paired: true });
-      }
-    } catch (_) { /* storage unavailable */ }
+  function selectClient(id) {
+    settleWaits();
+    const channel = channelFor(id);
+    if (!clients.get(id)?.paired || !channel) return { ok: false, error: 'AI is offline. Open its software to reconnect.' };
+    if (channel === activeChannel) return { ok: true };
+    if (locked()) return { ok: false, error: 'Current AI is busy. Wait for its reply, or request Stop before switching.' };
+    activate(channel);
+    // This AI may have queued work from while it was waiting for control.
+    drainWaiting();
+    return { ok: true };
   }
-
-  async function persistPaired() {
-    const map = {};
-    for (const c of clients.values()) if (c.paired) map[c.id] = c;
-    await chrome.storage.local.set({ [STORAGE_KEYS.pairedClients]: map });
+  function chooseAvailable() {
+    if (locked() || live(activeChannel)) return;
+    const channel = channelFor(rememberedId) || [...channels.values()].find((c) => live(c) && clients.get(c.clientId)?.paired);
+    if (channel) activate(channel);
   }
-
-  /** Forget every trusted client except `keepId`. */
-  async function keepOnlyPaired(keepId) {
-    let changed = false;
-    for (const [id, c] of [...clients.entries()]) {
-      if (id !== keepId && c.paired) {
-        clients.delete(id);
-        changed = true;
-      }
-    }
-    if (changed) {
-      await persistPaired();
-      clearChat(); // a different agent took over — don't mix transcripts
-    }
-  }
-
-  // ── HTTP ───────────────────────────────────────────────────────────────────
-  async function probePort(candidate) {
-    try {
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 600);
-      const res = await fetch(`http://127.0.0.1:${candidate}/health`, { signal: controller.signal });
-      clearTimeout(timer);
-      if (!res.ok) return false;
-      const body = await res.json();
-      return body && body.service === 'agentlimb-bridge';
-    } catch (_) {
-      return false;
-    }
-  }
-
-  async function discoverPort() {
-    for (const candidate of BRIDGE_PORTS) {
-      if (await probePort(candidate)) return candidate;
-    }
-    return null;
-  }
-
-  async function post(frame) {
-    if (!port) throw new Error('bridge not connected');
-    const res = await fetch(`http://127.0.0.1:${port}/api/message`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ b: browserId, ...frame }),
+  async function post(frame, channel = activeChannel) {
+    if (!live(channel)) throw new Error('bridge not connected');
+    const response = await fetch(`http://127.0.0.1:${channel.port}/api/message`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ b: channel.browserId, ...frame }),
     });
-    if (!res.ok) throw new Error(`bridge POST ${res.status}`);
-    return res.json().catch(() => ({}));
+    if (!response.ok) throw new Error(`bridge POST ${response.status}`);
+    return response.json().catch(() => ({}));
   }
-
-  // ── SSE ────────────────────────────────────────────────────────────────────
-  function openStream() {
-    if (eventSource) {
-      eventSource.close();
-      eventSource = null;
+  function discardWaiting(channel, error) {
+    for (const [id, item] of waitingTools) if (item.channel === channel) {
+      clearTimeout(item.timer); waitingTools.delete(id);
+      void post({ t: WIRE.TOOL_RESULT, tool_use_id: id, ok: false, error }, channel).catch(() => {});
     }
-    setStatus('connecting');
-    const source = new EventSource(`http://127.0.0.1:${port}/events?b=${encodeURIComponent(browserId)}`);
-    eventSource = source;
-
-    source.onopen = () => {
-      setStatus('connected');
-    };
-
+  }
+  function dropChannel(channel) {
+    if (channels.get(channel.port) !== channel) return;
+    channel.online = false;
+    channel.source.close();
+    channels.delete(channel.port);
+    // Whatever this channel was doing stops counting: a tool that was running
+    // here can no longer report a result, so leaving it in the set would pin
+    // the whole panel to "operating" forever.
+    taskChannels.delete(channel); operatingChannels.delete(channel); taskIdleAt.delete(channel);
+    discardWaiting(channel, 'AI connection closed; queued action was not executed');
+    if (channel.clientId) unauthorized.delete(channel.clientId);
+    if (preferredNext === channel) preferredNext = null;
+    if (activeChannel === channel) {
+      persistChat(); connectionEpoch++; activeChannel = null;
+      pendingReplyAt = null; sending = false; stopRequest = null; stopRequestedAt = 0;
+      // The outbox SURVIVES a drop. Most drops are transient (the MV3 worker was
+      // suspended, the SSE stream was torn down), and a message the user typed
+      // must still reach the agent when it comes back — otherwise it silently
+      // disappears. Only an explicit "remove this AI" clears the queue.
+    }
+    drainWaiting(); chooseAvailable(); broadcast();
+  }
+  async function probe(candidate) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), DISCOVERY.PROBE_TIMEOUT_MS);
+    try {
+      const response = await fetch(`http://127.0.0.1:${candidate}/health`, { signal: controller.signal });
+      const body = response.ok ? await response.json() : null;
+      return body?.service === 'agentlimb-bridge' ? body : null;
+    } catch { return null; } finally { clearTimeout(timer); }
+  }
+  async function discover() {
+    if (stopped) return;
+    if (scanPromise) return scanPromise;
+    scanPromise = (async () => {
+      const results = await Promise.all(candidates.map(async (port) => ({ port, health: await probe(port) })));
+      if (stopped) return;
+      for (const { port, health } of results) {
+        const existing = channels.get(port);
+        if (!health) { if (existing) dropChannel(existing); continue; }
+        if (existing && health.client?.id && existing.clientId && health.client.id !== existing.clientId) dropChannel(existing);
+        // Old bridge fixtures have no identity; only the first candidate is meaningful.
+        if (!channels.has(port) && (health.client?.id || port === candidates[0])) openStream(port);
+      }
+      chooseAvailable(); broadcast();
+    })().finally(() => { scanPromise = null; });
+    return scanPromise;
+  }
+  function openStream(port) {
+    const channel = { port, browserId: crypto.randomUUID(), clientId: null, online: false, source: null };
+    const source = channel.source = new EventSource(`http://127.0.0.1:${port}/events?b=${channel.browserId}`);
+    channels.set(port, channel);
+    source.onopen = () => { if (channels.get(port) !== channel) return; channel.online = true; broadcast(); };
     source.onmessage = (event) => {
-      let frame;
-      try {
-        frame = JSON.parse(event.data);
-      } catch (_) {
-        return;
-      }
-      handleFrame(frame).catch((error) => console.warn('[bridge] frame error', error));
+      if (!live(channel)) return;
+      let frame; try { frame = JSON.parse(event.data); } catch { return; }
+      void handleFrame(frame, channel).catch((error) => console.warn('[bridge] frame error', error));
     };
-
-    source.onerror = () => {
-      // EventSource auto-reconnects on transport errors; if the bridge process
-      // died the reconnect will fail and we fall back to discovery.
-      if (status === 'connected') setStatus('connecting');
-      setTimeout(() => {
-        if (status !== 'connected') {
-          source.close();
-          if (eventSource === source) eventSource = null;
-          void reconnect();
-        }
-      }, 2000);
-    };
+    source.onerror = () => { dropChannel(channel); if (!stopped) setTimeout(() => { void discover(); }, DISCOVERY.RETRY_MS); };
   }
-
-  async function reconnect() {
-    const found = await discoverPort();
-    if (found) {
-      if (found !== port) {
-        port = found;
-      }
-      // The bridge (MCP host) restarts with the agent software. Trusted clients
-      // live in chrome.storage, so restore them BEFORE the stream opens —
-      // otherwise the HELLO/PAIRING_REQUEST handshake sees an empty map and the
-      // user is asked to pair again on every restart.
-      await loadPaired();
-      openStream();
-    } else {
-      port = null;
-      setStatus('disconnected');
-      pending.clear();
-      broadcast();
+  function drainWaiting() {
+    settleWaits();
+    if (locked()) return;
+    if (preferredNext && live(preferredNext) && clients.get(preferredNext.clientId)?.paired) activate(preferredNext);
+    preferredNext = null;
+    const item = waitingTools.values().next().value;
+    if (!item) { chooseAvailable(); return; }
+    waitingTools.delete(item.frame.tool_use_id); clearTimeout(item.timer);
+    if (item.deadline <= Date.now() || !live(item.channel) || !clients.get(item.channel.clientId)?.paired) {
+      // The queue's own timer normally reports this. When control becomes free
+      // first, the timer is cleared above — so the answer must be sent here, or
+      // the host's tool call hangs until its own timeout with no explanation.
+      const reason = item.deadline <= Date.now()
+        ? 'queued action expired; it was not executed'
+        : 'AI connection closed; queued action was not executed';
+      void post({ t: WIRE.TOOL_RESULT, tool_use_id: item.frame.tool_use_id, ok: false, error: reason }, item.channel).catch(() => {});
+      drainWaiting(); return;
     }
+    activate(item.channel);
+    dispatchTool(item.frame, item.channel, item.deadline);
+    for (const [id, next] of waitingTools) if (next.channel === item.channel) {
+      waitingTools.delete(id); clearTimeout(next.timer);
+      dispatchTool(next.frame, next.channel, next.deadline);
+    }
+    broadcast();
   }
-
-  // ── frame handling ─────────────────────────────────────────────────────────
-  async function handleFrame(frame) {
+  function dispatchTool(frame, channel, deadline) {
+    const { tool_use_id, tool, args, tabId } = frame;
+    const epoch = connectionEpoch;
+    const drivesBrowser = tool !== 'ping';
+    if (drivesBrowser) { taskChannels.add(channel); operatingChannels.add(channel); taskIdleAt.delete(channel); activeTools++; }
+    broadcast();
+    toolChain = toolChain.then(async () => {
+      let result; let error;
+      try {
+        if (!live(channel) || !clients.get(channel.clientId)?.paired) throw new Error('browser connection changed');
+        if (Date.now() >= deadline) throw new Error('queued action expired; it was not executed');
+        if (drivesBrowser && (epoch !== connectionEpoch || activeChannel !== channel)) throw new Error('browser control changed');
+        result = await onToolCall({ tool, args: args || {}, tabId, timeoutMs: Math.max(1, Math.min(TOOL_TIMEOUT_MS, deadline - Date.now())) });
+      } catch (reason) { error = reason instanceof Error ? reason.message : String(reason); }
+      const userMessages = epoch === connectionEpoch && activeChannel === channel ? drainUserMessages(channel.clientId) : [];
+      await post({ t: WIRE.TOOL_RESULT, tool_use_id, ok: !error, result, error, userMessages }, channel).catch(() => {});
+      if (drivesBrowser) {
+        operatingChannels.delete(channel);
+        activeTools--;
+        if (taskChannels.has(channel) && !operatingChannels.has(channel)) taskIdleAt.set(channel, Date.now());
+      }
+      drainWaiting(); chooseAvailable(); broadcast();
+    });
+  }
+  async function handleFrame(frame, channel) {
     switch (frame.t) {
       case WIRE.HELLO: {
-        const client = frame.client || {};
+        const client = frame.client;
+        if (!client?.id) return;
+        channel.clientId = client.id;
         const known = clients.get(client.id);
-        clients.set(client.id, {
-          id: client.id,
-          name: client.name || 'AI Agent',
-          kind: client.kind || 'generic',
-          paired: known ? known.paired : false,
-          pairedAt: known?.pairedAt,
-        });
-        // Whoever is actually connected and trusted wins; stale pairings from
-        // earlier software get dropped here.
-        if (clients.get(client.id).paired) await keepOnlyPaired(client.id);
-        broadcast();
-        // Report our paired-client view so the host can auto-confirm.
-        const pairedIds = [...clients.values()].filter((c) => c.paired).map((c) => c.id);
-        post({
-          t: WIRE.STATUS,
-          paired: pairedIds,
-        }).catch(() => {});
-        break;
-      }
-
-      case WIRE.PAIRING_REQUEST: {
-        const client = frame.client || {};
-        clients.set(client.id, {
-          id: client.id,
-          name: client.name || 'AI Agent',
-          kind: client.kind || 'generic',
-          paired: clients.get(client.id)?.paired === true,
-        });
-        const knownPaired = clients.get(client.id)?.paired === true;
-        if (knownPaired) {
-          // Previously trusted client — auto-confirm, no UI interruption.
-          await post({
-            t: WIRE.PAIRING_RESPONSE,
-            request_id: frame.request_id,
-            ok: true,
-            name: clients.get(client.id).name,
-          });
+        const record = { id: client.id, name: client.name || 'AI Agent', kind: client.kind || 'generic',
+          paired: known?.paired === true, pairedAt: known?.pairedAt };
+        clients.set(client.id, record);
+        // Trust is either remembered from an earlier session, or granted by the
+        // 30-minute window that clicking Copy opened. There is no approval page.
+        // A remembered client that merely reconnects must NOT steal the chat
+        // window from whoever owns it — only a fresh grant takes over.
+        const remembered = record.paired;
+        if (remembered || await onboarding.consume()) {
+          await trust(record, channel, { takeOver: !remembered });
         } else {
-          pending.set(frame.request_id, { client, receivedAt: new Date().toISOString() });
-          await openPairingTab(frame.request_id, client);
+          unauthorized.set(client.id, { id: client.id, name: record.name, kind: record.kind, at: new Date().toISOString() });
+          await post({ t: WIRE.GRANT, ok: false, reason: 'not_authorized' }, channel).catch(() => {});
         }
-        broadcast();
-        break;
+        chooseAvailable(); broadcast(); break;
       }
-
       case WIRE.TOOL_CALL: {
-        const { tool_use_id, tool, args, tabId, client_id } = frame;
-        if (tool !== 'ping' && tool !== 'say') pushActivity(tool, args || {});
-        busy = true;
-        broadcast();
-        // Serialize tool execution — agent calls are sequential by nature.
-        toolChain = toolChain.then(async () => {
-          let result = null;
-          let error = null;
-          try {
-            result = await onToolCall({ tool, args: args || {}, tabId, timeoutMs: TOOL_TIMEOUT_MS });
-          } catch (e) {
-            error = e instanceof Error ? e.message : String(e);
+        if (frame.client_id !== channel.clientId || !clients.get(channel.clientId)?.paired) {
+          await post({ t: WIRE.TOOL_RESULT, tool_use_id: frame.tool_use_id, ok: false, error: 'AI client is not connected and paired' }, channel); return;
+        }
+        settleWaits();
+        const deadline = Math.min(Number.isFinite(frame.deadline) ? frame.deadline : Date.now() + TOOL_TIMEOUT_MS, Date.now() + TOOL_TIMEOUT_MS);
+        if (frame.tool !== 'ping' && activeChannel !== channel) {
+          if (!locked()) activate(channel);
+          else {
+            if (deadline <= Date.now()) return;
+            const timer = setTimeout(() => {
+              waitingTools.delete(frame.tool_use_id);
+              void post({ t: WIRE.TOOL_RESULT, tool_use_id: frame.tool_use_id, ok: false, error: 'browser busy; queued action expired without execution' }, channel).catch(() => {});
+              broadcast();
+            }, deadline - Date.now());
+            waitingTools.set(frame.tool_use_id, { frame, channel, deadline, timer }); broadcast(); return;
           }
-          const userMessages = drainUserMessages(client_id);
-          await post({
-            t: WIRE.TOOL_RESULT,
-            tool_use_id,
-            ok: !error,
-            result,
-            error,
-            userMessages,
-          }).catch((e) => console.warn('[bridge] tool_result post failed', e));
-          busy = false;
-          broadcast();
-        });
-        await toolChain;
-        break;
+        }
+        dispatchTool(frame, channel, deadline); break;
       }
-
       case WIRE.AGENT_MESSAGE: {
-        // The agent replied via the `say` tool — show it in the panel chat.
-        pendingReplyAt = null;
-        pushChat({ from: 'agent', text: frame.text, at: frame.at || new Date().toISOString() });
-        break;
+        if (!clients.get(channel.clientId)?.paired) return;
+        pushChat({ from: 'agent', text: frame.text, at: frame.at || new Date().toISOString() }, channel.clientId);
+        if (channel === activeChannel) {
+          // `say` is the agent saying its task is done: that closes the task and
+          // releases both the lock and anything queued behind it.
+          pendingReplyAt = null; taskChannels.delete(channel); operatingChannels.delete(channel); taskIdleAt.delete(channel);
+          stopRequest = null; stopRequestedAt = 0;
+          userMessageQueues.delete(channel.clientId);
+        } else discardWaiting(channel, 'AI finished its task before taking control; queued action was not executed');
+        drainWaiting(); broadcast(); break;
       }
-
-      case WIRE.USER_MESSAGE: {
-        // Panel chat → queued and attached to the agent's next tool result.
-        const clientId = [...clients.values()].find((c) => c.paired)?.id || frame.client_id;
-        if (clientId) queueUserMessage(clientId, { text: frame.text, at: frame.at, page: frame.page });
-        onAgentMessage?.(frame);
-        break;
-      }
-
-      case WIRE.PING:
-        await post({ t: WIRE.PONG, at: new Date().toISOString() }).catch(() => {});
-        break;
-
-      case WIRE.PAIRING_REVOKED: {
-        const c = clients.get(frame.client_id);
-        if (c) c.paired = false;
-        await persistPaired();
-        broadcast();
-        break;
-      }
-
-      default:
-        break;
+      case WIRE.USER_MESSAGE: onAgentMessage?.(frame); break;
+      case WIRE.PING: await post({ t: WIRE.PONG, at: new Date().toISOString() }, channel).catch(() => {}); break;
+      case WIRE.REVOKED: await disconnectClient(channel.clientId); break;
     }
   }
-
-  // ── pairing UI ─────────────────────────────────────────────────────────────
-  async function openPairingTab(requestId, client) {
-    // Reuse an already-open pairing tab for this request.
-    const existing = openPairingTabs.get(requestId);
-    if (existing != null) return;
-    const params = new URLSearchParams({
-      request_id: requestId,
-      client_type: client.kind || 'generic',
-      client_name: client.name || 'AI Agent',
-    });
-    const tab = await chrome.tabs.create({
-      url: chrome.runtime.getURL(`ui/pairing/pairing.html?${params.toString()}`),
-      active: true,
-    });
-    if (tab?.id != null) openPairingTabs.set(requestId, tab.id);
-  }
-
-  async function closePairingTabs(requestId) {
-    const tabId = openPairingTabs.get(requestId);
-    if (tabId != null) {
-      chrome.tabs.remove(tabId).catch(() => {});
-      openPairingTabs.delete(requestId);
-    }
-  }
-
-  /** Called from the pairing page via runtime message. */
-  async function respondPairing(requestId, ok, name) {
-    const entry = pending.get(requestId);
-    if (!entry) return { ok: false, error: 'unknown or expired pairing request' };
-    pending.delete(requestId);
-    await closePairingTabs(requestId);
-
-    const client = clients.get(entry.client.id) || entry.client;
-    if (ok) {
-      client.paired = true;
-      client.pairedAt = new Date().toISOString();
-      if (name && name.trim()) client.name = name.trim();
-      clients.set(client.id, client);
+  /**
+   * Save trust for one client and answer its HELLO.
+   * `takeOver` is true only for a grant the user just made; a client that
+   * merely reconnected with saved trust waits for the chat to become free.
+   */
+  async function trust(record, channel, { takeOver = true } = {}) {
+    const firstTime = !record.paired;
+    record.paired = true;
+    record.pairedAt = record.pairedAt || new Date().toISOString();
+    clients.set(record.id, record);
+    unauthorized.delete(record.id);
+    if (firstTime) {
       await persistPaired();
-      // A newly confirmed client takes the browser over — drop the previous one.
-      await keepOnlyPaired(client.id);
+      pushChat({ from: 'system', text: `已连接到 ${record.name}。请直接在 AI 工具中下达浏览器指令，AI 的操作回复会同步显示在这里。`, at: new Date().toISOString() }, record.id);
     }
-    await post({
-      t: WIRE.PAIRING_RESPONSE,
-      request_id: requestId,
-      ok,
-      name: client.name,
-    }).catch(() => {});
+    const delivered = await post({ t: WIRE.GRANT, ok: true, name: record.name }, channel)
+      .then(() => true).catch(() => false);
+    // If the answer never reaches the host, the panel would sit on "connected"
+    // while the agent stays blocked forever. Drop the channel instead:
+    // discovery re-opens it and the handshake simply runs again.
+    if (!delivered) { dropChannel(channel); return; }
+    if (takeOver) { if (!locked()) { activate(channel); drainWaiting(); } else preferredNext = channel; }
+  }
+  /**
+   * Clicking Copy is the whole authorization step: open the window for the next
+   * unknown AI, and immediately trust any AI that is already connected and
+   * waiting for it (the user just answered the agent's "not authorized" error).
+   */
+  async function openOnboarding() {
+    const window = await onboarding.open();
+    const waiting = [...channels.values()].filter((channel) =>
+      live(channel) && channel.clientId && clients.get(channel.clientId) && !clients.get(channel.clientId).paired);
+    for (const channel of waiting) await trust(clients.get(channel.clientId), channel);
     broadcast();
-    return { ok: true };
+    return window;
+  }
+  // ── panel chat ─────────────────────────────────────────────────────────────
+  async function sendUserMessage(text, collectPage) {
+    if (!text || !text.trim()) return { ok: false, error: 'empty message' };
+    const status = getStatus();
+    const state = panelState(status);
+    const fallbackClient = !state.connected
+      ? (status.clients || []).find((c) => c.paired && c.id === (selectedId || rememberedId))
+        || (status.clients || []).find((c) => c.paired)
+      : null;
+    const targetClient = state.client || fallbackClient;
+    if (!targetClient) return { ok: false, error: 'bridge not connected' };
+    if (sending) return { ok: false, error: 'A message is already being sent' };
+    // Reserve synchronously BEFORE querying/screenshotting the page. Multiple
+    // panels and rapid Enter presses share this one backend lock.
+    sending = true;
+    const wasLive = state.connected;
+    const epoch = connectionEpoch;
+    const clientId = targetClient.id;
+    if (!selectedId) selectedId = clientId;
+    broadcast();
+    let message;
+    let entry;
+    try {
+      const page = typeof collectPage === 'function' ? await collectPage() : collectPage;
+      if (epoch !== connectionEpoch || !clients.get(clientId)?.paired || (wasLive && !panelState(getStatus()).connected)) {
+        throw new Error('bridge not connected');
+      }
+      // Typing while the agent drives the browser (or between per-turn MCP
+      // invocations) is normal — in the agent's own chat box it queues, and
+      // here it does the same: the host delivers it with the next tool result.
+      message = { text: text.trim(), at: new Date().toISOString(), ...(page ? { page } : {}) };
+      entry = pushChat({ from: 'user', text: message.text, at: message.at,
+        ...(page ? { page: { title: page.title, url: page.url, restricted: page.restricted } } : {}) }, clientId);
+      pendingReplyAt = Date.now();
+      queueUserMessage(clientId, message);
+      broadcast();
+      if (live(activeChannel)) {
+        const response = await post({ t: WIRE.USER_MESSAGE, ...message });
+        if (response.ok === false) throw new Error(response.error || 'message rejected');
+      }
+      return { ok: true };
+    } catch (error) {
+      if (epoch === connectionEpoch) {
+        pendingReplyAt = null;
+        userMessageQueues.delete(clientId);
+        const index = chatLog.indexOf(entry);
+        if (index >= 0) { chatLog.splice(index, 1); persistChat(); }
+      }
+      return { ok: false, error: error.message };
+    } finally {
+      if (epoch === connectionEpoch) sending = false;
+      broadcast();
+    }
   }
 
-  // ── panel chat ─────────────────────────────────────────────────────────────
-  async function sendUserMessage(text, page) {
-    if (!text || !text.trim()) return { ok: false, error: 'empty message' };
-    if (!port) return { ok: false, error: 'bridge not connected' };
-    const clientId = [...clients.values()].find((c) => c.paired)?.id;
-    if (!clientId) return { ok: false, error: 'no paired AI client' };
-    const message = { text: text.trim(), at: new Date().toISOString() };
-    if (page) message.page = page;
-    pushChat({ from: 'user', ...message });
-    pendingReplyAt = Date.now();
-    // Queue locally too: the host echoes the frame back, but if the SSE hiccups
-    // the message still rides on the agent's next tool result.
-    queueUserMessage(clientId, message);
-    await post({ t: WIRE.USER_MESSAGE, ...message });
-    return { ok: true };
+  /** A cooperative, plain-language request; it never cancels a tool or trust. */
+  async function requestStop() {
+    const state = panelState(getStatus());
+    if (!state.connected) return { ok: false, error: 'bridge not connected' };
+    if (stopRequest) return { ok: true, alreadyRequested: true };
+    if (!state.canStop) return { ok: false, error: 'no task to stop' };
+    const message = { text: USER_STOP_MESSAGE, at: new Date().toISOString() };
+    const epoch = connectionEpoch;
+    stopRequest = message; // reserve before any await: rapid clicks send once
+    stopRequestedAt = Date.now();
+    const entry = pushChat({ from: 'user', text: '请停止当前操作。', at: message.at });
+    queueUserMessage(state.client.id, message);
+    broadcast();
+    try {
+      const response = await post({ t: WIRE.USER_MESSAGE, ...message });
+      if (response.ok === false) throw new Error(response.error || 'message rejected');
+      return { ok: true };
+    } catch (error) {
+      if (epoch === connectionEpoch) {
+        if (stopRequest === message) { stopRequest = null; stopRequestedAt = 0; }
+        const queue = userMessageQueues.get(state.client.id) || [];
+        userMessageQueues.set(state.client.id, queue.filter((item) => item !== message));
+        const index = chatLog.indexOf(entry);
+        if (index >= 0) { chatLog.splice(index, 1); persistChat(); }
+        broadcast();
+      }
+      return { ok: false, error: error.message };
+    }
   }
 
   function queueUserMessage(clientId, message) {
@@ -457,6 +561,9 @@ export function createBridgeClient({ onStatus, onToolCall, onPairingRequest, onA
     // The host echoes our own USER_MESSAGE back over SSE; dedupe on (at, text)
     // so the agent doesn't receive the same message twice.
     if (!queue.some((m) => m.at === entry.at && m.text === entry.text)) queue.push(entry);
+    // Bounded: the panel keeps a similar number of records, and an agent that
+    // never comes back must not grow the queue forever.
+    if (queue.length > CHAT_RECORD_LIMIT) queue.splice(0, queue.length - CHAT_RECORD_LIMIT);
     userMessageQueues.set(clientId, queue);
   }
 
@@ -468,35 +575,84 @@ export function createBridgeClient({ onStatus, onToolCall, onPairingRequest, onA
   }
 
   async function disconnectClient(clientId) {
-    const c = clients.get(clientId);
-    if (c) c.paired = false;
-    await persistPaired();
-    await post({ t: WIRE.PAIRING_REVOKED, client_id: clientId }).catch(() => {});
-    clearChat(); // 断开 = 结束这段关系，聊天记录一并清掉
-    broadcast();
+    const client = clients.get(clientId);
+    if (!client) return { ok: false, error: 'Unknown AI' };
+    // "Remove this AI" means the software, not one historical identity of it.
+    // Otherwise removing the visible row just promotes a duplicate that was
+    // hidden behind it, and the user has to click Remove again.
+    const siblings = [...clients.values()].filter((other) => other.paired
+      && other.id !== clientId
+      && String(other.name || other.id) === String(client.name || client.id)
+      && String(other.kind || 'generic') === String(client.kind || 'generic'));
+    const targets = [...channels.values()].filter((channel) => channel.clientId === clientId
+      || siblings.some((sibling) => sibling.id === channel.clientId));
+    client.paired = false;
+    unauthorized.delete(clientId);
+    for (const channel of targets) {
+      discardWaiting(channel, 'AI authorization removed; queued action was not executed');
+      await post({ t: WIRE.REVOKED, client_id: channel.clientId }, channel).catch(() => {});
+    }
+    userMessageQueues.delete(clientId);
+    delete transcripts[clientId];
+    if (selectedId === clientId || siblings.some((s) => s.id === selectedId)) {
+      clearChat();
+      delete transcripts[clientId];
+      activeChannel = null;
+      selectedId = null;
+      connectionEpoch++;
+      taskChannels.clear();
+      operatingChannels.clear();
+      taskIdleAt.clear();
+      sending = false;
+      stopRequest = null;
+      stopRequestedAt = 0;
+    }
+    clients.delete(clientId);
+    for (const sibling of siblings) {
+      userMessageQueues.delete(sibling.id);
+      delete transcripts[sibling.id];
+      clients.delete(sibling.id);
+      if (preferredNext?.clientId === sibling.id) preferredNext = null;
+    }
+    if (preferredNext?.clientId === clientId) preferredNext = null;
+    await persistPaired(); persistChat(); chooseAvailable(); broadcast();
+    return { ok: true };
   }
-
-  // ── lifecycle ──────────────────────────────────────────────────────────────
+  /**
+   * Scan cadence. Tool calls arrive over the open SSE stream, so a connected
+   * browser does not need fast scanning — only a fast scan while nothing is
+   * connected yet, because that wait sits directly between "paste the prompt"
+   * and "it works".
+   */
+  function nextScanDelay() {
+    if (discoveryIntervalMs != null) return discoveryIntervalMs;
+    return [...channels.values()].some(live) ? DISCOVERY.IDLE_MS : DISCOVERY.HUNT_MS;
+  }
+  function scheduleScan() {
+    clearTimeout(discoveryTimer);
+    discoveryTimer = null;
+    const delay = nextScanDelay();
+    if (stopped || !(delay > 0) || !chrome.runtime?.id) return;
+    discoveryTimer = setTimeout(() => {
+      discoveryTimer = null;
+      discover().catch(() => {}).finally(scheduleScan);
+    }, delay);
+  }
   async function start() {
-    await loadChatLog();
-    await loadPaired();
-    await reconnect();
+    stopped = false;
+    await loadState();
+    await discover();
+    scheduleScan();
   }
-
-  /** Alarm-driven wakeup: MV3 suspends the SW; this re-opens the stream. */
-  function ensure() {
-    if (status === 'connected' && eventSource) return;
-    void reconnect();
+  function stop() {
+    stopped = true;
+    clearTimeout(discoveryTimer);
+    discoveryTimer = null;
+    for (const item of waitingTools.values()) clearTimeout(item.timer);
+    waitingTools.clear();
+    for (const channel of [...channels.values()]) dropChannel(channel);
   }
-
-  return {
-    start,
-    ensure,
-    getStatus,
-    respondPairing,
-    sendUserMessage,
-    disconnectClient,
-    queueUserMessage,
-    keepOnlyPaired, // exposed for the single-tenant invariant test
-  };
+  function ensure() { return discover(); }
+  return { start, stop, ensure, discover, selectClient, getStatus, openOnboarding, closeOnboarding: onboarding.close,
+    sendUserMessage, requestStop, disconnectClient, queueUserMessage };
 }

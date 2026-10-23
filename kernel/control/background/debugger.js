@@ -169,13 +169,24 @@ export function createDebuggerManager() {
             }
           }
         }
+      } else if (method === 'Page.frameNavigated') {
+        const frame = params && params.frame;
+        if (frame && !frame.parentId && frame.url) {
+          let host = '';
+          try { host = new URL(frame.url).host; } catch (_) { host = ''; }
+          const e = entry(tabId);
+          if (host && e.lastHost && e.lastHost !== host) {
+            consoleBuffers.delete(tabId);
+            networkBuffers.delete(tabId);
+          }
+          if (host) e.lastHost = host;
+        }
       }
     });
   }
 
   // ── command ────────────────────────────────────────────────────────────────
-  async function send(tabId, method, params = {}, timeoutMs = DEFAULT_COMMAND_TIMEOUT_MS) {
-    await attach(tabId);
+  function rawSend(tabId, method, params = {}, timeoutMs = DEFAULT_COMMAND_TIMEOUT_MS) {
     return new Promise((resolve, reject) => {
       let settled = false;
       const timer = setTimeout(() => {
@@ -199,6 +210,22 @@ export function createDebuggerManager() {
         reject(error);
       }
     });
+  }
+
+  async function send(tabId, method, params = {}, timeoutMs = DEFAULT_COMMAND_TIMEOUT_MS) {
+    await attach(tabId);
+    try {
+      return await rawSend(tabId, method, params, timeoutMs);
+    } catch (error) {
+      if (/not attached|detached while handling|No target with given id/i.test(error?.message || '')) {
+        const e = entry(tabId);
+        e.attached = false;
+        e.enabled.clear();
+        await attach(tabId);
+        return rawSend(tabId, method, params, timeoutMs);
+      }
+      throw error;
+    }
   }
 
   // ── focus emulation (background-tab control) ───────────────────────────────

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><title>AgentLimb paired-list smoke test</title></head>
+<body>
+  <!--
+    Loaded by scripts/smoke-client-list.mjs in a real Chrome. It boots the REAL
+    bridge-client.js with the exact storage state from the bug report — three
+    stale identities of one software — and prints the resulting rows so the
+    runner can assert on them.
+  -->
+  <pre id="out">running…</pre>
+  <script type="module">
+    try {
+    const pairedClients = {
+      'id-newest': { id: 'id-newest', name: 'WorkBuddy AI', kind: 'workbuddy', pairedAt: '2026-10-22T19:15:20.825Z' },
+      'id-middle': { id: 'id-middle', name: 'WorkBuddy AI', kind: 'workbuddy', pairedAt: '2026-10-22T18:36:46.362Z' },
+      'id-oldest': { id: 'id-oldest', name: 'WorkBuddy AI', kind: 'workbuddy', pairedAt: '2026-10-21T09:00:00.000Z' },
+      'other-1': { id: 'other-1', name: 'Cursor', kind: 'cursor', pairedAt: '2026-10-22T12:00:00.000Z' },
+    };
+    const store = { 'agentlimb.pairedClients': pairedClients };
+    const realFetch = globalThis.fetch.bind(globalThis);
+    const htmlText = await (await realFetch('/ui/sidepanel/sidepanel.html')).text();
+    const listeners = [];
+    let bridge = null;
+    const chromeStub = {
+      runtime: {
+        id: 'smoke',
+        getManifest: () => ({ version: '0.5.7', version_name: '0.5.7-l8' }),
+        onMessage: { addListener: (fn) => listeners.push(fn) },
+        sendMessage: async (msg) => {
+          if (!bridge) return { ok: true };
+          if (msg?.type === 'AGENTLIMB_GET_STATUS' || msg?.type === 'AGENTLIMB_ENSURE') {
+            return { ok: true, ...bridge.getStatus() };
+          }
+          if (msg?.type === 'AGENTLIMB_DISCONNECT_CLIENT') {
+            return bridge.disconnectClient(msg.clientId);
+          }
+          return { ok: true };
+        },
+        getURL: (p) => p,
+      },
+      storage: {
+        local: {
+          get: async (key) => (typeof key === 'string' ? { [key]: store[key] } : {}),
+          set: async (patch) => { Object.assign(store, patch); },
+        },
+      },
+      tabs: {
+        query: async () => [{ id: 1, title: '百度一下，你就知道', url: 'https://www.baidu.com/' }],
+        onActivated: { addListener: () => {} },
+        onUpdated: { addListener: () => {} },
+      },
+      i18n: { getUILanguage: () => 'zh-CN' },
+    };
+    globalThis.chrome = chromeStub;
+    globalThis.EventSource = class { constructor() {} close() {} };
+    globalThis.fetch = async () => ({ ok: false, json: async () => ({}) });
+
+    store['agentlimb.lastClient'] = 'id-newest';
+    store['agentlimb.chatLogs'] = {
+      'id-newest': [
+        { from: 'user', text: '打开百度贴吧随机发帖子', at: '2026-10-23T03:16:00.000Z' },
+        { from: 'system', text: 'AI 还没有回复。消息已经送到，它下次操作时会看到；你可以继续发送。', at: '2026-10-23T03:17:00.000Z' },
+        { from: 'agent', text: 'Connected. 已为你打开百度 ✅', at: '2026-10-23T11:38:00.000Z' },
+      ],
+    };
+
+    const { createBridgeClient } = await import('/kernel/control/background/bridge-client.js');
+    bridge = createBridgeClient({ ports: [28765, 28766] });
+    await bridge.start();
+    const paired = bridge.getStatus().clients.filter((c) => c.paired);
+
+    const doc = new DOMParser().parseFromString(htmlText, 'text/html');
+    const host = document.createElement('div');
+    host.id = 'panel-host';
+    for (const node of [...doc.body.children]) {
+      if (node.tagName !== 'SCRIPT') host.appendChild(node);
+    }
+    document.body.appendChild(host);
+
+    await import('/ui/sidepanel/sidepanel.js');
+    await new Promise((r) => setTimeout(r, 150));
+
+    document.getElementById('btn-manager').click();
+    const popoverHiddenAfterClick = document.getElementById('manager-popover').hidden;
+    const statePairedHidden = document.getElementById('state-paired').hidden;
+    const stateUnpairedHidden = document.getElementById('state-unpaired').hidden;
+    const topStatus = document.getElementById('top-status').textContent;
+    const topDotClass = document.getElementById('top-dot').className;
+    const chatText = document.getElementById('chat-log').textContent;
+    const chatFormHidden = document.getElementById('chat-form').hidden;
+
+    // Also test a11y-tree.js nested <span> inside <button>/<a> in real Chrome
+    const fixture = document.createElement('div');
+    fixture.innerHTML = '<button id="su"><span>百度一下</span></button><a href="https://tieba.baidu.com"><span>贴吧</span></a>';
+    document.body.appendChild(fixture);
+    await import('/kernel/control/content/a11y-tree.js');
+    const axHandler = window.__agentlimbAXHandler;
+    const axTree = await new Promise((r) => axHandler({ type: 'AGENTLIMB_READ_PAGE', options: { filter: 'interactive' } }, null, r));
+    const axFind = await new Promise((r) => axHandler({ type: 'AGENTLIMB_FIND', options: { query: '百度一下' } }, null, r));
+
+    await bridge.disconnectClient('id-newest');
+    await bridge.disconnectClient('other-1');
+    for (const fn of listeners) fn({ type: 'AGENTLIMB_NOTIFY_STATUS', ...bridge.getStatus() });
+    await new Promise((r) => setTimeout(r, 50));
+
+    const stateUnpairedHiddenAfterRemove = document.getElementById('state-unpaired').hidden;
+    const topStatusAfterRemove = document.getElementById('top-status').textContent;
+
+    document.getElementById('out').textContent = JSON.stringify({
+      rowCount: paired.length,
+      rows: paired.map((c) => `${c.name} (${c.kind})`).sort(),
+      workbuddyRows: paired.filter((c) => c.name === 'WorkBuddy AI').length,
+      storedIdentities: 4,
+      popoverHiddenAfterClick,
+      statePairedHidden,
+      stateUnpairedHidden,
+      topStatus,
+      topDotClass,
+      chatText,
+      chatFormHidden,
+      axTreeSample: axTree?.tree || '',
+      axFindMatches: (axFind?.matches || []).map((m) => `${m.role}:${m.name}`),
+      stateUnpairedHiddenAfterRemove,
+      topStatusAfterRemove,
+    }, null, 2);
+    } catch (err) {
+      document.getElementById('out').textContent = JSON.stringify({ error: String(err?.stack || err) });
+    }
+  </script>
+</body>
+</html>

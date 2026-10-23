@@ -9,8 +9,8 @@
  *
  * Responsibilities:
  *   - port discovery (first free port in BRIDGE_PORTS)
- *   - SSE fan-out to browser extension(s), one "active" paired browser
- *   - pairing registry, persisted at ~/.agentlimb/paired-clients.json
+ *   - SSE fan-out to browser extension(s), one "active" authorized browser
+ *   - trust registry, persisted at ~/.agentlimb/trust-<hash>.json
  *   - tool_call / tool_result correlation with timeouts
  *   - user-message relay (panel chat → agent) and stop signals
  */
@@ -18,13 +18,13 @@
 import { createServer } from 'node:http';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { mkdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
-import { randomUUID } from 'node:crypto';
+import { mkdirSync, readFileSync, writeFileSync, existsSync, renameSync, rmSync } from 'node:fs';
+import { randomUUID, createHash } from 'node:crypto';
 
-import { BRIDGE_PORTS, BRIDGE_HOST, HOME_DIR_NAME, APP_VERSION, WIRE } from '../kernel/shared/constants.js';
+import { BRIDGE_HOST, HOME_DIR_NAME, APP_VERSION, APP_BUILD, WIRE, resolveBridgePorts } from '../kernel/shared/constants.js';
 
 export function agentlimbHome() {
-  return join(homedir(), HOME_DIR_NAME);
+  return join(process.env.HOME || process.env.USERPROFILE || homedir(), HOME_DIR_NAME);
 }
 
 function readJson(file, fallback) {
@@ -37,35 +37,70 @@ function readJson(file, fallback) {
 
 function writeJson(file, value) {
   mkdirSync(agentlimbHome(), { recursive: true });
-  writeFileSync(file, `${JSON.stringify(value, null, 2)}\n`);
+  const payload = `${JSON.stringify(value, null, 2)}\n`;
+  const temp = `${file}.${randomUUID()}.tmp`;
+  writeFileSync(temp, payload);
+  try {
+    renameSync(temp, file);
+  } catch (_) {
+    // Windows may throw EPERM/EACCES on renameSync when the target file is
+    // briefly held open by an indexer or concurrent reader. Fall back safely.
+    try { writeFileSync(file, payload); } finally {
+      try { rmSync(temp, { force: true }); } catch { /* ignore */ }
+    }
+  }
 }
 
-/** Stable identity of this MCP host process (survives restarts). */
-export function loadOrCreateClientId() {
-  const file = join(agentlimbHome(), 'client-id.json');
+export function clientTrustPath(clientId) {
+  const key = createHash('sha256').update(String(clientId)).digest('hex');
+  return join(agentlimbHome(), `trust-${key}.json`);
+}
+
+export function persistedTrust(clientId) {
+  const own = readJson(clientTrustPath(clientId), null);
+  if (own) return own.id === clientId && own.revoked !== true;
+  return Object.prototype.hasOwnProperty.call(readJson(join(agentlimbHome(), 'paired-clients.json'), {}), clientId);
+}
+
+/** Stable per-client identity. Legacy shared IDs must not grant a new client trust. */
+export function clientIdentityPath(clientName, clientKind = 'generic') {
+  const key = createHash('sha256').update(JSON.stringify([clientName, clientKind])).digest('hex');
+  return join(agentlimbHome(), `client-${key}.json`);
+}
+
+export function loadOrCreateClientId(clientName = 'AI Agent', clientKind = 'generic') {
+  const file = clientIdentityPath(clientName, clientKind);
   const existing = readJson(file, null);
   if (existing?.id) return existing.id;
   const id = randomUUID();
-  writeJson(file, { id, createdAt: new Date().toISOString() });
+  writeJson(file, { id, name: clientName, kind: clientKind, createdAt: new Date().toISOString() });
   return id;
 }
 
-export function createBridge({ clientId, clientName = 'AI Agent', clientKind = 'generic', onLog, onUserMessage } = {}) {
+export function createBridge({ clientId, clientName = 'AI Agent', clientKind = 'generic', ports, onLog, onUserMessage, onAuthorized } = {}) {
   const pairedFile = join(agentlimbHome(), 'paired-clients.json');
-  /** @type {Map<string, {res:any, id:string, token:string, paired:boolean}>} */
+  const candidates = ports?.length ? ports : resolveBridgePorts();
+  /** @type {Map<string, {res:any, id:string, token:string, granted:boolean}>} */
   const sseClients = new Map();
   /** token -> connection id (extension identifies itself on every POST) */
   const tokenIndex = new Map();
   const pendingToolCalls = new Map(); // tool_use_id -> {resolve, reject, timer}
   let activeBrowserId = null;
-  let pendingPairing = null; // {request_id, timer}
-  let pendingPairingResolve = null;
+  // Set when the browser answered HELLO with "not authorized"; cleared as soon
+  // as one connection is granted. Only used to fail fast with a useful message.
+  let deniedReason = null;
   let everConnected = false;
   let server = null;
   let port = null;
   let heartbeat = null;
+  // /health is polled several times per second by every browser tab's discovery
+  // loop. Reading the trust files on each probe blocked the event loop for tens
+  // of milliseconds and delayed the very handshake it was reporting on, so the
+  // answer is cached: only this process writes this identity's trust file.
+  let pairedCache = null;
+  let pairedAtCache = null;
   // Set from MCP initialize.params.clientInfo.name — the agent software tells
-  // us who it is, so the user never has to type a name during pairing.
+  // us who it is, so the user never has to type a name to authorize it.
   let effectiveClientName = clientName;
 
   function log(level, message) {
@@ -77,25 +112,62 @@ export function createBridge({ clientId, clientName = 'AI Agent', clientKind = '
   }
 
   function isPaired() {
-    return Object.prototype.hasOwnProperty.call(pairedClients(), clientId);
+    if (pairedCache === null) {
+      pairedCache = persistedTrust(clientId);
+      if (pairedCache) {
+        const record = readJson(clientTrustPath(clientId), null);
+        pairedAtCache = record?.pairedAt || null;
+      }
+    }
+    return pairedCache;
+  }
+
+  /**
+   * What the host knows about the connection right now. `ping` attaches this to
+   * its pong so one tool call answers "am I connected?" completely — the agent
+   * should never have to guess, re-read install docs, or re-run setup for this.
+   */
+  function connectionStatus() {
+    const connection = activeConnection();
+    const authorized = connection?.granted === true;
+    return {
+      connected: connection != null,
+      authorized,
+      browser: connection ? 'Chrome (AgentLimb extension)' : null,
+      extensionVersion: `${APP_VERSION}-${APP_BUILD}`,
+      client: effectiveClientName,
+      paired: isPaired(),
+      pairedAt: pairedAtCache,
+      bridgePort: port,
+      note: authorized
+        ? 'You are connected and authorized. Trust persists across restarts, so nothing needs to be re-paired, restarted or approved. Tell the user "Connected" and start the task.'
+        : connection
+          ? 'A browser is connected but has not authorized this AI yet. Ask the user to click the copy-prompt button in the AgentLimb side panel, then retry. Do not change the MCP config or restart.'
+          : 'No browser is connected. Keep Chrome running with the AgentLimb extension enabled and open its side panel once, then retry.',
+    };
   }
 
   function markPaired(name) {
-    // Single tenant: a new pairing replaces the previous client so the registry
-    // never grows into a list of every agent the user ever tried.
+    // Each process writes its own authoritative trust record. Concurrent MCP
+    // clients cannot erase each other's trust through a shared JSON overwrite.
     const entry = {
       id: clientId,
       name: name || effectiveClientName,
       kind: clientKind,
       pairedAt: new Date().toISOString(),
     };
-    writeJson(pairedFile, { [clientId]: entry });
+    pairedAtCache = entry.pairedAt;
+    writeJson(clientTrustPath(clientId), entry);
+    writeJson(pairedFile, { ...pairedClients(), [clientId]: entry });
+    pairedCache = true;
   }
 
   function revokePairing() {
+    writeJson(clientTrustPath(clientId), { id: clientId, revoked: true });
     const clients = pairedClients();
     delete clients[clientId];
     writeJson(pairedFile, clients);
+    pairedCache = false;
   }
 
   // ── SSE ─────────────────────────────────────────────────────────────────────
@@ -140,6 +212,10 @@ export function createBridge({ clientId, clientName = 'AI Agent', clientKind = '
         port,
         browsers: sseClients.size,
         paired: isPaired(),
+        authorized: activeConnection() != null,
+        activeBrowser: activeConnection() != null,
+        denied: deniedReason,
+        stage: activeConnection() ? 'ready' : sseClients.size ? 'awaiting_authorization' : 'awaiting_extension',
         client: { id: clientId, name: effectiveClientName, kind: clientKind },
       }));
       return;
@@ -155,19 +231,20 @@ export function createBridge({ clientId, clientName = 'AI Agent', clientKind = '
       res.write('retry: 2000\n\n');
       const id = randomUUID();
       const token = url.searchParams.get('b') || randomUUID();
-      const conn = { res, id, token, paired: false };
+      const conn = { res, id, token, granted: false };
       sseClients.set(id, conn);
       tokenIndex.set(token, id);
       everConnected = true;
       log('info', `browser connected (${sseClients.size} total)`);
 
+      // The extension answers GRANT after HELLO — no browser page is involved.
       sendTo(conn, { t: WIRE.HELLO, client: { id: clientId, name: effectiveClientName, kind: clientKind } });
-      // Always request pairing; the extension auto-confirms trusted clients.
-      requestPairing(conn);
 
       req.on('close', () => {
         sseClients.delete(id);
         tokenIndex.delete(token);
+        // No browser left: the last denial no longer describes anything.
+        if (sseClients.size === 0) deniedReason = null;
         if (activeBrowserId === id) {
           activeBrowserId = null;
           // Fail any in-flight tool call — the browser vanished mid-call.
@@ -176,6 +253,9 @@ export function createBridge({ clientId, clientName = 'AI Agent', clientKind = '
             pending.reject(new Error('browser disconnected during tool call'));
             pendingToolCalls.delete(useId);
           }
+          // Another already-authorized browser keeps working without a re-grant.
+          const survivor = [...sseClients.values()].find((other) => other.granted);
+          if (survivor) activeBrowserId = survivor.id;
           log('warn', 'active browser disconnected');
         }
       });
@@ -208,48 +288,34 @@ export function createBridge({ clientId, clientName = 'AI Agent', clientKind = '
     res.end(JSON.stringify({ ok: false, error: 'not found' }));
   }
 
-  // ── pairing ────────────────────────────────────────────────────────────────
-  function requestPairing(conn) {
-    const requestId = randomUUID();
-    if (pendingPairing) {
-      clearTimeout(pendingPairing.timer);
-      pendingPairing = null;
+  // ── handshake ──────────────────────────────────────────────────────────────
+  /** The extension decides; the host only records the answer. */
+  function handleGrant(frame, browserConn) {
+    if (!browserConn) return;
+    if (frame.ok) {
+      markPaired(frame.name || effectiveClientName);
+      browserConn.granted = true;
+      deniedReason = null;
+      if (!activeBrowserId) activeBrowserId = browserConn.id;
+      const name = frame.name || effectiveClientName;
+      log('info', `browser authorized this client as "${name}"`);
+      // The agent has no other way to learn this. The extension knows it is
+      // paired; the side panel shows it; but the agent only finds out if it
+      // happens to call a tool — which is why it kept re-running setup after a
+      // restart even though trust had been restored automatically.
+      //
+      // Reported off to the side and never allowed to throw: the grant itself
+      // is already recorded, and a status-reporting bug must not be able to
+      // fail the authorization.
+      try {
+        const status = connectionStatus();
+        setImmediate(() => { try { onAuthorized?.({ client: name, at: new Date().toISOString(), status }); } catch (_) { /* ignore */ } });
+      } catch (_) { /* ignore */ }
+      return;
     }
-    pendingPairing = {
-      request_id: requestId,
-      timer: setTimeout(() => {
-        if (pendingPairing?.request_id === requestId) pendingPairing = null;
-      }, 180000),
-    };
-    sendTo(conn, {
-      t: WIRE.PAIRING_REQUEST,
-      request_id: requestId,
-      client: { id: clientId, name: effectiveClientName, kind: clientKind },
-    });
-    log('info', `pairing requested from browser (already paired: ${isPaired()})`);
-  }
-
-  /** Wait until the user confirms pairing in the browser. */
-  function waitForPairing(timeoutMs = 180000) {
-    if (isPaired()) return Promise.resolve(true);
-    return new Promise((resolve, reject) => {
-      const timer = setTimeout(() => {
-        if (pendingPairingResolve) {
-          pendingPairingResolve = null;
-          reject(new Error('pairing timed out — confirm in the browser pairing tab'));
-        }
-      }, timeoutMs);
-      pendingPairingResolve = (ok, name) => {
-        clearTimeout(timer);
-        pendingPairingResolve = null;
-        if (ok) {
-          markPaired(name);
-          resolve(true);
-        } else {
-          reject(new Error('pairing dismissed by user'));
-        }
-      };
-    });
+    deniedReason = frame.reason || 'not_authorized';
+    log('warning',
+      '浏览器还没有授权这个 AI 接入。请让用户在 AgentLimb 侧栏点「复制连接提示词」（打开 30 分钟接入窗口）后重试，不需要改配置或重启。');
   }
 
   // ── frames from the extension ───────────────────────────────────────────────
@@ -257,17 +323,8 @@ export function createBridge({ clientId, clientName = 'AI Agent', clientKind = '
     const browserConn = frame.b ? sseClients.get(tokenIndex.get(frame.b) || '') : null;
 
     switch (frame.t) {
-      case WIRE.PAIRING_RESPONSE: {
-        if (frame.ok) {
-          markPaired(frame.name);
-          log('info', `paired as "${frame.name || effectiveClientName}"`);
-        }
-        // Whoever answered becomes the active browser.
-        if (browserConn && frame.ok) {
-          activeBrowserId = browserConn.id;
-          browserConn.paired = true;
-        }
-        if (pendingPairingResolve) pendingPairingResolve(frame.ok !== false, frame.name);
+      case WIRE.GRANT: {
+        handleGrant(frame, browserConn);
         break;
       }
 
@@ -297,38 +354,44 @@ export function createBridge({ clientId, clientName = 'AI Agent', clientKind = '
         break;
       }
 
-      case WIRE.PAIRING_REVOKED: {
+      case WIRE.REVOKED: {
         revokePairing();
-        // Plain words to the agent: the browser is gone, stop reaching for it.
-        log('warning', '用户已在浏览器侧断开连接（侧栏点了「断开」）——你不再能控制这个浏览器。需要时请让用户重新配对。');
+        // The channel stays open but is no longer usable: the next tool call must
+        // fail with the actionable "not authorized" message instead of reaching
+        // a browser that just removed this AI.
+        if (browserConn) browserConn.granted = false;
+        if (browserConn && activeBrowserId === browserConn.id) activeBrowserId = null;
+        deniedReason = 'revoked';
+        log('warning', '用户已在浏览器侧移除这个 AI（侧栏点了「移除」）——你不再能控制这个浏览器。需要时请让用户重新点「复制连接提示词」。');
         break;
       }
-
-      case WIRE.STATUS:
-        // Extension reports which clients it trusts; informational only.
-        break;
 
       default:
         break;
     }
   }
 
-  /** Wait for the extension to finish its auto-confirm handshake. */
-  async function waitForActiveConnection(timeoutMs) {
+  /** Wait for the extension to answer HELLO with a grant. */
+  async function waitForGrant(timeoutMs) {
     const deadline = Date.now() + timeoutMs;
     while (Date.now() < deadline) {
       if (activeConnection()) return true;
+      if (deniedReason) return false;
       await new Promise((r) => setTimeout(r, 100));
     }
     return activeConnection() != null;
   }
 
+  const NOT_AUTHORIZED = 'This AI is not authorized by the browser yet. Ask the user to click the copy-prompt button in the AgentLimb side panel — that authorizes the next AI for 30 minutes. No MCP config change or restart is needed; just retry after the user clicks.';
+
   // ── tool calls ──────────────────────────────────────────────────────────────
   async function callTool(tool, args = {}, timeoutMs = 65000) {
     if (!activeConnection()) {
-      // No active browser. Two very different situations:
+      // No authorized browser. Three different situations:
       //  (a) the extension never connected — fail fast, nothing will happen
-      //  (b) it connected but pairing is pending — wait for the user
+      //  (b) it connected and said "not authorized" — one Copy click fixes it
+      //  (c) it connected and the grant is still in flight — wait a beat
+      if (deniedReason) throw new Error(NOT_AUTHORIZED);
       if (!everConnected) {
         const deadline = Date.now() + 20000;
         while (Date.now() < deadline && !everConnected) {
@@ -340,21 +403,15 @@ export function createBridge({ clientId, clientName = 'AI Agent', clientKind = '
           );
         }
       }
-      // Already paired? The extension still needs a beat to answer PAIRING_REQUEST
-      // with its auto-confirm, and the very first tool call usually lands inside
-      // that window — wait it out instead of failing.
-      if (isPaired()) await waitForActiveConnection(10000);
-      if (!activeConnection()) {
-        try {
-          await waitForPairing(Math.min(timeoutMs, 150000));
-        } catch (error) {
-          throw new Error(`no paired browser: ${error.message}`);
-        }
-        await waitForActiveConnection(3000);
-      }
+      // A browser was here and dropped: most likely the MV3 worker was
+      // suspended, and it cannot answer until Chrome revives it (30 s alarm
+      // floor). Wait for that revival instead of reporting a failure the user
+      // has no way to act on.
+      await waitForGrant(35000);
+      if (deniedReason) throw new Error(NOT_AUTHORIZED);
       if (!activeConnection()) {
         throw new Error(
-          'paired but the browser has not taken control yet — if a pairing tab is open, confirm it; otherwise reload the extension and retry',
+          'the browser has not taken control yet — open the AgentLimb side panel in Chrome (its discovery loop wakes the extension), then retry',
         );
       }
     }
@@ -365,7 +422,7 @@ export function createBridge({ clientId, clientName = 'AI Agent', clientKind = '
         reject(new Error(`tool ${tool} timed out after ${timeoutMs}ms`));
       }, timeoutMs);
       pendingToolCalls.set(toolUseId, { resolve, reject, timer });
-      const sent = sendTo(activeConnection(), { t: WIRE.TOOL_CALL, tool_use_id: toolUseId, tool, args, client_id: clientId });
+      const sent = sendTo(activeConnection(), { t: WIRE.TOOL_CALL, tool_use_id: toolUseId, tool, args, client_id: clientId, deadline: Date.now() + timeoutMs });
       if (!sent) {
         clearTimeout(timer);
         pendingToolCalls.delete(toolUseId);
@@ -377,13 +434,17 @@ export function createBridge({ clientId, clientName = 'AI Agent', clientKind = '
   // ── lifecycle ───────────────────────────────────────────────────────────────
   async function start() {
     server = createServer((req, res) => {
+      // The handshake is three tiny frames on two connections. With Nagle on,
+      // the delayed-ACK timer adds a flat ~40 ms to every pairing; turning it
+      // off makes HELLO → GRANT effectively free.
+      try { req.socket.setNoDelay(true); } catch (_) { /* ignore */ }
       handleRequest(req, res).catch((error) => {
         res.writeHead(500, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
         res.end(JSON.stringify({ ok: false, error: error.message }));
       });
     });
 
-    for (const candidate of BRIDGE_PORTS) {
+    for (const candidate of candidates) {
       try {
         await new Promise((resolve, reject) => {
           server.once('error', reject);
@@ -398,14 +459,17 @@ export function createBridge({ clientId, clientName = 'AI Agent', clientKind = '
         // port taken — try the next one
       }
     }
-    if (port == null) throw new Error(`no free port in ${BRIDGE_PORTS.join(', ')}`);
+    if (port == null) throw new Error(`no free port in ${candidates.join(', ')}`);
 
-    // Heartbeat keeps the extension SW awake and detects dead browsers.
+    // Heartbeat: keeps a live extension worker from idling out (well under the
+    // 30 s limit) and detects dead browsers. The extension answers each PING
+    // with a POST, and that outbound request is itself an event the MV3 worker
+    // registers — this is what keeps the connection alive with the panel closed.
     heartbeat = setInterval(() => {
       for (const conn of sseClients.values()) {
         if (!sendTo(conn, { t: WIRE.PING })) sseClients.delete(conn.id);
       }
-    }, 25000);
+    }, 10000);
 
     log('info', `bridge listening on http://${BRIDGE_HOST}:${port} (paired: ${isPaired()})`);
     return port;
@@ -447,10 +511,11 @@ export function createBridge({ clientId, clientName = 'AI Agent', clientKind = '
     stop,
     callTool,
     sayToUser,
-    waitForPairing,
     isPaired,
     getPort: () => port,
     getActiveBrowser: () => activeBrowserId != null,
+    connectionStatus,
+    getDeniedReason: () => deniedReason,
     revokePairing,
   };
 }

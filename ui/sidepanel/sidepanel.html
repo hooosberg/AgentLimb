@@ -8,51 +8,192 @@
 </head>
 <body>
 
-  <!-- ═══ 未配对：唯一职责 = 复制提示词 ═══ -->
-  <section id="state-unpaired" class="state">
-    <div class="hero">
-      <img src="../../icons/icon.svg" class="hero-logo" alt="">
-      <h1 class="hero-title">连接 AI 到浏览器</h1>
-      <p class="hero-sub">复制下面的提示词，粘贴给你的智能体软件。<br>它会自动接入 MCP 并请求配对。</p>
+  <!-- ═══ 顶部栏：两种状态共用。左=当前连接的 AI（直接显示，不弹菜单），右=复制提示词 + 设置 ═══ -->
+  <header class="topbar">
+    <div id="btn-manager" class="topbar-identity" data-i18n-aria="managerAria" data-i18n-title="managerAria">
+      <img class="topbar-logo" src="../../icons/icon.svg" alt="">
+      <span class="topbar-text">
+        <span class="topbar-name">AgentLimb</span>
+        <span class="topbar-status"><span id="top-dot" class="dot"></span><span id="top-status">未连接</span></span>
+      </span>
     </div>
-
-    <button id="btn-copy-prompt" class="btn-primary">复制连接提示词</button>
-    <div id="copy-feedback" class="copy-feedback" hidden>已复制 — 去粘贴给 AI 吧</div>
-
-    <p class="panel-hint">连接成功后就不需要一直开着侧边栏：侧栏与 AI 运行无关，只在首次配对和聊天时用到，随时可以关掉。</p>
-
-    <div id="pending-box" class="pending-box" hidden>
-      <div class="pending-title">等待配对确认</div>
-      <div id="pending-detail" class="pending-detail"></div>
-      <div class="pending-hint">配对标签页已自动打开；如果误关了，重新复制提示词让 AI 再连一次。</div>
+    <div class="topbar-actions">
+      <button id="btn-copy-prompt" class="icon-button" type="button" data-i18n-aria="copy" data-i18n-title="copy"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"></rect><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"></path></svg></button>
+      <button id="btn-settings" class="icon-button" type="button" data-i18n-aria="settings" data-i18n-title="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-1.7 2.94-.08-.02a1.7 1.7 0 0 0-1.82.36l-.06.06h-3.4l-.03-.08a1.7 1.7 0 0 0-1.42-1.17 1.7 1.7 0 0 0-1.42 1.17l-.03.08h-3.4l-.06-.06a1.7 1.7 0 0 0-1.82-.36l-.08.02-1.7-2.94.06-.06A1.7 1.7 0 0 0 3.2 15l-.08-.03v-3.4l.08-.03a1.7 1.7 0 0 0 1.17-1.42A1.7 1.7 0 0 0 3.2 8.7l-.08-.03v-3.4l.06-.06a1.7 1.7 0 0 0 .36-1.82l-.02-.08 2.94-1.7.06.06a1.7 1.7 0 0 0 1.88.34l.03-.08h3.4l.03.08a1.7 1.7 0 0 0 1.42 1.17 1.7 1.7 0 0 0 1.42-1.17l.03-.08h3.4l.06.06a1.7 1.7 0 0 0 1.82.36l.08-.02 1.7 2.94-.06.06A1.7 1.7 0 0 0 20.8 8.7l.08.03v3.4l-.08.03A1.7 1.7 0 0 0 19.4 15Z"></path></svg></button>
     </div>
+  </header>
 
-    <div id="bridge-offline" class="bridge-offline" hidden>
-      本地桥接未运行 — 请先在 AI 中配置并启动 AgentLimb MCP。
+  <!-- 轻量管理器：已连接几个 AI、谁在用、一键切换 -->
+  <div id="manager-popover" class="manager" role="dialog" hidden>
+    <div class="manager-head">
+      <span data-i18n="clientsTitle">已连接的 AI</span>
+      <span id="manager-count" class="manager-count"></span>
     </div>
+    <div id="manager-list" class="manager-list"></div>
+    <div class="manager-actions">
+      <button id="btn-connect-another" class="manager-add" type="button"><span class="plus">＋</span><span data-i18n="connectAnother">连接其他 AI</span></button>
+      <button id="btn-manage-all" class="manager-manage" type="button" data-i18n="manageAll">管理</button>
+    </div>
+  </div>
 
-    <details class="advanced">
-      <summary>高级：MCP 命令路径</summary>
-      <p class="advanced-hint">安装脚本默认把 MCP 主机放在 <code>~/.agentlimb/</code>。如自定义了位置，在此修改（写入复制出的提示词）：</p>
-      <input id="input-host-path" type="text" spellcheck="false" placeholder="~/.agentlimb/mcp-server.mjs">
-      <button id="btn-save-path" class="btn-ghost">保存</button>
-    </details>
-  </section>
+  <div id="toast" class="toast" role="status" hidden></div>
 
-  <!-- ═══ 已配对：就是 AI 的聊天窗，眼前这一页它默认看得见 ═══ -->
-  <section id="state-paired" class="state state-chat" hidden>
-    <header class="chat-header">
-      <div id="client-chips" class="client-chips"></div>
-      <button id="btn-disconnect" class="btn-link" title="断开后需要重新配对">断开</button>
+  <main class="panel">
+    <!-- ═══ 未配对：唯一职责 = 复制提示词。首页只留一句关键话 ═══ -->
+    <section id="state-unpaired" class="state">
+      <div class="hero">
+        <img src="../../icons/icon.svg" class="hero-logo" alt="">
+        <h1 class="hero-title" data-i18n="heroTitle">连接 AI 到浏览器</h1>
+        <p class="hero-sub" data-i18n="heroSub">复制提示词，粘贴给你要用的 AI 工具，它就能连上浏览器。</p>
+      </div>
+
+      <button id="btn-copy-hero" class="btn-primary" type="button" data-i18n="copy">复制连接提示词</button>
+
+      <!-- 有 AI 连上但还没获授权：一句话告诉用户点复制就够了，不再开确认页 -->
+      <div id="unauthorized-box" class="notice-box" hidden>
+        <div class="notice-title" data-i18n="unauthorizedTitle">有一个 AI 想接入，但还没获授权</div>
+        <div id="unauthorized-detail" class="notice-detail"></div>
+        <div class="notice-hint" data-i18n="unauthorizedHint"></div>
+      </div>
+
+      <div id="bridge-offline" class="bridge-offline" data-i18n="bridgeOffline" hidden></div>
+      <!-- 已配对但 AI 软件退了：正常现象，说句话就回来 -->
+      <div id="bridge-idle" class="bridge-offline bridge-idle" data-i18n="bridgeIdle" hidden></div>
+    </section>
+
+    <!-- ═══ 已配对：展示 AI 的连接状态与操作回复（在 AI 工具中直接下指令，不在此处阻塞输入） ═══ -->
+    <section id="state-paired" class="state state-chat" hidden>
+      <div id="chat-log" class="chat-log" role="log"></div>
+      <div id="send-error" class="send-error" role="alert" hidden></div>
+      <div id="composer-status" class="composer-status" role="status" hidden></div>
+      <form id="chat-form" class="chat-form" hidden>
+        <textarea id="chat-input" rows="1" autocomplete="off" disabled></textarea>
+        <button id="btn-send" type="submit" class="btn-send" disabled>发送</button>
+      </form>
+      <div id="page-note" class="chat-note"></div>
+    </section>
+  </main>
+
+  <!-- ═══ 设置：首页是栏目列表，点进去是子页 ═══ -->
+  <section id="settings-view" class="settings-view" hidden aria-label="设置">
+    <header class="settings-header">
+      <button id="btn-settings-back" class="icon-button" type="button" data-i18n-aria="back"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 6-6 6 6 6"></path></svg></button>
+      <h2 id="settings-title">设置</h2>
     </header>
 
-    <div id="chat-log" class="chat-log"></div>
+    <div class="settings-content">
+      <!-- 首页 -->
+      <div id="settings-home" class="settings-home">
+        <p class="settings-group" data-i18n="groupConnect">连接</p>
+        <div class="settings-group-card">
+          <button class="settings-row" data-page="connect" type="button">
+            <span class="settings-row-main">
+              <span class="settings-row-label" data-i18n="connectAnother">连接其他 AI</span>
+              <span class="settings-row-desc" data-i18n="connectRowDesc"></span>
+            </span>
+            <span class="settings-row-caret">›</span>
+          </button>
+          <button class="settings-row" data-page="clients" type="button">
+            <span class="settings-row-main">
+              <span class="settings-row-label" data-i18n="clientsTitle">已连接的 AI</span>
+              <span class="settings-row-desc" data-i18n="clientsRowDesc"></span>
+            </span>
+            <span id="row-clients-value" class="settings-row-value">0</span>
+            <span class="settings-row-caret">›</span>
+          </button>
+        </div>
 
-    <form id="chat-form" class="chat-form">
-      <textarea id="chat-input" rows="1" placeholder="问它当前页面的事，或让它去做点什么…" autocomplete="off"></textarea>
-      <button type="submit" class="btn-send" title="发送（Enter，Shift+Enter 换行）">发送</button>
-    </form>
-    <div id="page-note" class="chat-note">它会自动看到你当前标签页的内容</div>
+        <p class="settings-group" data-i18n="groupGeneral">通用</p>
+        <div class="settings-group-card">
+          <button class="settings-row" data-page="language" type="button">
+            <span class="settings-row-main"><span class="settings-row-label" data-i18n="languageLabel">界面语言</span></span>
+            <span id="row-language-value" class="settings-row-value"></span>
+            <span class="settings-row-caret">›</span>
+          </button>
+          <button class="settings-row" data-page="advanced" type="button">
+            <span class="settings-row-main"><span class="settings-row-label" data-i18n="advanced">高级</span></span>
+            <span class="settings-row-value" data-i18n="advancedRowValue"></span>
+            <span class="settings-row-caret">›</span>
+          </button>
+        </div>
+
+        <p class="settings-group" data-i18n="groupAbout">关于</p>
+        <div class="settings-group-card">
+          <button class="settings-row" data-page="about" type="button">
+            <span class="settings-row-main"><span class="settings-row-label" data-i18n="aboutRow">关于 AgentLimb</span></span>
+            <span id="row-about-value" class="settings-row-value"></span>
+            <span class="settings-row-caret">›</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 子页：连接其他 AI -->
+      <div id="page-connect" class="settings-page" hidden>
+        <p class="settings-lead" data-i18n="connectPageDesc"></p>
+        <button id="btn-copy-page" class="btn-primary" type="button" data-i18n="copy">复制连接提示词</button>
+        <div id="copy-feedback-page" class="copy-feedback" role="status" hidden></div>
+        <p class="settings-note" data-i18n="connectTakeoverHint"></p>
+      </div>
+
+      <!-- 子页：已连接的 AI -->
+      <div id="page-clients" class="settings-page" hidden>
+        <p id="clients-summary" class="settings-lead"></p>
+        <div id="client-list" class="client-list"></div>
+        <div id="client-action-feedback" class="settings-feedback" role="status" hidden></div>
+      </div>
+
+      <!-- 子页：语言 -->
+      <div id="page-language" class="settings-page" hidden>
+        <label for="language-select" data-i18n="languageLabel">界面语言</label>
+        <select id="language-select">
+          <option value="auto">自动</option>
+          <option value="zh-CN">简体中文</option>
+          <option value="en">English</option>
+        </select>
+        <p class="settings-note" data-i18n="languageHint"></p>
+      </div>
+
+      <!-- 子页：高级 -->
+      <div id="page-advanced" class="settings-page" hidden>
+        <label for="input-source-path" data-i18n="sourcePathLabel"></label>
+        <p class="settings-note" data-i18n="sourcePathHint"></p>
+        <input id="input-source-path" type="text" spellcheck="false" placeholder="/Users/you/Projects/agentlimb">
+        <button id="btn-save-source" class="btn-ghost" type="button" data-i18n="save">保存</button>
+        <label for="input-host-path" data-i18n="hostPathLabel"></label>
+        <p class="settings-note" data-i18n="pathHint"></p>
+        <input id="input-host-path" type="text" spellcheck="false" placeholder="~/.agentlimb/host/mcp-server.mjs">
+        <button id="btn-save-path" class="btn-ghost" type="button" data-i18n="save">保存</button>
+      </div>
+
+      <!-- 子页：关于 -->
+      <div id="page-about" class="settings-page" hidden>
+        <div class="about-card">
+          <img class="about-logo" src="../../icons/icon.svg" alt="">
+          <div>
+            <div class="about-name">AgentLimb</div>
+            <div class="about-version"><span data-i18n="version">版本</span> <span id="about-version"></span></div>
+          </div>
+        </div>
+        <p class="settings-note" data-i18n="about"></p>
+      </div>
+
+      <!-- ═══ 设置页底部（所有子页共用）：官网 / 产品页 / GitHub Star ═══ -->
+      <footer class="settings-footer">
+        <p class="settings-footer-star">
+          <span data-i18n="footerStarPrompt"></span
+          ><a class="settings-footer-star-link" href="https://github.com/hooosberg/AgentLimb" target="_blank" rel="noopener" data-i18n="footerStarAction"></a>
+        </p>
+        <div class="about-links settings-footer-links">
+          <a href="https://hooosberg.com/apps/agentlimb/" target="_blank" rel="noopener" data-i18n="blogPage"></a>
+          <span class="dot-sep">·</span>
+          <a href="https://agentlimb.com" target="_blank" rel="noopener" data-i18n="website"></a>
+          <span class="dot-sep">·</span>
+          <a href="https://github.com/hooosberg/AgentLimb" target="_blank" rel="noopener">GitHub</a>
+          <span class="dot-sep">·</span>
+          <a href="https://agentlimb.com/license" target="_blank" rel="noopener" data-i18n="license"></a>
+        </div>
+      </footer>
+    </div>
   </section>
 
   <script type="module" src="sidepanel.js"></script>
