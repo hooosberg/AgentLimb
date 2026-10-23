@@ -4,7 +4,7 @@ import { spawnSync } from 'node:child_process';
 import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { makeMcpConfig } from '../host/install.mjs';
 
 const root = join(fileURLToPath(new URL('..', import.meta.url)));
@@ -54,8 +54,10 @@ test('install creates the ESM runtime, emits absolute-path JSON, and preserves p
     ]) assert.equal(existsSync(join(runtime, rel)), true, `missing ${rel}`);
     assert.equal(JSON.parse(readFileSync(join(runtime, 'package.json'), 'utf8')).type, 'module');
 
+    // Dynamic import needs a URL, not a path: on Windows a bare `C:\...` throws
+    // ERR_UNSUPPORTED_ESM_URL_SCHEME, so hand Node a file:// URL everywhere.
     const moduleCheck = spawnSync(process.execPath, ['--input-type=module', '-e',
-      `import(${JSON.stringify(join(runtime, 'host', 'bridge-server.mjs'))}).then(m => { if (typeof m.loadOrCreateClientId !== 'function') process.exit(2); })`,
+      `import(${JSON.stringify(pathToFileURL(join(runtime, 'host', 'bridge-server.mjs')).href)}).then(m => { if (typeof m.loadOrCreateClientId !== 'function') process.exit(2); })`,
     ], { env, encoding: 'utf8' });
     assert.equal(moduleCheck.status, 0, moduleCheck.stderr);
   });

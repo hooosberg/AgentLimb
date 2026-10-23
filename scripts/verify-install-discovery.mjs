@@ -40,6 +40,13 @@ export function chromeExtensionId(folder) {
   return [...hex].map((c) => String.fromCharCode(97 + parseInt(c, 16))).join('');
 }
 
+/**
+ * These checks execute the ```sh blocks the prompt hands to POSIX agents.
+ * Windows has no /bin/sh (the prompt ships PowerShell commands there instead),
+ * so callers must skip them rather than report a false failure.
+ */
+export const HAS_POSIX_SHELL = process.platform !== 'win32';
+
 function seed(home) {
   const repo = (root, { name = 'agentlimb', host = true, bin = true } = {}) => {
     mkdirSync(join(root, 'bin'), { recursive: true });
@@ -78,6 +85,7 @@ export function extractUnixCommands(prompt) {
 }
 
 function run(command, home) {
+  if (!HAS_POSIX_SHELL) throw new Error('POSIX shell commands cannot run on this platform');
   const stdout = execFileSync('/bin/sh', ['-c', command], {
     env: { ...process.env, HOME: home },
     encoding: 'utf8',

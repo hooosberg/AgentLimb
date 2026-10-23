@@ -8,10 +8,15 @@ import {
   verifyProfileLookup,
   extractUnixCommands,
   chromeExtensionId,
+  HAS_POSIX_SHELL,
 } from '../scripts/verify-install-discovery.mjs';
 
 const CJK = /[\u4e00-\u9fff]/;
 const EXT_ID = 'poiblbjgbeecibjhnadcpmleigpopllj';
+// The three checks below execute the ```sh blocks from the prompt against a
+// fake HOME. Windows has no /bin/sh and the prompt hands Windows agents
+// PowerShell commands instead, so they are POSIX-only by design.
+const posixOnly = HAS_POSIX_SHELL ? false : 'POSIX shell only — Windows agents get PowerShell commands';
 
 test('the copied prompt is English-only, whatever the UI language is', () => {
   const zh = buildConnectionPrompt({ lang: 'zh' });
@@ -72,20 +77,20 @@ test('Chrome ID algorithm matches the IDs Chrome actually assigned on this machi
   );
 });
 
-test('step 1 reads back the folder Chrome recorded for that ID', () => {
+test('step 1 reads back the folder Chrome recorded for that ID', { skip: posixOnly }, () => {
   const report = verifyProfileLookup();
   assert.ok(report.ok, `paths were:\n${report.matches.join('\n')}`);
   assert.equal(report.matches[0], report.target);
 });
 
-test('step 2 resolves the ID to one folder even when identical copies exist', () => {
+test('step 2 resolves the ID to one folder even when identical copies exist', { skip: posixOnly }, () => {
   const report = verifyFingerprint();
   assert.ok(report.ok, `matches were:\n${report.matches.join('\n')}`);
   assert.equal(report.matches.length, 1);
   assert.match(report.matches[0], /Projects[\\/]agentlimb$/);
 });
 
-test('the package.json fallback is ambiguous by design — that is why the ID comes first', () => {
+test('the package.json fallback is ambiguous by design — that is why the ID comes first', { skip: posixOnly }, () => {
   const report = verifyDiscovery();
   assert.ok(report.ok, 'two identical copies should both look valid to the fallback rule');
   assert.equal(report.valid.length, 2);
@@ -107,6 +112,10 @@ test('cross-platform & universal agent prompt: fast-path, Linux/Windows profile 
   assert.match(prompt, /YAML/);
 
   // 3. Linux Chromium / Snap & Windows LOCALAPPDATA profile lookup via Step 1 command.
+  //    Running the published shell blocks is POSIX-only; Windows agents get the
+  //    PowerShell branch, which the assertions above already cover.
+  if (!HAS_POSIX_SHELL) return;
+
   const home = mkdtempSync(join(tmpdir(), 'agentlimb-xplat-'));
   try {
     const linuxTarget = join(home, 'opt', 'agentlimb');
