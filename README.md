@@ -4,6 +4,18 @@
 
 <h1 align="center">AgentLimb</h1>
 
+> **⚠️ 本分支已归档，不再更新。**
+>
+> 这里是 0.2 时代的 cowork_local 版本（muscle 网页记忆、HTTP 轮询桥接、12 语言 i18n、
+> agentlimb.com 官网）。当前维护线是 [`main`](https://github.com/hooosberg/AgentLimb)——
+> 通用 MCP 浏览器控制、复制即配对、16 个标准工具、100% 本地。
+>
+> - 当前版本与源码：https://github.com/hooosberg/AgentLimb
+> - 官网 / 产品页（落地页）：https://hooosberg.com/apps/agentlimb/
+> - 旧版官网（含教程 / 工具目录 / 新闻）：https://agentlimb.com/
+>
+> 归档代码只读保留，不再接受功能改动；需要旧资产时可按需迁回 `main`。
+
 <p align="center">
   <strong>Stop watching your AI relearn the same task.</strong><br>
   The open-source alternative to CoWork — 90% fewer tokens on repeat browser tasks.
