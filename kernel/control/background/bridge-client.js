@@ -67,6 +67,23 @@ export function createBridgeClient({ onStatus, onToolCall, onAgentMessage, disco
   let scanPromise;
   let discoveryTimer = null;
   let stopped = false;
+  let browserIdentity = { id: `Profile-${crypto.randomUUID().slice(0, 6)}`, label: '' };
+
+  async function resolveAutoProfileLabel() {
+    try {
+      if (chrome.identity?.getProfileUserInfo) {
+        const info = await new Promise((resolve) => chrome.identity.getProfileUserInfo((u) => resolve(u || {})));
+        if (info?.email) return info.email;
+      }
+    } catch (_) { /* identity permission optional */ }
+    return '';
+  }
+
+  function effectiveBrowserIdentity() {
+    const id = browserIdentity.id || 'Profile-default';
+    const label = (browserIdentity.label || '').trim() || id;
+    return { id, label };
+  }
 
   const live = (channel) => channel?.online && channels.get(channel.port) === channel;
   const channelFor = (id) => live(activeChannel) && activeChannel.clientId === id ? activeChannel
@@ -122,6 +139,21 @@ export function createBridgeClient({ onStatus, onToolCall, onAgentMessage, disco
   }
   async function loadState() {
     try {
+      const savedIdentity = (await chrome.storage.local.get(STORAGE_KEYS.browserIdentity))[STORAGE_KEYS.browserIdentity];
+      if (savedIdentity && typeof savedIdentity === 'object' && savedIdentity.id) {
+        browserIdentity = { id: String(savedIdentity.id), label: String(savedIdentity.label || '').trim() };
+      } else {
+        const autoLabel = await resolveAutoProfileLabel();
+        browserIdentity = { id: browserIdentity.id, label: autoLabel || browserIdentity.id };
+        await chrome.storage.local.set({ [STORAGE_KEYS.browserIdentity]: browserIdentity }).catch(() => {});
+      }
+      if (!browserIdentity.label) {
+        const autoLabel = await resolveAutoProfileLabel();
+        if (autoLabel) {
+          browserIdentity = { ...browserIdentity, label: autoLabel };
+          await chrome.storage.local.set({ [STORAGE_KEYS.browserIdentity]: browserIdentity }).catch(() => {});
+        }
+      }
       const paired = (await chrome.storage.local.get(STORAGE_KEYS.pairedClients))[STORAGE_KEYS.pairedClients] || {};
       for (const [id, info] of Object.entries(paired)) clients.set(id, { ...info, id, paired: true });
       rememberedId = (await chrome.storage.local.get(STORAGE_KEYS.lastClient))[STORAGE_KEYS.lastClient] || null;
@@ -138,6 +170,24 @@ export function createBridgeClient({ onStatus, onToolCall, onAgentMessage, disco
         chatLog.splice(0, chatLog.length, ...sanitizeChatRecords(transcripts[selectedId] || legacy));
       }
     } catch (_) { /* unavailable storage */ }
+  }
+
+  async function setBrowserLabel(rawLabel) {
+    const clean = String(rawLabel ?? '').trim();
+    const autoLabel = clean ? '' : await resolveAutoProfileLabel();
+    browserIdentity = {
+      id: browserIdentity.id,
+      label: clean || autoLabel || browserIdentity.id,
+    };
+    await chrome.storage.local.set({ [STORAGE_KEYS.browserIdentity]: browserIdentity }).catch(() => {});
+    for (const channel of channels.values()) {
+      if (live(channel) && channel.clientId && clients.get(channel.clientId)?.paired) {
+        const record = clients.get(channel.clientId);
+        void post({ t: WIRE.GRANT, ok: true, name: record.name, browser: effectiveBrowserIdentity() }, channel).catch(() => {});
+      }
+    }
+    broadcast();
+    return { ok: true, browserIdentity: effectiveBrowserIdentity() };
   }
 
   /**
@@ -198,6 +248,7 @@ export function createBridgeClient({ onStatus, onToolCall, onAgentMessage, disco
       status: anyOnline ? 'connected' : 'disconnected',
       port: connected ? activeChannel.port : null,
       connectedClientId: connected ? selectedId : null,
+      browserIdentity: effectiveBrowserIdentity(),
       clients: visibleClients().map((client) => ({ ...client, online: !!channelFor(client.id),
         waiting: preferredNext?.clientId === client.id || [...waitingTools.values()].some((item) => item.channel.clientId === client.id) })),
       unauthorized: [...unauthorized.values()],
@@ -395,7 +446,7 @@ export function createBridgeClient({ onStatus, onToolCall, onAgentMessage, disco
           await trust(record, channel, { takeOver: !remembered });
         } else {
           unauthorized.set(client.id, { id: client.id, name: record.name, kind: record.kind, at: new Date().toISOString() });
-          await post({ t: WIRE.GRANT, ok: false, reason: 'not_authorized' }, channel).catch(() => {});
+          await post({ t: WIRE.GRANT, ok: false, reason: 'not_authorized', browser: effectiveBrowserIdentity() }, channel).catch(() => {});
         }
         chooseAvailable(); broadcast(); break;
       }
@@ -451,7 +502,7 @@ export function createBridgeClient({ onStatus, onToolCall, onAgentMessage, disco
       await persistPaired();
       pushChat({ from: 'system', text: `已连接到 ${record.name}。请直接在 AI 工具中下达浏览器指令，AI 的操作回复会同步显示在这里。`, at: new Date().toISOString() }, record.id);
     }
-    const delivered = await post({ t: WIRE.GRANT, ok: true, name: record.name }, channel)
+    const delivered = await post({ t: WIRE.GRANT, ok: true, name: record.name, browser: effectiveBrowserIdentity() }, channel)
       .then(() => true).catch(() => false);
     // If the answer never reaches the host, the panel would sit on "connected"
     // while the agent stays blocked forever. Drop the channel instead:
@@ -658,5 +709,5 @@ export function createBridgeClient({ onStatus, onToolCall, onAgentMessage, disco
   }
   function ensure() { return discover(); }
   return { start, stop, ensure, discover, selectClient, getStatus, openOnboarding, closeOnboarding: onboarding.close,
-    sendUserMessage, requestStop, disconnectClient, queueUserMessage };
+    sendUserMessage, requestStop, disconnectClient, queueUserMessage, setBrowserLabel };
 }

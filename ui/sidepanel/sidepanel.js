@@ -58,6 +58,15 @@ const els = {
   clientActionFeedback: $('client-action-feedback'),
   clientsSummary: $('clients-summary'),
   copyFeedbackPage: $('copy-feedback-page'),
+  browserIdValue: $('browser-id-value'),
+  btnCopyBrowserId: $('btn-copy-browser-id'),
+  btnEditBrowserLabel: $('btn-edit-browser-label'),
+  inputBrowserLabel: $('input-browser-label'),
+  btnCopyBrowserLabel: $('btn-copy-browser-label'),
+  btnSaveBrowserLabel: $('btn-save-browser-label'),
+  updateStatus: $('update-status'),
+  btnCheckUpdate: $('btn-check-update'),
+  linkUpdateDownload: $('link-update-download'),
 };
 
 let lastStatus = null;
@@ -76,6 +85,8 @@ let toastTimer = null;
 let memoryInfo = null;
 let memoryHostOld = false;
 const DEFAULT_MEMORY_PATH = '~/.agentlimb/memory';
+let updateCheckState = { state: 'idle', latestVersion: null, url: 'https://github.com/hooosberg/AgentLimb/releases/latest' };
+let updateCheckedOnce = false;
 // Last time the panel saw a live connection. A brief drop (worker suspended,
 // SSE torn down) must not bounce the user back to the "not connected" screen
 // and wipe the chat they were reading — that looks like the connection was lost
@@ -151,7 +162,13 @@ const text = (key) => ({
   languageValues: english ? ['Automatic', 'Simplified Chinese', 'English'] : ['自动', '简体中文', 'English'],
   languageNames: { auto: english ? 'Automatic' : '自动', 'zh-CN': english ? 'Simplified Chinese' : '简体中文', en: 'English' },
   advanced: english ? 'Advanced' : '高级',
-  advancedRowValue: english ? 'MCP path' : 'MCP 路径',
+  advancedRowValue: english ? 'Browser ID · MCP' : '浏览器标识 · MCP',
+  browserIdPrefix: english ? 'Browser' : '当前浏览器',
+  copyBrowserId: english ? 'Click to copy this browser identifier for the AI' : '点击复制当前浏览器标识（多开浏览器时可发给 AI 指定操作）',
+  editBrowserLabel: english ? 'Rename' : '改名',
+  browserLabelTitle: english ? 'Browser profile name (multi-browser routing)' : '当前浏览器名称（多浏览器识别）',
+  browserLabelHint: english ? 'When you open multiple Chrome profiles at once, give each browser a short name (e.g. work or personal) so you can tell the AI which browser to control.' : '同时打开多个 Chrome 账号/浏览器时，给每个浏览器起个名字（如 work、personal），即可直接让 AI 指定操作某一个或同时操作多个。',
+  browserIdCopied: (label) => english ? `Copied browser ID "${label}". Mention it to the AI to target this browser.` : `已复制浏览器标识“${label}”，发给 AI 即可指定操作此浏览器。`,
   sourcePathLabel: english ? 'Install source folder' : '安装源目录',
   sourcePathHint: english ? 'Folder that contains bin/agentlimb.mjs. Save it once and every copied prompt carries this absolute path, so the AI never has to search for it.' : '包含 bin/agentlimb.mjs 的仓库目录。填一次，之后复制出的提示词会带上这个绝对路径，AI 不用自己找。',
   hostPathLabel: english ? 'MCP command path' : 'MCP 命令路径',
@@ -215,6 +232,14 @@ const text = (key) => ({
   aboutRow: english ? 'About AgentLimb' : '关于 AgentLimb',
   about: english ? 'AgentLimb connects AI assistants to Chrome so they can view pages and perform browser tasks with your authorization. Everything stays on your machine.' : 'AgentLimb 把 AI 助手连接到 Chrome，让它在你的授权下查看页面并执行浏览器任务。所有数据都留在本机。',
   version: english ? 'Version' : '版本',
+  updateIdle: english ? 'Check GitHub for the latest release' : '检查是否有新版本发布',
+  checkUpdate: english ? 'Check for updates' : '检查更新',
+  checkingUpdate: english ? 'Checking…' : '正在检查…',
+  downloadUpdate: english ? 'Download new version' : '前往下载新版',
+  updateUpToDate: (v) => english ? `Up to date (v${v})` : `已是最新版本（v${v}）`,
+  updateAvailable: (latest, current) => english ? `New version v${latest} available (current v${current})` : `发现新版本 v${latest}（当前 v${current}）`,
+  updateRowBadge: (latest) => english ? `${displayVersion} · v${latest} new` : `${displayVersion} · 有新版 v${latest}`,
+  updateFailed: english ? 'Could not reach GitHub to check for updates' : '暂时无法连接 GitHub 检查更新，请稍后再试',
   website: english ? 'Website' : '官网',
   license: english ? 'License' : '许可',
   // settings footer (every settings sub-page): official links + star encouragement
@@ -345,6 +370,7 @@ function render() {
 
   renderTopbar(state, paired, currentClient);
   renderManager(clients, currentClient?.id || lastStatus?.connectedClientId);
+  renderBrowserIdentity();
 
   const nextClientId = currentClient?.id || null;
   if (nextClientId !== activeClientId) {
@@ -394,6 +420,19 @@ function renderTopbar(state, paired, currentClient = activePairedClient(state, p
     els.topStatus.textContent = text('topUnpaired');
   }
   $('row-clients-value').textContent = text('countValue')(paired.length);
+}
+
+function renderBrowserIdentity() {
+  const identity = lastStatus?.browserIdentity;
+  if (!identity) return;
+  const display = identity.label && identity.label !== identity.id
+    ? `${identity.label} (${identity.id})`
+    : identity.id;
+  els.browserIdValue.textContent = display;
+  if (document.activeElement !== els.inputBrowserLabel) {
+    els.inputBrowserLabel.value = identity.label && identity.label !== identity.id ? identity.label : '';
+    els.inputBrowserLabel.placeholder = identity.id || 'work / personal';
+  }
 }
 
 /** The tiny manager (popover) and the full list (settings page) share one model. */
@@ -739,6 +778,10 @@ function showSettingsPage(page) {
   els.settingsContent.scrollTop = 0;
   $('btn-settings-back').setAttribute('aria-label', settingsPage === 'home' ? text('settings') : text('back'));
   if (settingsPage === 'memory') void loadMemory();
+  if ((settingsPage === 'home' || settingsPage === 'about') && !updateCheckedOnce) {
+    updateCheckedOnce = true;
+    void checkForUpdates();
+  }
 }
 $('btn-settings').addEventListener('click', () => openSettings('home'));
 $('btn-settings-back').addEventListener('click', () => {
@@ -795,6 +838,7 @@ function applyLanguage() {
   renderManager(lastStatus?.clients || [], lastStatus?.connectedClientId);
   setClientFeedback('');
   renderMemory();
+  renderUpdateStatus();
   render();
   if (!els.statePaired.hidden) void updatePageNote();
 }
@@ -814,12 +858,127 @@ els.btnSaveSource.addEventListener('click', async () => {
   setTimeout(() => { els.btnSaveSource.textContent = text('save'); }, 1200);
 });
 
+async function copyCurrentBrowserId() {
+  const identity = lastStatus?.browserIdentity;
+  const target = (els.inputBrowserLabel.value || identity?.label || identity?.id || '').trim();
+  if (!target) return;
+  const ok = await copyText(target);
+  showToast(ok ? text('browserIdCopied')(target) : text('copyFailed'), ok);
+}
+
+els.btnCopyBrowserId.addEventListener('click', () => { void copyCurrentBrowserId(); });
+els.btnCopyBrowserLabel.addEventListener('click', () => { void copyCurrentBrowserId(); });
+els.btnEditBrowserLabel.addEventListener('click', () => {
+  openSettings('advanced');
+  setTimeout(() => els.inputBrowserLabel.focus(), 50);
+});
+els.btnSaveBrowserLabel.addEventListener('click', async () => {
+  const label = els.inputBrowserLabel.value.trim();
+  try {
+    const res = await chrome.runtime.sendMessage({ type: MESSAGE_TYPES.SET_BROWSER_LABEL, label });
+    if (res?.ok && res.browserIdentity) {
+      lastStatus = { ...(lastStatus || {}), browserIdentity: res.browserIdentity };
+      renderBrowserIdentity();
+    }
+    els.btnSaveBrowserLabel.textContent = text('saved');
+    setTimeout(() => { els.btnSaveBrowserLabel.textContent = text('save'); }, 1200);
+  } catch (_) {
+    showToast(text('unknown'), false);
+  }
+});
+
 chrome.storage.local.get(STORAGE_KEYS.autoTrust).then((r) => { $('auto-trust-toggle').checked = r[STORAGE_KEYS.autoTrust] !== false; });
 $('auto-trust-toggle').addEventListener('change', () => {
   void chrome.storage.local.set({ [STORAGE_KEYS.autoTrust]: $('auto-trust-toggle').checked });
 });
 loadHostPath().then((p) => { els.inputHostPath.value = p; });
 loadSourcePath().then((p) => { els.inputSourcePath.value = p; });
+
+// ── version update check (About page) ─────────────────────────────────────────
+function compareSemver(a, b) {
+  const pa = String(a || '').replace(/^v/i, '').split('-')[0].split('.').map((n) => parseInt(n, 10) || 0);
+  const pb = String(b || '').replace(/^v/i, '').split('-')[0].split('.').map((n) => parseInt(n, 10) || 0);
+  for (let i = 0; i < 3; i += 1) {
+    if ((pa[i] || 0) > (pb[i] || 0)) return 1;
+    if ((pa[i] || 0) < (pb[i] || 0)) return -1;
+  }
+  return 0;
+}
+
+function renderUpdateStatus() {
+  const { state, latestVersion, url } = updateCheckState;
+  const currentVersion = manifest.version || '0.0.0';
+  els.btnCheckUpdate.disabled = state === 'checking';
+  els.btnCheckUpdate.textContent = state === 'checking' ? text('checkingUpdate') : text('checkUpdate');
+  els.updateStatus.dataset.state = state;
+  if (state === 'checking') {
+    els.updateStatus.textContent = text('checkingUpdate');
+    els.linkUpdateDownload.hidden = true;
+  } else if (state === 'available' && latestVersion) {
+    els.updateStatus.textContent = text('updateAvailable')(latestVersion, currentVersion);
+    els.linkUpdateDownload.href = url || 'https://github.com/hooosberg/AgentLimb/releases/latest';
+    els.linkUpdateDownload.hidden = false;
+    $('row-about-value').textContent = text('updateRowBadge')(latestVersion);
+  } else if (state === 'upToDate') {
+    els.updateStatus.textContent = text('updateUpToDate')(currentVersion);
+    els.linkUpdateDownload.hidden = true;
+    $('row-about-value').textContent = displayVersion;
+  } else if (state === 'error') {
+    els.updateStatus.textContent = text('updateFailed');
+    els.linkUpdateDownload.hidden = true;
+  } else {
+    els.updateStatus.textContent = text('updateIdle');
+    els.linkUpdateDownload.hidden = true;
+  }
+}
+
+async function checkForUpdates() {
+  if (updateCheckState.state === 'checking') return;
+  updateCheckState = { ...updateCheckState, state: 'checking' };
+  renderUpdateStatus();
+  const currentVersion = manifest.version || '0.0.0';
+  let latestVersion = null;
+  let releaseUrl = 'https://github.com/hooosberg/AgentLimb/releases/latest';
+
+  try {
+    const res = await fetch('https://api.github.com/repos/hooosberg/AgentLimb/releases/latest', {
+      headers: { Accept: 'application/vnd.github+json' },
+      signal: AbortSignal.timeout(4500),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      const tag = String(data?.tag_name || '').replace(/^v/i, '').trim();
+      if (/^\d+\.\d+\.\d+/.test(tag)) {
+        latestVersion = tag;
+        if (data?.html_url) releaseUrl = data.html_url;
+      }
+    }
+  } catch (_) { /* fallback to main package.json below */ }
+
+  try {
+    const pkgRes = await fetch('https://raw.githubusercontent.com/hooosberg/AgentLimb/main/package.json', {
+      signal: AbortSignal.timeout(4500),
+    });
+    if (pkgRes.ok) {
+      const pkgData = await pkgRes.json();
+      const mainVer = String(pkgData?.version || '').trim();
+      if (/^\d+\.\d+\.\d+/.test(mainVer) && (!latestVersion || compareSemver(mainVer, latestVersion) > 0)) {
+        latestVersion = mainVer;
+      }
+    }
+  } catch (_) { /* ignore */ }
+
+  if (!latestVersion) {
+    updateCheckState = { state: 'error', latestVersion: null, url: releaseUrl };
+  } else if (compareSemver(latestVersion, currentVersion) > 0) {
+    updateCheckState = { state: 'available', latestVersion, url: releaseUrl };
+  } else {
+    updateCheckState = { state: 'upToDate', latestVersion, url: releaseUrl };
+  }
+  renderUpdateStatus();
+}
+
+els.btnCheckUpdate.addEventListener('click', () => { void checkForUpdates(); });
 
 // ── site memory / 网站记忆 ────────────────────────────────────────────────────
 /**

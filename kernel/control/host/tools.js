@@ -15,6 +15,7 @@ export const HOST_TOOLS = [
       type: 'object',
       properties: {
         tabId: { type: 'number', description: 'Optional tab id to inspect.' },
+        browser: { type: 'string', description: 'Optional browser profile id or label when multiple Chrome profiles are connected.' },
       },
       additionalProperties: false,
     },
@@ -28,6 +29,7 @@ export const HOST_TOOLS = [
       properties: {
         url: { type: 'string', description: 'URL to open. Defaults to about:blank.' },
         active: { type: 'boolean', description: 'Bring the new tab to front. Default: false.' },
+        browser: { type: 'string', description: 'Optional browser profile id or label when multiple Chrome profiles are connected.' },
       },
       additionalProperties: false,
     },
@@ -39,6 +41,7 @@ export const HOST_TOOLS = [
       type: 'object',
       properties: {
         tabId: { type: 'number', description: 'Tab id to close.' },
+        browser: { type: 'string', description: 'Optional browser profile id or label when multiple Chrome profiles are connected.' },
       },
       required: ['tabId'],
       additionalProperties: false,
@@ -51,6 +54,7 @@ export const HOST_TOOLS = [
       type: 'object',
       properties: {
         tabId: { type: 'number', description: 'Tab id to activate.' },
+        browser: { type: 'string', description: 'Optional browser profile id or label when multiple Chrome profiles are connected.' },
       },
       required: ['tabId'],
       additionalProperties: false,
@@ -67,6 +71,7 @@ export const HOST_TOOLS = [
         filter: { type: 'string', enum: ['interactive', 'all'], description: 'Default: interactive.' },
         depth: { type: 'number', description: 'Max tree depth. Default: 15.' },
         limit: { type: 'number', description: 'Max elements returned. Default: 100.' },
+        browser: { type: 'string', description: 'Optional browser profile id or label when multiple Chrome profiles are connected.' },
       },
       additionalProperties: false,
     },
@@ -82,6 +87,7 @@ export const HOST_TOOLS = [
         query: { type: 'string', description: 'Visible text to match (case-insensitive substring).' },
         selector: { type: 'string', description: 'CSS selector (alternative to query).' },
         limit: { type: 'number', description: 'Max matches. Default: 20.' },
+        browser: { type: 'string', description: 'Optional browser profile id or label when multiple Chrome profiles are connected.' },
       },
       additionalProperties: false,
     },
@@ -122,6 +128,7 @@ export const HOST_TOOLS = [
         ref2: { type: 'number', description: 'Drag target element ref.' },
         format: { type: 'string', enum: ['jpeg', 'png'], description: 'Screenshot format. Default: jpeg.' },
         fullPage: { type: 'boolean', description: 'Screenshot beyond viewport. Default: false.' },
+        browser: { type: 'string', description: 'Optional browser profile id or label when multiple Chrome profiles are connected.' },
       },
       required: ['action'],
       additionalProperties: false,
@@ -138,6 +145,7 @@ export const HOST_TOOLS = [
         ref: { type: 'number', description: 'Element ref.' },
         selector: { type: 'string', description: 'CSS selector fallback.' },
         value: { description: 'String for text/select, boolean for checkbox/radio.' },
+        browser: { type: 'string', description: 'Optional browser profile id or label when multiple Chrome profiles are connected.' },
       },
       required: ['value'],
       additionalProperties: false,
@@ -154,6 +162,7 @@ export const HOST_TOOLS = [
         tabId: { type: 'number', description: 'Target tab. Defaults to the active tab.' },
         waitForLoad: { type: 'boolean', description: 'Wait for load event. Default: true.' },
         timeout: { type: 'number', description: 'Load wait timeout ms. Default: 15000.' },
+        browser: { type: 'string', description: 'Optional browser profile id or label when multiple Chrome profiles are connected.' },
       },
       required: ['url'],
       additionalProperties: false,
@@ -168,6 +177,7 @@ export const HOST_TOOLS = [
       properties: {
         expression: { type: 'string', description: 'JS expression to evaluate.' },
         tabId: { type: 'number', description: 'Target tab.' },
+        browser: { type: 'string', description: 'Optional browser profile id or label when multiple Chrome profiles are connected.' },
       },
       required: ['expression'],
       additionalProperties: false,
@@ -189,6 +199,7 @@ export const HOST_TOOLS = [
           description: 'Default: "visible" when selector given, else "page_load".',
         },
         timeout: { type: 'number', description: 'Max wait ms. Default: 10000, max: 30000.' },
+        browser: { type: 'string', description: 'Optional browser profile id or label when multiple Chrome profiles are connected.' },
       },
       additionalProperties: false,
     },
@@ -202,6 +213,7 @@ export const HOST_TOOLS = [
         tabId: { type: 'number', description: 'Target tab.' },
         limit: { type: 'number', description: 'Max messages. Default: 50.' },
         level: { type: 'string', enum: ['all', 'error', 'warning', 'info', 'log'], description: 'Default: all.' },
+        browser: { type: 'string', description: 'Optional browser profile id or label when multiple Chrome profiles are connected.' },
       },
       additionalProperties: false,
     },
@@ -215,6 +227,7 @@ export const HOST_TOOLS = [
         tabId: { type: 'number', description: 'Target tab.' },
         limit: { type: 'number', description: 'Max requests. Default: 50.' },
         urlFilter: { type: 'string', description: 'Substring filter on request URL.' },
+        browser: { type: 'string', description: 'Optional browser profile id or label when multiple Chrome profiles are connected.' },
       },
       additionalProperties: false,
     },
@@ -226,6 +239,7 @@ export const HOST_TOOLS = [
     inputSchema: {
       type: 'object',
       properties: {
+        browser: { type: 'string', description: 'Optional browser profile id or label when multiple Chrome profiles are connected.' },
         actions: {
           type: 'array',
           maxItems: 20,
@@ -251,6 +265,7 @@ export const HOST_TOOLS = [
       type: 'object',
       properties: {
         text: { type: 'string', description: 'Message shown in the side panel chat.' },
+        browser: { type: 'string', description: 'Optional browser profile id or label to deliver to a specific browser panel (omit to broadcast to all connected panels).' },
       },
       required: ['text'],
       additionalProperties: false,
@@ -292,11 +307,17 @@ export const HOST_TOOLS = [
   {
     name: 'ping',
     description: [
-      'Check whether the browser connection is live and authorized. Returns a pong plus the pairing state.',
+      'Check whether the browser connection is live and authorized. Returns a pong plus the pairing state (and all connected browser profiles when multiple Chrome instances are open).',
       'Call this FIRST whenever you are unsure whether you are connected, or when the user asks about connection status ("are you connected", "连接", "did it work").',
       'Trust persists across restarts, so a successful ping means you are ready — never re-run installation, configuration or pairing for it.',
     ].join(' '),
-    inputSchema: { type: 'object', properties: {}, additionalProperties: false },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        browser: { type: 'string', description: 'Optional browser profile id or label when multiple Chrome profiles are connected.' },
+      },
+      additionalProperties: false,
+    },
   },
 ];
 

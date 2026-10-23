@@ -8,8 +8,8 @@
 export const APP_ID = 'agentlimb.chrome';
 export const APP_NAME = 'AgentLimb';
 /** Display version. `manifest.json`, `package.json` and the docs mirror these two. */
-export const APP_VERSION = '0.6.4';
-export const APP_BUILD = 'l13';
+export const APP_VERSION = '0.6.5';
+export const APP_BUILD = 'l14';
 export const USER_STOP_MESSAGE = '用户请求停止当前任务：请停止后续浏览器操作，并用 say 回复确认。';
 
 /** Local bridge defaults. The host picks the first free port in the range. */
@@ -88,6 +88,7 @@ export const STORAGE_KEYS = {
   lastClient: 'agentlimb.lastClient',
   hostPath: 'agentlimb.hostPath', // user-overridable MCP command path
   sourcePath: 'agentlimb.sourcePath', // absolute path of the repo that contains bin/agentlimb.mjs
+  browserIdentity: 'agentlimb.browserIdentity', // { id, label } per-profile identity for multi-browser routing
   lang: 'agentlimb.lang',
   chatLogs: 'agentlimb.chatLogs', // per-client display-only transcripts
   chatLog: 'agentlimb.chatLog', // recent panel chat (survives panel close / SW restart)
@@ -107,6 +108,7 @@ export const MESSAGE_TYPES = {
   CHAT_STOP: 'AGENTLIMB_CHAT_STOP',
   SELECT_CLIENT: 'AGENTLIMB_SELECT_CLIENT',
   DISCONNECT_CLIENT: 'AGENTLIMB_DISCONNECT_CLIENT',
+  SET_BROWSER_LABEL: 'AGENTLIMB_SET_BROWSER_LABEL',
   // SW → pages (broadcast)
   NOTIFY_STATUS: 'AGENTLIMB_NOTIFY_STATUS',
   NOTIFY_CHAT: 'AGENTLIMB_NOTIFY_CHAT',

@@ -601,3 +601,106 @@ test('the agent is told it is connected instead of having to guess', { timeout: 
     .find((n) => n.method === 'notifications/message' && n.params?.logger === 'agentlimb-status'
       && /Saved pairing found/.test(n.params.data || '')));
 });
+
+test('multi-browser routing: two Chrome profiles connected simultaneously can be targeted by label, substring, or ID', async (t) => {
+  const home = mkdtempSync(join(tmpdir(), 'agentlimb-multi-browser-'));
+  t.after(() => rmSync(home, { recursive: true, force: true }));
+
+  const mcp = new McpProcess(home, 'MultiBrowser Agent', 'test-multi');
+  await mcp.ready;
+  t.after(() => mcp.stop());
+
+  const init = await mcp.request('initialize', {
+    protocolVersion: '2025-03-26',
+    capabilities: {},
+    clientInfo: { name: 'multi-client', version: '0' },
+  });
+  assert.match(init.result.instructions, /Multi-browser routing/);
+
+  const { port } = await discoverPort('MultiBrowser Agent');
+
+  // Connect Browser 1 (work@example.com) and Browser 2 (personal) to the same bridge
+  const sseWork = new SseClient(`http://127.0.0.1:${port}/events?b=tok-work`);
+  const ssePersonal = new SseClient(`http://127.0.0.1:${port}/events?b=tok-pers`);
+  t.after(async () => {
+    await sseWork.close();
+    await ssePersonal.close();
+  });
+
+  await sseWork.waitFor((f) => f.t === WIRE.HELLO);
+  await ssePersonal.waitFor((f) => f.t === WIRE.HELLO);
+
+  assert.equal((await post(port, {
+    b: 'tok-work',
+    t: WIRE.GRANT,
+    ok: true,
+    name: 'MultiBrowser Agent',
+    browser: { id: 'Profile-work01', label: 'work@example.com' },
+  })).ok, true);
+
+  assert.equal((await post(port, {
+    b: 'tok-pers',
+    t: WIRE.GRANT,
+    ok: true,
+    name: 'MultiBrowser Agent',
+    browser: { id: 'Profile-pers02', label: 'personal' },
+  })).ok, true);
+
+  // 1. Route navigate to work via substring match ("work" -> "work@example.com")
+  const navGoogle = mcp.request('tools/call', {
+    name: 'navigate',
+    arguments: { url: 'https://www.google.com', browser: 'work' },
+  });
+  const callGoogle = await sseWork.waitFor((f) => f.t === WIRE.TOOL_CALL && f.tool === 'navigate');
+  assert.equal(callGoogle.args.url, 'https://www.google.com');
+  assert.equal(callGoogle.args.browser, undefined, 'routing parameter is stripped before forwarding to extension');
+  await post(port, {
+    b: 'tok-work',
+    t: WIRE.TOOL_RESULT,
+    tool_use_id: callGoogle.tool_use_id,
+    ok: true,
+    result: { url: 'https://www.google.com', title: 'Google' },
+  });
+  const resGoogle = await navGoogle;
+  const textGoogle = resGoogle.result.content.map((c) => c.text || '').join('\n');
+  assert.match(textGoogle, /MULTI-BROWSER \(auto\): 2 Chrome profiles connected/);
+  assert.match(textGoogle, /This call ran on: work@example\.com \(Profile-work01\)/);
+
+  // 2. Route navigate to personal via exact label match ("personal")
+  const navBaidu = mcp.request('tools/call', {
+    name: 'navigate',
+    arguments: { url: 'https://www.baidu.com', browser: 'personal' },
+  });
+  const callBaidu = await ssePersonal.waitFor((f) => f.t === WIRE.TOOL_CALL && f.tool === 'navigate');
+  assert.equal(callBaidu.args.url, 'https://www.baidu.com');
+  await post(port, {
+    b: 'tok-pers',
+    t: WIRE.TOOL_RESULT,
+    tool_use_id: callBaidu.tool_use_id,
+    ok: true,
+    result: { url: 'https://www.baidu.com', title: '百度一下' },
+  });
+  const resBaidu = await navBaidu;
+  const textBaidu = resBaidu.result.content.map((c) => c.text || '').join('\n');
+  assert.match(textBaidu, /This call ran on: personal \(Profile-pers02\)/);
+
+  // 3. Targeted `say` sends only to the specified browser profile
+  const sayPers = await mcp.request('tools/call', {
+    name: 'say',
+    arguments: { text: '百度已打开', browser: 'Profile-pers02' },
+  });
+  assert.ok(!sayPers.result.isError);
+  const msgPers = await ssePersonal.waitFor((f) => f.t === WIRE.AGENT_MESSAGE && f.text === '百度已打开');
+  assert.equal(msgPers.text, '百度已打开');
+  assert.equal(sseWork.frames.some((f) => f.t === WIRE.AGENT_MESSAGE && f.text === '百度已打开'), false);
+
+  // 4. Unknown browser target returns a clear error listing connected browsers
+  const badTarget = await mcp.request('tools/call', {
+    name: 'navigate',
+    arguments: { url: 'https://example.com', browser: 'nonexistent' },
+  });
+  assert.equal(badTarget.result.isError, true);
+  assert.match(badTarget.result.content[0].text, /Target browser "nonexistent" not found/);
+  assert.match(badTarget.result.content[0].text, /work@example\.com/);
+  assert.match(badTarget.result.content[0].text, /personal/);
+});

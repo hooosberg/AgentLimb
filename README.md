@@ -7,7 +7,7 @@
 
 **Landing page → https://hooosberg.com/apps/agentlimb/** · [Download latest](https://github.com/hooosberg/AgentLimb/releases/latest) · [Legacy site](https://agentlimb.com/)
 
-Current source version: **0.6.4 / l13** (see [CHANGELOG.md](./CHANGELOG.md)).
+Current source version: **0.6.5 / l14** (see [CHANGELOG.md](./CHANGELOG.md)).
 
 A universal browser-control extension: it gives any MCP-capable agent hands, so it can drive your Chrome.
 
@@ -135,6 +135,14 @@ A folder of plain Markdown files that lets any MCP-connected AI reuse what it al
 - **Not tied to AgentLimb**: the folder is a valid `kb` library layout, so another browser MCP, another AI client, or the standalone CLI can use the same notes.
 - **Operation knowledge only**: never accounts, passwords, cookies, tokens, verification codes, or data copied from the site. Two consecutive failures mark a playbook `stale` so the next run re-verifies anchors instead of trusting a stale selector.
 
+## Multi-browser / multi-profile routing
+
+When you only run one Chrome profile, you never have to think about routing. If you open 2+ Chrome profiles simultaneously (each with AgentLimb installed, for example multi-account operations), AgentLimb routes commands across them without adding extra tools or changing your MCP config:
+
+- **Automatic profile identity + one-click copy**: each Chrome profile generates a persistent ID (`Profile-xxxxxx`) and automatically reads the signed-in Google email as its default label if available. The bottom bar of the side panel shows the current browser profile (`label (id)`) — click it to copy the identifier for your AI, or click **Rename** (`Settings → Advanced`) to give each browser a short alias (e.g. `work`, `personal`).
+- **Optional `browser` parameter on every browser tool**: pass `browser: "work"` (supports exact ID, exact label, or unambiguous substring match) on `navigate`, `tabs_context`, `computer`, `say`, etc. to operate multiple browsers simultaneously or sequentially.
+- **Auto-injected context & disambiguation**: when 2+ browsers are connected to the bridge at once, tool results automatically include a `MULTI-BROWSER (auto)` hint listing all connected profiles (`label` and `id`). If your instruction is ambiguous across multiple open browsers, the AI is instructed to ask which browser profile to operate first.
+
 The catalog lives in `kernel/control/host/tools.js` and is shared by the extension and the MCP host — change it once, both sides follow.
 
 ## Layout
@@ -165,7 +173,7 @@ tests/                         Node's native test runner, including end-to-end p
 ## What is actually verified
 
 - `npm test` covers the protocol and modules automatically; `node scripts/live-test.mjs` runs a browser/MCP integration pass with its own temporary HOME, Chrome profile, extension copy, and ports, then cleans up — it never touches your daily `~/.agentlimb` install.
-- The existing 81/81 live report belongs to an earlier single-client baseline and does **not** represent multi-client Chrome acceptance for 0.6.4/l13. Automated unit tests currently pass 107/107; real multi-client Chrome acceptance is still in progress and has no result to report yet.
+- The existing 81/81 live report belongs to an earlier single-client baseline and does **not** represent multi-client Chrome acceptance for 0.6.5/l14. Automated unit tests currently pass 109/109; real multi-client Chrome acceptance is still in progress and has no result to report yet.
 - Site memory has its own real-model smoke test that needs no browser: `npm run smoke:memory` (czen/hy3, 20/20). It proves the model calls `site_memory`, the playbook lands on disk with entry/selector/pitfall and no secrets, a **fresh session** reads it back, and the off switch makes the tool refuse. The browser half (pair → click → type) still lives in `node scripts/ai-onboarding-test.mjs`.
 - Loading the config and trusting MCP inside real agent clients, plus specific models and monkey testing, still need independent acceptance. Nothing is claimed to pass without observed evidence.
 

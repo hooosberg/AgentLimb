@@ -203,6 +203,9 @@ function bootstrap() {
       case MESSAGE_TYPES.CHAT_STOP:
         return bridge.requestStop();
 
+      case MESSAGE_TYPES.SET_BROWSER_LABEL:
+        return bridge.setBrowserLabel(message.label);
+
       default:
         return { ok: false, error: `unknown message: ${message.type || '(empty)'}` };
     }

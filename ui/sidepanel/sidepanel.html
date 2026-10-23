@@ -72,6 +72,15 @@
       </form>
       <div id="page-note" class="chat-note"></div>
     </section>
+
+    <!-- 底部轻量浏览器标识栏：多开 Chrome 账号时一键复制给 AI 或改备注名 -->
+    <div id="browser-id-bar" class="browser-id-bar">
+      <button id="btn-copy-browser-id" class="browser-id-chip" type="button" data-i18n-title="copyBrowserId" data-i18n-aria="copyBrowserId">
+        <span data-i18n="browserIdPrefix">当前浏览器</span>
+        <code id="browser-id-value">Profile</code>
+      </button>
+      <button id="btn-edit-browser-label" class="browser-id-edit" type="button" data-i18n="editBrowserLabel">改名</button>
+    </div>
   </main>
 
   <!-- ═══ 设置：首页是栏目列表，点进去是子页 ═══ -->
@@ -193,6 +202,13 @@
 
       <!-- 子页：高级 -->
       <div id="page-advanced" class="settings-page" hidden>
+        <label for="input-browser-label" data-i18n="browserLabelTitle"></label>
+        <p class="settings-note" data-i18n="browserLabelHint"></p>
+        <div class="path-row">
+          <input id="input-browser-label" type="text" spellcheck="false" placeholder="work / personal">
+          <button id="btn-copy-browser-label" class="btn-ghost" type="button" data-i18n="copyPath">复制</button>
+        </div>
+        <button id="btn-save-browser-label" class="btn-ghost" type="button" data-i18n="save">保存</button>
         <label for="input-source-path" data-i18n="sourcePathLabel"></label>
         <p class="settings-note" data-i18n="sourcePathHint"></p>
         <input id="input-source-path" type="text" spellcheck="false" placeholder="/Users/you/Projects/agentlimb">
@@ -219,6 +235,13 @@
             <div class="about-name">AgentLimb</div>
             <div class="about-version"><span data-i18n="version">版本</span> <span id="about-version"></span></div>
           </div>
+        </div>
+        <div class="update-card">
+          <div class="update-row">
+            <span id="update-status" class="update-status" data-i18n="updateIdle">点击检查是否有新版本</span>
+            <button id="btn-check-update" class="btn-ghost" type="button" data-i18n="checkUpdate">检查更新</button>
+          </div>
+          <a id="link-update-download" class="btn-primary update-download" href="https://github.com/hooosberg/AgentLimb/releases/latest" target="_blank" rel="noopener" hidden data-i18n="downloadUpdate">前往下载新版</a>
         </div>
         <p class="settings-note" data-i18n="about"></p>
       </div>

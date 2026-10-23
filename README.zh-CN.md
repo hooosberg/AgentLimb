@@ -7,7 +7,7 @@
 
 **官网 / 产品页（落地页）→ https://hooosberg.com/apps/agentlimb/** · [下载最新版](https://github.com/hooosberg/AgentLimb/releases/latest) · [旧版官网](https://agentlimb.com/)
 
-当前源码版本：**0.6.4 / l13**（变更记录见 [CHANGELOG.md](./CHANGELOG.md)）。
+当前源码版本：**0.6.5 / l14**（变更记录见 [CHANGELOG.md](./CHANGELOG.md)）。
 
 通用浏览器控制插件：给任意支持 MCP 的智能体软件装上「手」，让它能控制你的 Chrome。
 
@@ -138,6 +138,14 @@ npm test                         # 协议端到端测试（含模拟扩展）
 - **不绑定 AgentLimb**：目录就是合法的 `kb` 库布局，换浏览器 MCP、换 AI 工具、或独立的 CLI 都能读同一份。
 - **只记操作知识**：不记账号、密码、Cookie、Token、验证码，也不记网站上抓到的内容。连续失败 2 次自动标 `stale`，下次先验锚点再照做。
 
+## 多浏览器 / 多账号路由（Multi-browser routing）
+
+80% 的单浏览器用户完全零感知；当你同时打开 2 个及以上 Chrome 账号配置文件（均安装 AgentLimb，例如多账号运营场景）时，无需修改 MCP 配置即可同时或分别操控多个浏览器：
+
+- **自动识别账号 + 侧栏一键复制与改名**：每个 Chrome 配置文件自动生成持久标识（`Profile-xxxxxx`），并尝试读取当前登录的 Google 账号邮箱作为默认名称。侧栏底部常驻极简「当前浏览器」标识条，**点击即可一键复制标识**发给 AI，点击「改名」（或进入「设置 → 高级」）可自定义简短备注名（如 `work`、`personal`），保存后实时同步给宿主。
+- **工具层可选 `browser` 参数**：全部 16 个浏览器工具（含 `navigate`、`tabs_context`、`computer`、`say`、`ping` 等）均支持传入可选参数 `browser`（支持精确 ID、精确名称或无歧义子串匹配，如 `"work"` 自动匹配 `"work@example.com"`），可并行或顺序驱动不同浏览器。
+- **双通道自动提示与消歧**：当同时有 2 个及以上浏览器在线时，工具返回结果会自动注入 `MULTI-BROWSER (auto)` 提示，列出所有在线浏览器的名称与 ID；若你的指令没有指明操作哪个浏览器，AI 会先向你确认目标浏览器再执行操作。
+
 ## 目录
 
 ```
@@ -166,7 +174,7 @@ tests/                         Node 原生 test runner，含端到端协议测�
 ## 验收边界
 
 - `npm test` 是自动化协议和模块测试；`node scripts/live-test.mjs` 使用独立临时 HOME、Chrome profile、扩展副本及端口进行浏览器/MCP 集成测试，并清理本轮临时数据，不触碰日常 `~/.agentlimb` 安装。
-- 已有 81/81 的 live 报告属于此前单客户端基线，不代表当前 0.6.4/l13 的多客户端 Chrome 验收。当前自动化单元测试为 107/107；多客户端真实 Chrome 验收仍在进行，尚无结果可报告。
+- 已有 81/81 的 live 报告属于此前单客户端基线，不代表当前 0.6.5/l14 的多客户端 Chrome 验收。当前自动化单元测试为 109/109；多客户端真实 Chrome 验收仍在进行，尚无结果可报告。
 - 网站记忆有独立的真实模型冒烟（不需要浏览器）：`npm run smoke:memory`（czen/hy3，20/20）。它证明模型真的调用 `site_memory`、手册真的落盘（入口/锚点/坑齐全且无凭据）、**全新会话能读回来**、关掉开关后工具会明确拒绝。浏览器那一半（配对 → 点击 → 输入）仍在 `node scripts/ai-onboarding-test.mjs`。
 - 真实智能体客户端中的配置加载/信任，以及指定模型和猴子测试仍需独立验收；没有观测证据时不宣称通过。
 

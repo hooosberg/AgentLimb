@@ -128,20 +128,59 @@ export function createBridge({ clientId, clientName = 'AI Agent', clientKind = '
    * its pong so one tool call answers "am I connected?" completely — the agent
    * should never have to guess, re-read install docs, or re-run setup for this.
    */
+  function listBrowsers() {
+    return [...sseClients.values()].map((conn) => ({
+      id: conn.browser?.id || conn.token,
+      label: conn.browser?.label || conn.browser?.id || conn.token,
+      authorized: conn.granted === true,
+      active: conn.id === activeBrowserId,
+    }));
+  }
+
+  function resolveBrowser(target) {
+    const query = String(target || '').trim();
+    if (!query) return null;
+    const lower = query.toLowerCase();
+    const grantedList = [...sseClients.values()].filter((c) => c.granted);
+    // 1. Exact ID or token match
+    const exactId = grantedList.find((c) => (c.browser?.id || '').toLowerCase() === lower || c.token.toLowerCase() === lower);
+    if (exactId) return exactId;
+    // 2. Exact label match
+    const exactLabel = grantedList.find((c) => (c.browser?.label || '').toLowerCase() === lower);
+    if (exactLabel) return exactLabel;
+    // 3. Substring match on label or id (e.g. "work" matches "work@example.com")
+    const subMatches = grantedList.filter(
+      (c) => (c.browser?.label || '').toLowerCase().includes(lower) || (c.browser?.id || '').toLowerCase().includes(lower),
+    );
+    if (subMatches.length === 1) return subMatches[0];
+    if (subMatches.length > 1) {
+      const names = subMatches.map((c) => `"${c.browser?.label || c.browser?.id}" (${c.browser?.id || c.token})`).join(', ');
+      throw new Error(`Ambiguous browser target "${query}" matched multiple profiles: ${names}. Pass the exact id or label.`);
+    }
+    const available = grantedList.map((c) => `"${c.browser?.label || c.browser?.id}" (id: ${c.browser?.id || c.token})`).join(', ') || 'none';
+    throw new Error(`Target browser "${query}" not found. Connected authorized browsers: ${available}.`);
+  }
+
   function connectionStatus() {
     const connection = activeConnection();
     const authorized = connection?.granted === true;
+    const browsers = listBrowsers();
+    const grantedBrowsers = browsers.filter((b) => b.authorized);
     return {
       connected: connection != null,
       authorized,
       browser: connection ? 'Chrome (AgentLimb extension)' : null,
+      activeBrowserProfile: connection?.browser || null,
+      ...(browsers.length > 1 ? { browsers } : {}),
       extensionVersion: `${APP_VERSION}-${APP_BUILD}`,
       client: effectiveClientName,
       paired: isPaired(),
       pairedAt: pairedAtCache,
       bridgePort: port,
       note: authorized
-        ? 'You are connected and authorized. Trust persists across restarts, so nothing needs to be re-paired, restarted or approved. Tell the user "Connected" and start the task.'
+        ? (grantedBrowsers.length > 1
+          ? `Multiple Chrome profiles are connected (${grantedBrowsers.map((b) => `${b.label} [${b.id}]`).join(', ')}). Pass the "browser" argument on tool calls to target a specific profile, or ask the user which browser to operate if their request is ambiguous.`
+          : 'You are connected and authorized. Trust persists across restarts, so nothing needs to be re-paired, restarted or approved. Tell the user "Connected" and start the task.')
         : connection
           ? 'A browser is connected but has not authorized this AI yet. Ask the user to click the copy-prompt button in the AgentLimb side panel, then retry. Do not change the MCP config or restart.'
           : 'No browser is connected. Keep Chrome running with the AgentLimb extension enabled and open its side panel once, then retry.',
@@ -212,6 +251,7 @@ export function createBridge({ clientId, clientName = 'AI Agent', clientKind = '
         version: APP_VERSION,
         port,
         browsers: sseClients.size,
+        browserList: listBrowsers(),
         paired: isPaired(),
         authorized: activeConnection() != null,
         activeBrowser: activeConnection() != null,
@@ -268,7 +308,7 @@ export function createBridge({ clientId, clientName = 'AI Agent', clientKind = '
       res.write('retry: 2000\n\n');
       const id = randomUUID();
       const token = url.searchParams.get('b') || randomUUID();
-      const conn = { res, id, token, granted: false };
+      const conn = { res, id, token, granted: false, browser: null };
       sseClients.set(id, conn);
       tokenIndex.set(token, id);
       everConnected = true;
@@ -282,14 +322,15 @@ export function createBridge({ clientId, clientName = 'AI Agent', clientKind = '
         tokenIndex.delete(token);
         // No browser left: the last denial no longer describes anything.
         if (sseClients.size === 0) deniedReason = null;
-        if (activeBrowserId === id) {
-          activeBrowserId = null;
-          // Fail any in-flight tool call — the browser vanished mid-call.
-          for (const [useId, pending] of pendingToolCalls) {
+        for (const [useId, pending] of pendingToolCalls) {
+          if (pending.connId === id) {
             clearTimeout(pending.timer);
             pending.reject(new Error('browser disconnected during tool call'));
             pendingToolCalls.delete(useId);
           }
+        }
+        if (activeBrowserId === id) {
+          activeBrowserId = null;
           // Another already-authorized browser keeps working without a re-grant.
           const survivor = [...sseClients.values()].find((other) => other.granted);
           if (survivor) activeBrowserId = survivor.id;
@@ -329,13 +370,20 @@ export function createBridge({ clientId, clientName = 'AI Agent', clientKind = '
   /** The extension decides; the host only records the answer. */
   function handleGrant(frame, browserConn) {
     if (!browserConn) return;
+    if (frame.browser && typeof frame.browser === 'object') {
+      browserConn.browser = {
+        id: String(frame.browser.id || browserConn.token).trim(),
+        label: String(frame.browser.label || frame.browser.id || browserConn.token).trim(),
+      };
+    }
     if (frame.ok) {
       markPaired(frame.name || effectiveClientName);
       browserConn.granted = true;
       deniedReason = null;
       if (!activeBrowserId) activeBrowserId = browserConn.id;
       const name = frame.name || effectiveClientName;
-      log('info', `browser authorized this client as "${name}"`);
+      const bLabel = browserConn.browser?.label ? ` (${browserConn.browser.label})` : '';
+      log('info', `browser authorized this client as "${name}"${bLabel}`);
       // The agent has no other way to learn this. The extension knows it is
       // paired; the side panel shows it; but the agent only finds out if it
       // happens to call a tool — which is why it kept re-running setup after a
@@ -370,7 +418,7 @@ export function createBridge({ clientId, clientName = 'AI Agent', clientKind = '
         if (!pending) break;
         clearTimeout(pending.timer);
         pendingToolCalls.delete(frame.tool_use_id);
-        if (frame.ok) pending.resolve({ result: frame.result, userMessages: frame.userMessages || [] });
+        if (frame.ok) pending.resolve({ result: frame.result, userMessages: frame.userMessages || [], browser: browserConn?.browser || null });
         else pending.reject(new Error(frame.error || 'tool failed'));
         break;
       }
@@ -379,14 +427,16 @@ export function createBridge({ clientId, clientName = 'AI Agent', clientKind = '
         break;
 
       case WIRE.USER_MESSAGE: {
-        log('info', `user message: ${frame.text}${frame.page ? ` (page: ${frame.page.url})` : ''}`);
-        onUserMessage?.(frame.text, frame.page);
+        const bInfo = browserConn?.browser || null;
+        log('info', `user message: ${frame.text}${frame.page ? ` (page: ${frame.page.url})` : ''}${bInfo ? ` [browser: ${bInfo.label}]` : ''}`);
+        onUserMessage?.(frame.text, frame.page, bInfo);
         // Relay to every browser so the panel chat and tool-result queues see it.
         broadcast({
           t: WIRE.USER_MESSAGE,
           text: frame.text,
           at: frame.at || new Date().toISOString(),
           page: frame.page,
+          ...(bInfo ? { browser: bInfo } : {}),
         });
         break;
       }
@@ -452,14 +502,20 @@ export function createBridge({ clientId, clientName = 'AI Agent', clientKind = '
         );
       }
     }
+    const { browser: targetBrowser, ...cleanArgs } = args || {};
+    let targetConn = activeConnection();
+    if (targetBrowser) {
+      targetConn = resolveBrowser(targetBrowser);
+      activeBrowserId = targetConn.id;
+    }
     const toolUseId = randomUUID();
     return new Promise((resolve, reject) => {
       const timer = setTimeout(() => {
         pendingToolCalls.delete(toolUseId);
         reject(new Error(`tool ${tool} timed out after ${timeoutMs}ms`));
       }, timeoutMs);
-      pendingToolCalls.set(toolUseId, { resolve, reject, timer });
-      const sent = sendTo(activeConnection(), { t: WIRE.TOOL_CALL, tool_use_id: toolUseId, tool, args, client_id: clientId, deadline: Date.now() + timeoutMs });
+      pendingToolCalls.set(toolUseId, { resolve, reject, timer, connId: targetConn.id });
+      const sent = sendTo(targetConn, { t: WIRE.TOOL_CALL, tool_use_id: toolUseId, tool, args: cleanArgs, client_id: clientId, deadline: Date.now() + timeoutMs });
       if (!sent) {
         clearTimeout(timer);
         pendingToolCalls.delete(toolUseId);
@@ -527,10 +583,19 @@ export function createBridge({ clientId, clientName = 'AI Agent', clientKind = '
    * side panel as a normal assistant message, so the panel really is a chat
    * window on the agent, not a one-way command box.
    */
-  function sayToUser(text) {
+  function sayToUser(text, targetBrowser) {
     const clean = String(text || '').trim();
     if (!clean) return false;
     const at = new Date().toISOString();
+    if (targetBrowser) {
+      const targetConn = resolveBrowser(targetBrowser);
+      if (targetConn) {
+        activeBrowserId = targetConn.id;
+        sendTo(targetConn, { t: WIRE.AGENT_MESSAGE, text: clean, at });
+        log('info', `agent → panel (${targetConn.browser?.label || targetConn.id}): ${clean.slice(0, 120)}`);
+        return true;
+      }
+    }
     broadcast({ t: WIRE.AGENT_MESSAGE, text: clean, at });
     log('info', `agent → panel: ${clean.slice(0, 120)}`);
     return true;
@@ -551,6 +616,7 @@ export function createBridge({ clientId, clientName = 'AI Agent', clientKind = '
     isPaired,
     getPort: () => port,
     getActiveBrowser: () => activeBrowserId != null,
+    listBrowsers,
     connectionStatus,
     getDeniedReason: () => deniedReason,
     revokePairing,

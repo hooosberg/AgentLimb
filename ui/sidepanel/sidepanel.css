@@ -353,6 +353,57 @@ body {
   padding: 0 4px;
 }
 
+/* ── 底部浏览器标识栏（多开 Chrome 账号时可一键复制或改备注名） ── */
+.browser-id-bar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 5px 10px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-soft);
+  font-size: 11px;
+  color: var(--text-soft);
+}
+.browser-id-chip {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--text-soft);
+  font: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 4px;
+  border-radius: 6px;
+  cursor: pointer;
+  min-width: 0;
+  overflow: hidden;
+}
+.browser-id-chip:hover { color: var(--text); background: var(--bg); }
+.browser-id-chip code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.browser-id-edit {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-soft);
+  font: inherit;
+  font-size: 10.5px;
+  padding: 1px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  flex: none;
+}
+.browser-id-edit:hover { color: var(--text); border-color: var(--brand); }
+
 /* ── 设置 ── */
 .settings-view {
   position: fixed;
@@ -429,6 +480,8 @@ body {
   color: var(--text);
   font: inherit;
 }
+#input-browser-label,
+#input-source-path,
 #input-host-path,
 #input-memory-path {
   width: 100%;
@@ -440,7 +493,7 @@ body {
   font-size: 12px;
   font-family: ui-monospace, monospace;
 }
-#btn-save-path, #btn-save-source, #btn-save-memory-path { align-self: flex-start; }
+#btn-save-browser-label, #btn-save-path, #btn-save-source, #btn-save-memory-path { align-self: flex-start; }
 
 /* ── 网站记忆 ── */
 .switch-row {
@@ -517,6 +570,33 @@ body {
 .about-logo { width: 36px; height: 36px; }
 .about-name { font-size: 14px; font-weight: 650; }
 .about-version { font-size: 11px; color: var(--text-soft); margin-top: 2px; }
+.update-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 11px;
+  background: var(--bg-soft);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.update-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.update-status { font-size: 12px; color: var(--text-soft); line-height: 1.45; }
+.update-status[data-state="available"] { color: var(--brand); font-weight: 600; }
+.update-status[data-state="upToDate"] { color: var(--ok); }
+.update-status[data-state="error"] { color: var(--warn); }
+.update-download {
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+  font-size: 12.5px;
+  padding: 8px 12px;
+}
+.update-download[hidden] { display: none; }
 .about-links { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--text-soft); }
 .about-links a { color: var(--text-soft); text-decoration: none; }
 .about-links a:hover { color: var(--brand); text-decoration: underline; }

@@ -192,3 +192,18 @@ test('paired side panel simplifies UI by hiding the non-equivalent chat form and
   assert.match(js, /els\.chatForm\.hidden = true;/, 'renderComposer keeps chatForm hidden');
   assert.match(js, /m\.from !== 'user'/, 'syncChat filters out stale user/timeout bubbles and displays AI replies cleanly');
 });
+
+test('browser profile identity auto-initializes, persists custom label, and sends identity in GRANT frames', async (t) => {
+  const { bridge, sources, store } = await setup(t, {
+    'wb-1': { id: 'wb-1', name: 'WorkBuddy AI', kind: 'workbuddy', pairedAt: '2026-10-23T03:15:00.000Z' },
+  });
+  const initialIdentity = bridge.getStatus().browserIdentity;
+  assert.match(initialIdentity.id, /^Profile-[a-z0-9]{6}$/);
+  assert.equal(initialIdentity.label, initialIdentity.id);
+
+  const updated = await bridge.setBrowserLabel('work-profile');
+  assert.equal(updated.ok, true);
+  assert.equal(updated.browserIdentity.label, 'work-profile');
+  assert.equal(store[STORAGE_KEYS.browserIdentity].label, 'work-profile');
+  assert.equal(bridge.getStatus().browserIdentity.label, 'work-profile');
+});

@@ -61,13 +61,13 @@ async function startBridge(clientInfo) {
         ].join(' '),
       });
     },
-    onUserMessage: (text, page) => {
+    onUserMessage: (text, page, browser) => {
       // Panel chat → agent. Logged immediately AND attached to the next tool
       // result, so delivery is guaranteed even mid-turn.
       notify('notifications/message', {
         level: 'info',
         logger: 'agentlimb-chat',
-        data: formatUserMessage({ text, at: new Date().toISOString(), page }),
+        data: formatUserMessage({ text, at: new Date().toISOString(), page, browser }),
       });
     },
   });
@@ -91,7 +91,8 @@ async function startBridge(clientInfo) {
  * can answer "translate this" / "what is this" without a single round trip.
  */
 function formatUserMessage(msg) {
-  const lines = [`User message from the browser side panel (${msg.at || ''}): ${msg.text}`];
+  const browserTag = msg.browser?.label ? ` [browser: ${msg.browser.label} (${msg.browser.id})]` : '';
+  const lines = [`User message from the browser side panel (${msg.at || ''})${browserTag}: ${msg.text}`];
   const page = msg.page;
   if (page) {
     lines.push('');
@@ -150,6 +151,11 @@ function buildInstructions() {
     '- Panel messages arrive on your next tool result and already carry the user\'s current page context.',
     '- If the user presses STOP, halt further browser actions and acknowledge with `say`.',
     '- Reply in the user\'s language.',
+    '',
+    'Multi-browser routing (when 2+ Chrome profiles are open):',
+    '- Every browser tool accepts an optional `browser` argument (profile label, email prefix, or profile ID shown in the side panel, e.g. `browser: "work"` or `browser: "Profile-a1b2c3"`). Single-browser users never need this parameter.',
+    '- When multiple Chrome profiles are connected, `ping` and `tabs_context` list all connected profiles (`id` and `label`). You can control multiple browsers simultaneously or sequentially by passing `browser` on each tool call.',
+    '- If multiple browsers are connected and the user\'s instruction does not specify which browser/account to operate, ask the user which browser profile they want you to use before taking action.',
   ];
   try {
     const state = memoryState();
@@ -225,11 +231,15 @@ async function handleToolCall(request) {
   // `say` never touches the browser — it writes into the side panel chat, which
   // is what makes the panel a real conversation with the agent.
   if (name === 'say') {
-    const ok = bridge.sayToUser(args.text);
-    const content = [{ type: 'text', text: ok ? 'Delivered to the user\'s side panel.' : 'Empty message ignored.' }];
-    const nudge = memoryHint((root) => memoryHints.finishing(root));
-    if (nudge) content.push({ type: 'text', text: nudge });
-    reply(request.id, { content });
+    try {
+      const ok = bridge.sayToUser(args.text, args.browser);
+      const content = [{ type: 'text', text: ok ? 'Delivered to the user\'s side panel.' : 'Empty message ignored.' }];
+      const nudge = memoryHint((root) => memoryHints.finishing(root));
+      if (nudge) content.push({ type: 'text', text: nudge });
+      reply(request.id, { content });
+    } catch (error) {
+      reply(request.id, { isError: true, content: [{ type: 'text', text: error instanceof Error ? error.message : String(error) }] });
+    }
     return;
   }
 
@@ -245,12 +255,17 @@ async function handleToolCall(request) {
   }
 
   try {
-    const { result, userMessages } = await bridge.callTool(name, args);
+    const { result, userMessages, browser } = await bridge.callTool(name, args);
+    const grantedBrowsers = bridge.listBrowsers().filter((b) => b.authorized);
     // `ping` is the connection self-check. The pong proves the round trip; the
     // host-side snapshot proves the pairing, so one call answers "am I
     // connected?" without the agent having to infer anything.
     if (name === 'ping' && result && typeof result === 'object') {
       result.connection = bridge.connectionStatus();
+    }
+    if (name === 'tabs_context' && grantedBrowsers.length > 1 && result && typeof result === 'object') {
+      result.browserProfile = browser || null;
+      result.connectedBrowsers = grantedBrowsers;
     }
     const content = [];
     if (result && result.image && result.image.data) {
@@ -259,6 +274,14 @@ async function handleToolCall(request) {
       content.push({ type: 'text', text: `screenshot captured (${result.image.mimeType}, q=${result.image.quality ?? 'n/a'})` });
     } else {
       content.push({ type: 'text', text: JSON.stringify(result) });
+    }
+    if (grantedBrowsers.length > 1) {
+      const activeLabel = browser ? `${browser.label} (${browser.id})` : 'default';
+      const profilesList = grantedBrowsers.map((b) => `${b.label} [id: ${b.id}]${b.active ? ' (active)' : ''}`).join(', ');
+      content.push({
+        type: 'text',
+        text: `MULTI-BROWSER (auto): ${grantedBrowsers.length} Chrome profiles connected — ${profilesList}. This call ran on: ${activeLabel}. Pass \`browser: "<label or id>"\` on any tool call to target a specific browser. If the user did not specify which browser to operate, ask them first.`,
+      });
     }
     if (name === 'navigate' || name === 'tab_new') {
       const hint = memoryHint((root) => memoryHints.navigated(root, args.url || result?.url || result?.tab?.url));

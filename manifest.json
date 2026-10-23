@@ -1,9 +1,9 @@
 {
   "manifest_version": 3,
   "name": "AgentLimb",
-  "version": "0.6.4",
-  "version_name": "0.6.4-l13",
-  "description": "Let any MCP AI agent control your browser. Pair once, then the agent drives its own tabs — the side panel is only a chat window. 100% local.",
+  "version": "0.6.5",
+  "version_name": "0.6.5-l14",
+  "description": "Let any MCP AI agent control your browser. Pair once, then the agent drives its own tabs — the side panel is just chat. 100% local.",
   "minimum_chrome_version": "116",
   "permissions": [
     "tabs",
@@ -14,7 +14,8 @@
     "debugger",
     "tabGroups",
     "alarms",
-    "clipboardWrite"
+    "clipboardWrite",
+    "identity"
   ],
   "host_permissions": [
     "<all_urls>"
@@ -75,6 +76,6 @@
     }
   ],
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' http://127.0.0.1:* http://localhost:*; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; font-src 'self' data:"
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' http://127.0.0.1:* http://localhost:* https://api.github.com https://raw.githubusercontent.com; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; font-src 'self' data:"
   }
 }
