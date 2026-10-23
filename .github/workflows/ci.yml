@@ -43,4 +43,6 @@ jobs:
           }
           if ($failed) { exit 1 }
       - name: Run tests on Windows
+        # bash expands the tests/*.test.mjs glob; PowerShell passes it literally.
+        shell: bash
         run: npm test
