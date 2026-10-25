@@ -7,7 +7,7 @@
 
 **Landing page → https://hooosberg.com/apps/agentlimb/** · [Download latest](https://github.com/hooosberg/AgentLimb/releases/latest) · [Legacy site](https://agentlimb.com/)
 
-Current source version: **0.6.7 / l16** (see [CHANGELOG.md](./CHANGELOG.md)).
+Current source version: **0.6.8 / l17** (see [CHANGELOG.md](./CHANGELOG.md)).
 
 A universal browser-control extension: it gives any MCP-capable agent hands, so it can drive your Chrome.
 
@@ -173,7 +173,7 @@ tests/                         Node's native test runner, including end-to-end p
 ## What is actually verified
 
 - `npm test` covers the protocol and modules automatically; `node scripts/live-test.mjs` runs a browser/MCP integration pass with its own temporary HOME, Chrome profile, extension copy, and ports, then cleans up — it never touches your daily `~/.agentlimb` install.
-- The existing 81/81 live report belongs to an earlier single-client baseline and does **not** represent multi-client Chrome acceptance for 0.6.7/l16. Automated unit tests currently pass 112/112; real multi-client Chrome acceptance is still in progress and has no result to report yet.
+- The existing 81/81 live report belongs to an earlier single-client baseline and does **not** represent multi-client Chrome acceptance for 0.6.8/l17. Automated unit tests currently pass 113/113; real multi-client Chrome acceptance is still in progress and has no result to report yet.
 - Site memory has its own real-model smoke test that needs no browser: `npm run smoke:memory` (czen/hy3, 20/20). It proves the model calls `site_memory`, the playbook lands on disk with entry/selector/pitfall and no secrets, a **fresh session** reads it back, and the off switch makes the tool refuse. The browser half (pair → click → type) still lives in `node scripts/ai-onboarding-test.mjs`.
 - Loading the config and trusting MCP inside real agent clients, plus specific models and monkey testing, still need independent acceptance. Nothing is claimed to pass without observed evidence.
 

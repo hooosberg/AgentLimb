@@ -127,3 +127,67 @@ test('router sticky agentTabId keeps working tab without focus stealing while us
   assert.equal(tabs.get(102).url, 'https://movie.com', 'movie tab remains untouched');
 });
 
+test('tab-marker maintains orange group during overall multi-step task and only ungroups on final completion', async () => {
+  const { createTabMarker } = await import('../kernel/control/background/tab-marker.js');
+
+  const groups = new Map();
+  const ungroupCalls = [];
+
+  globalThis.chrome = {
+    tabs: {
+      group: async ({ tabIds, groupId }) => {
+        const gid = groupId || 88;
+        groups.set(gid, { id: gid, title: '', color: '' });
+        return gid;
+      },
+      ungroup: async (tabIds) => {
+        ungroupCalls.push(tabIds);
+      },
+      query: async () => [],
+    },
+    tabGroups: {
+      get: async (id) => groups.get(id),
+      query: async () => [...groups.values()],
+      update: async (id, patch) => {
+        const existing = groups.get(id) || { id };
+        Object.assign(existing, patch);
+        groups.set(id, existing);
+        return existing;
+      },
+    },
+  };
+
+  const marker = createTabMarker({ ungroupDelayMs: 0, taskIdleDelayMs: 25 });
+  const tab = { id: 201, windowId: 1, active: false };
+  await marker.mark(tab);
+
+  // 1. Tool 1 starts: active in flight
+  await marker.updateState({ busy: true, operating: true });
+  assert.equal(groups.get(88).title, '⏳ AgentLimb');
+  assert.equal(ungroupCalls.length, 0);
+
+  // 2. Tool 1 finishes: inter-tool gap while AI thinks / next tool is coming
+  // Must NOT ungroup, must keep group stable without flickering
+  await marker.updateState({ busy: false, operating: true });
+  assert.equal(ungroupCalls.length, 0, 'inter-tool thinking must not ungroup tab');
+  assert.equal(groups.get(88).title, '⏳ AgentLimb');
+
+  // 3. Tool 2 starts: next action executes
+  await marker.updateState({ busy: true, operating: true });
+  assert.equal(ungroupCalls.length, 0, 'group remains stable into step 2');
+
+  // 4. Overall task completes (agent called say): now ungroups smoothly
+  await marker.updateState({ busy: false, operating: false });
+  assert.equal(ungroupCalls.length, 1, 'tab ungroups upon overall task completion');
+  assert.deepEqual(ungroupCalls[0], [201]);
+
+  // 5. Test fallback idle timeout when agent finishes tools but never calls say
+  await marker.mark({ id: 202, windowId: 1, active: false });
+  await marker.updateState({ busy: false, operating: true });
+  assert.equal(ungroupCalls.length, 1, 'not yet ungrouped');
+  await new Promise((r) => setTimeout(r, 40));
+  assert.equal(ungroupCalls.length, 2, 'fallback idle timeout ungroups abandoned task');
+  assert.deepEqual(ungroupCalls[1], [202]);
+});
+
+

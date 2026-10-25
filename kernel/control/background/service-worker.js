@@ -25,8 +25,9 @@ function bootstrap() {
   const bridge = createBridgeClient({
     onStatus: (snapshot) => {
       runtime.lastStatus = snapshot;
-      const working = Boolean(snapshot.busy);
-      setBusy(working);
+      const busy = Boolean(snapshot.busy);
+      const operating = Boolean(snapshot.operating || snapshot.busy);
+      setBusy(busy, operating);
       if (!snapshot.operating && !snapshot.busy) router.stopAllDriving();
     },
     onToolCall: async ({ tool, args, timeoutMs }) => {
@@ -76,8 +77,8 @@ function bootstrap() {
   });
 
   /** Tab-group hourglass = "the agent is doing something right now" (extension icon stays clean). */
-  function setBusy(on) {
-    void marker.setBusy(on);
+  function setBusy(on, operating = on) {
+    void marker.setBusy(on, operating);
   }
 
   function setPanelBehavior() {    chrome.sidePanel?.setPanelBehavior?.({ openPanelOnActionClick: false }).catch(() => {});

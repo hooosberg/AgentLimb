@@ -12,10 +12,12 @@
  *    treating the grouping purely as a temporary visual status behavior during active operation.
  */
 
-export function createTabMarker({ ungroupDelayMs = 600 } = {}) {
+export function createTabMarker({ ungroupDelayMs = 600, taskIdleDelayMs = 8000 } = {}) {
   const markedTabIds = new Set();
   let isBusy = false;
+  let isOperating = false;
   let ungroupTimer = null;
+  let idleTimer = null;
 
   async function ensureGroup(tab) {
     if (!chrome.tabGroups?.query || !chrome.tabs?.group) return null;
@@ -39,7 +41,7 @@ export function createTabMarker({ ungroupDelayMs = 600 } = {}) {
         ...(existing ? { groupId: existing.id } : { createProperties: { windowId: tab.windowId } }),
       });
 
-      const title = isBusy ? '⏳ AgentLimb' : 'AgentLimb';
+      const title = (isBusy || isOperating) ? '⏳ AgentLimb' : 'AgentLimb';
       await chrome.tabGroups.update(groupId, { title, color: 'orange', collapsed: false });
       return groupId;
     } catch (_) {
@@ -51,15 +53,32 @@ export function createTabMarker({ ungroupDelayMs = 600 } = {}) {
     return group && group.color === 'orange';
   }
 
-  function cancelUngroupTimer() {
+  function cancelTimers() {
     if (ungroupTimer != null) {
       clearTimeout(ungroupTimer);
       ungroupTimer = null;
     }
+    if (idleTimer != null) {
+      clearTimeout(idleTimer);
+      idleTimer = null;
+    }
+  }
+
+  async function updateGroupTitles(title) {
+    if (!chrome.tabGroups?.query) return;
+    try {
+      const groups = await chrome.tabGroups.query({});
+      for (const group of groups) {
+        if (!groupColorMatch(group) || !/^(⏳ )?AgentLimb$/.test(group.title || '')) continue;
+        if (group.title !== title) {
+          await chrome.tabGroups.update(group.id, { title });
+        }
+      }
+    } catch (_) { /* cosmetic */ }
   }
 
   async function ungroupAll() {
-    cancelUngroupTimer();
+    cancelTimers();
     const tabIds = [...markedTabIds];
     markedTabIds.clear();
 
@@ -88,28 +107,40 @@ export function createTabMarker({ ungroupDelayMs = 600 } = {}) {
 
   async function mark(tab) {
     if (!tab?.id) return;
-    cancelUngroupTimer();
+    cancelTimers();
     markedTabIds.add(tab.id);
     await ensureGroup(tab);
   }
 
-  async function setBusy(busy) {
+  async function updateState({ busy = false, operating = false } = {}) {
     isBusy = Boolean(busy);
+    isOperating = Boolean(operating);
+
     if (isBusy) {
-      cancelUngroupTimer();
-      if (!chrome.tabGroups?.query) return;
-      try {
-        const groups = await chrome.tabGroups.query({});
-        for (const group of groups) {
-          if (!groupColorMatch(group) || !/^(⏳ )?AgentLimb$/.test(group.title || '')) continue;
-          if (group.title !== '⏳ AgentLimb') {
-            await chrome.tabGroups.update(group.id, { title: '⏳ AgentLimb' });
-          }
-        }
-      } catch (_) { /* grouping is cosmetic */ }
+      // 1. Tool currently in flight: active execution on browser
+      cancelTimers();
+      await updateGroupTitles('⏳ AgentLimb');
+    } else if (isOperating) {
+      // 2. Inter-tool gap during ongoing overall task: AI is thinking or next tool is coming.
+      // Keep the orange group and hourglass stable — do NOT ungroup between steps!
+      if (ungroupTimer != null) {
+        clearTimeout(ungroupTimer);
+        ungroupTimer = null;
+      }
+      await updateGroupTitles('⏳ AgentLimb');
+      // Safety fallback: if the agent abandons the task without calling say,
+      // dissolve after taskIdleDelayMs so tabs don't remain grouped forever.
+      if (idleTimer == null && taskIdleDelayMs > 0) {
+        idleTimer = setTimeout(() => {
+          idleTimer = null;
+          isOperating = false;
+          void ungroupAll();
+        }, taskIdleDelayMs);
+      }
     } else {
-      // Operation finished: schedule automatic ungrouping so the orange group dissolves
-      cancelUngroupTimer();
+      // 3. Overall task completed (agent called say, stop requested, or disconnected).
+      // Schedule smooth dissolution of the orange group.
+      cancelTimers();
       if (ungroupDelayMs > 0) {
         ungroupTimer = setTimeout(() => {
           ungroupTimer = null;
@@ -121,22 +152,32 @@ export function createTabMarker({ ungroupDelayMs = 600 } = {}) {
     }
   }
 
+  async function setBusy(busy, operating = busy) {
+    return updateState({ busy: Boolean(busy), operating: Boolean(operating) });
+  }
+
   async function clear() {
-    cancelUngroupTimer();
+    isBusy = false;
+    isOperating = false;
+    cancelTimers();
     await ungroupAll();
   }
 
   async function recover() {
-    cancelUngroupTimer();
+    isBusy = false;
+    isOperating = false;
+    cancelTimers();
     await ungroupAll();
   }
 
   return {
     mark,
     setBusy,
+    updateState,
     clear,
     recover,
     ungroupAll,
     get isBusy() { return isBusy; },
+    get isOperating() { return isOperating; },
   };
 }

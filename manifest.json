@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "AgentLimb",
-  "version": "0.6.7",
-  "version_name": "0.6.7-l16",
+  "version": "0.6.8",
+  "version_name": "0.6.8-l17",
   "description": "Let any MCP AI agent control your browser. Pair once, then the agent drives its own tabs — the side panel is just chat. 100% local.",
   "minimum_chrome_version": "116",
   "permissions": [
