@@ -7,7 +7,7 @@
 
 **官网 / 产品页（落地页）→ https://hooosberg.com/apps/agentlimb/** · [下载最新版](https://github.com/hooosberg/AgentLimb/releases/latest) · [旧版官网](https://agentlimb.com/)
 
-当前源码版本：**0.6.8 / l17**（变更记录见 [CHANGELOG.md](./CHANGELOG.md)）。
+当前源码版本：**0.6.9 / l18**（变更记录见 [CHANGELOG.md](./CHANGELOG.md)）。
 
 通用浏览器控制插件：给任意支持 MCP 的智能体软件装上「手」，让它能控制你的 Chrome。
 
@@ -26,6 +26,8 @@ bash scripts/install.sh --client-name "WorkBuddy" --client-kind "workbuddy"
 
 # 2. Chrome 加载插件
 #    chrome://extensions → 开发者模式 → 加载已解压的扩展程序 → 选择本目录
+#    Windows：本目录必须放在纯英文路径（如 C:\AgentLimb）
+#    路径含中文会加载失败，详见下方说明
 
 # 3. 点击插件侧栏的「复制连接提示词」，把提示词交给目标智能体
 #    复制本身就授权了这次接入（30 分钟窗口），提示词里没有任何码要填进配置
@@ -35,6 +37,11 @@ bash scripts/install.sh --client-name "WorkBuddy" --client-kind "workbuddy"
 ```
 
 安装器只负责安装宿主文件和打印 JSON，不会写入任何智能体软件配置。复制提示词打开的接入窗口 30 分钟有效、只授权一个 AI；窗口过期就再点一次复制，不需要改配置或重启。客户端配置格式、MCP 启用/信任入口由各软件决定；不要把通用 JSON 示例当成已启用。
+
+> **Windows 用户注意：插件目录必须解压到纯英文路径**（如 `C:\AgentLimb`）。
+> 路径含非 ASCII 字符——最常见的是中文用户名，如 `C:\Users\张三\Desktop`——会让 Chrome 拒绝加载，报
+> `Could not load javascript 'kernel/control/content/a11y-tree.js' for script.`
+> 含空格不影响；macOS / Linux 不受此限制。已在真实 Windows（Edge 155 / Chrome 156）实测确认。
 
 本地调试（不装 Claude Code 也能跑）：
 
@@ -50,6 +57,7 @@ npm test                         # 协议端到端测试（含模拟扩展）
 
 | 现象 | 含义 | 怎么办 |
 |---|---|---|
+| Windows 上扩展加载失败，报 `Could not load javascript …` | 插件目录路径含中文（非 ASCII 字符） | 把目录挪到纯英文路径（如 `C:\AgentLimb`）再加载；含空格不影响 |
 | 工具调用返回「未授权」 | 30 分钟接入窗口过期，或已被另一个 AI 用掉 | 再点一次「复制连接提示词」，不用改配置或重启 |
 | 软件里能看到 AgentLimb，但工具没反应 | 配置合并了，但该软件没启用/信任 MCP，或进程没起来 | 在软件里启用并信任 MCP，然后重启它的 MCP 进程 |
 | 完全没有反应 | 宿主可能不在配置指向的位置 | `node bin/agentlimb.mjs status`，并确认 `~/.agentlimb/host/mcp-server.mjs` 存在 |
@@ -174,7 +182,7 @@ tests/                         Node 原生 test runner，含端到端协议测�
 ## 验收边界
 
 - `npm test` 是自动化协议和模块测试；`node scripts/live-test.mjs` 使用独立临时 HOME、Chrome profile、扩展副本及端口进行浏览器/MCP 集成测试，并清理本轮临时数据，不触碰日常 `~/.agentlimb` 安装。
-- 已有 81/81 的 live 报告属于此前单客户端基线，不代表当前 0.6.8/l17 的多客户端 Chrome 验收。当前自动化单元测试为 113/113；多客户端真实 Chrome 验收仍在进行，尚无结果可报告。
+- 已有 81/81 的 live 报告属于此前单客户端基线，不代表当前 0.6.9/l18 的多客户端 Chrome 验收。当前自动化单元测试 Linux 侧 113/113、Windows 侧 110/113（3 项跳过、0 失败）；多客户端真实 Chrome 验收仍在进行，尚无结果可报告。
 - 网站记忆有独立的真实模型冒烟（不需要浏览器）：`npm run smoke:memory`（czen/hy3，20/20）。它证明模型真的调用 `site_memory`、手册真的落盘（入口/锚点/坑齐全且无凭据）、**全新会话能读回来**、关掉开关后工具会明确拒绝。浏览器那一半（配对 → 点击 → 输入）仍在 `node scripts/ai-onboarding-test.mjs`。
 - 真实智能体客户端中的配置加载/信任，以及指定模型和猴子测试仍需独立验收；没有观测证据时不宣称通过。
 

@@ -11,6 +11,16 @@
 
 ---
 
+## 0.6.9 / l18 — 2026-10-26
+
+**Windows 安装路径提示、兼容性自检与 Windows CI 修复**
+
+- **Windows 安装路径必须纯英文（实测结论）**：在真实 Windows（Edge 155 / Chrome 156）上确认，扩展目录含中文时加载失败，报 `Could not load javascript 'kernel/control/content/a11y-tree.js' for script.`；含空格不受影响，macOS 同路径完全正常。这是 Windows 特有的路径处理问题，与加载方式无关（CDP 加载与命令行原生宽字符加载均失败）。README 的快速开始与排障表已标注，避免中文用户名用户把插件解压到桌面后无从下手。
+- **新增 Windows 兼容性自检脚本**：`node scripts/windows-compat-test.mjs env|browsers|install|pathsonly` 一条命令检查系统版本、已装浏览器与内核、扩展能否真正加载并连上桥接、`install` 落位与 8765–8770 端口占用。配套 `.github/workflows/windows-compat.yml`，可在真实 Windows 跑器上复跑，并用 Chrome for Testing 做命令行加载的交叉验证。
+- **修复 Windows 上连续三个版本失败的 CI**：`tests/protocol.test.mjs` 的 `SseClient` 原本只放过 `AbortError`，而 Windows 用 `TerminateProcess` 结束子进程时对端发 RST，undici 抛 `TypeError: terminated`，逃逸成未处理拒绝，把一条本该通过的用例判成失败。现在把「对端关闭连接」视为正常收尾。Windows 侧 113 项单测 0 失败，主分支 CI 恢复全绿。
+
+---
+
 ## 0.6.8 / l17 — 2026-10-25
 
 **多步任务生命周期平滑感知与标签防闪烁优化**

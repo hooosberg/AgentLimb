@@ -7,7 +7,7 @@
 
 **Landing page → https://hooosberg.com/apps/agentlimb/** · [Download latest](https://github.com/hooosberg/AgentLimb/releases/latest) · [Legacy site](https://agentlimb.com/)
 
-Current source version: **0.6.8 / l17** (see [CHANGELOG.md](./CHANGELOG.md)).
+Current source version: **0.6.9 / l18** (see [CHANGELOG.md](./CHANGELOG.md)).
 
 A universal browser-control extension: it gives any MCP-capable agent hands, so it can drive your Chrome.
 
@@ -26,6 +26,8 @@ bash scripts/install.sh --client-name "WorkBuddy" --client-kind "workbuddy"
 
 # 2. Load the extension in Chrome
 #    chrome://extensions → Developer mode → Load unpacked → select this folder
+#    Windows: keep this folder on a plain-English path (e.g. C:\AgentLimb).
+#    A path with non-ASCII characters fails to load — see the note below.
 
 # 3. Click "Copy connection prompt" in the side panel and hand it to your agent
 #    Copying is itself the authorization (30-minute window); no code to paste anywhere
@@ -35,6 +37,11 @@ bash scripts/install.sh --client-name "WorkBuddy" --client-kind "workbuddy"
 ```
 
 The installer only places the host files and prints JSON — it never writes another app's own configuration. The intake window opened by Copy lasts 30 minutes and authorizes exactly one AI; if it expires, click Copy again — no config change, no restart. Config format and the MCP enable/trust entry point are decided by each client; never read the generic JSON example as "already enabled".
+
+> **Windows: unzip to a plain-English path** (e.g. `C:\AgentLimb`).
+> A folder path containing non-ASCII characters — most often a Chinese user name, e.g. `C:\Users\张三\Desktop` — makes Chrome refuse to load the extension with
+> `Could not load javascript 'kernel/control/content/a11y-tree.js' for script.`
+> Spaces are fine. macOS and Linux are unaffected. Verified on real Windows with Edge 155 and Chrome 156.
 
 Local debugging (works without Claude Code):
 
@@ -50,6 +57,7 @@ Check in this order. Each step rules out one stage, and passing one stage says n
 
 | Symptom | What it means | What to do |
 |---|---|---|
+| On Windows the extension will not load; the error mentions `Could not load javascript …` | The extension folder sits on a path containing non-ASCII characters | Move the folder to a plain-English path such as `C:\AgentLimb`, then load it again; spaces are fine |
 | A tool call returns "not authorized" | The 30-minute intake window expired, or another AI already used it | Click Copy connection prompt again — no config change, no restart |
 | The app lists AgentLimb but tools never answer | The MCP entry is merged but not enabled/trusted by that app, or its process is not running | Enable and trust MCP in the app, then restart its MCP process |
 | Nothing happens at all | The host may not be where the config points | `node bin/agentlimb.mjs status`, then confirm `~/.agentlimb/host/mcp-server.mjs` exists |
@@ -173,7 +181,7 @@ tests/                         Node's native test runner, including end-to-end p
 ## What is actually verified
 
 - `npm test` covers the protocol and modules automatically; `node scripts/live-test.mjs` runs a browser/MCP integration pass with its own temporary HOME, Chrome profile, extension copy, and ports, then cleans up — it never touches your daily `~/.agentlimb` install.
-- The existing 81/81 live report belongs to an earlier single-client baseline and does **not** represent multi-client Chrome acceptance for 0.6.8/l17. Automated unit tests currently pass 113/113; real multi-client Chrome acceptance is still in progress and has no result to report yet.
+- The existing 81/81 live report belongs to an earlier single-client baseline and does **not** represent multi-client Chrome acceptance for 0.6.9/l18. Automated unit tests currently pass 113/113 on Linux and 110/113 on Windows (3 skipped, 0 failed); real multi-client Chrome acceptance is still in progress and has no result to report yet.
 - Site memory has its own real-model smoke test that needs no browser: `npm run smoke:memory` (czen/hy3, 20/20). It proves the model calls `site_memory`, the playbook lands on disk with entry/selector/pitfall and no secrets, a **fresh session** reads it back, and the off switch makes the tool refuse. The browser half (pair → click → type) still lives in `node scripts/ai-onboarding-test.mjs`.
 - Loading the config and trusting MCP inside real agent clients, plus specific models and monkey testing, still need independent acceptance. Nothing is claimed to pass without observed evidence.
 

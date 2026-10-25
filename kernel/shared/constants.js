@@ -8,8 +8,8 @@
 export const APP_ID = 'agentlimb.chrome';
 export const APP_NAME = 'AgentLimb';
 /** Display version. `manifest.json`, `package.json` and the docs mirror these two. */
-export const APP_VERSION = '0.6.8';
-export const APP_BUILD = 'l17';
+export const APP_VERSION = '0.6.9';
+export const APP_BUILD = 'l18';
 export const USER_STOP_MESSAGE = '用户请求停止当前任务：请停止后续浏览器操作，并用 say 回复确认。';
 
 /** Local bridge defaults. The host picks the first free port in the range. */
