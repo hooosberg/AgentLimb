@@ -269,6 +269,12 @@ export function createBridge({ clientId, clientName = 'AI Agent', clientKind = '
       try {
         const body = chunks.length ? JSON.parse(Buffer.concat(chunks).toString('utf8')) : {};
         const { tool, arguments: toolArgs, timeoutMs } = body;
+        if (tool === 'say') {
+          const ok = sayToUser(toolArgs?.text, toolArgs?.browser);
+          res.writeHead(200, { ...cors, 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: true, result: { ok, text: toolArgs?.text } }));
+          return;
+        }
         const result = await callTool(tool, toolArgs, timeoutMs || 60000);
         res.writeHead(200, { ...cors, 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ ok: true, result }));

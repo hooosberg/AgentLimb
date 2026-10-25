@@ -408,26 +408,39 @@ function render() {
 
 /** Left side of the top bar: which AI is connected right now (direct display, no dropdown menu). */
 function renderTopbar(state, paired, currentClient = activePairedClient(state, paired)) {
-  const onlineCount = paired.filter((client) => client.online).length;
+  const onlineClients = paired.filter((client) => client.online);
+  const onlineCount = onlineClients.length;
   if (currentClient) {
     const mode = state.connected ? state.mode : (submitting || lastStatus?.sending || lastStatus?.pendingReplyAt ? 'replying' : 'ready');
     const busy = mode === 'operating' || mode === 'replying';
     els.topDot.className = `dot${busy ? ' busy' : ' online'}`;
     const others = state.connected ? Math.max(0, onlineCount - 1) : 0;
-    els.topStatus.textContent = `${currentClient.name} · ${text('modeLabel')[mode]}${others ? text('othersOnline')(others) : ''}`;
+    const multiBrowsers = (lastStatus?.browsers && lastStatus.browsers > 1) ? lastStatus.browsers : 0;
+    let extra = '';
+    if (multiBrowsers > 1 && others > 0) {
+      extra = english ? ` (${multiBrowsers} terminals · +${others})` : ` (${multiBrowsers}终端在线 · +${others})`;
+    } else if (multiBrowsers > 1) {
+      extra = english ? ` (${multiBrowsers} terminals)` : ` (${multiBrowsers}终端在线)`;
+    } else if (others > 0) {
+      extra = text('othersOnline')(others);
+    }
+    els.topStatus.textContent = `${currentClient.name} · ${text('modeLabel')[mode]}${extra}`;
   } else {
     els.topDot.className = 'dot';
     els.topStatus.textContent = text('topUnpaired');
   }
-  $('row-clients-value').textContent = text('countValue')(paired.length);
+  $('row-clients-value').textContent = text('countValue')(onlineCount || (currentClient ? 1 : 0));
 }
 
 function renderBrowserIdentity() {
   const identity = lastStatus?.browserIdentity;
   if (!identity) return;
-  const display = identity.label && identity.label !== identity.id
+  const multi = lastStatus?.browsers > 1
+    ? (english ? ` · ${lastStatus.browsers} terminals` : ` · ${lastStatus.browsers}终端在线`)
+    : '';
+  const display = (identity.label && identity.label !== identity.id
     ? `${identity.label} (${identity.id})`
-    : identity.id;
+    : identity.id) + multi;
   els.browserIdValue.textContent = display;
   if (document.activeElement !== els.inputBrowserLabel) {
     els.inputBrowserLabel.value = identity.label && identity.label !== identity.id ? identity.label : '';
@@ -437,7 +450,9 @@ function renderBrowserIdentity() {
 
 /** The tiny manager (popover) and the full list (settings page) share one model. */
 function renderManager(clients, connectedClientId) {
-  const paired = clients.filter((client) => client.paired);
+  // 表现层与真实连接动态匹配：当有活跃连接时仅展示在线设备，设备断开即刻消失
+  const hasLive = clients.some((client) => client.online);
+  const paired = clients.filter((client) => client.paired && (!hasLive || client.online));
   const signature = JSON.stringify({
     clients: paired.map(({ id, name, online, waiting }) => [id, name, Boolean(online), Boolean(waiting)]),
     connectedClientId: connectedClientId || null,

@@ -1,7 +1,7 @@
 {
   "name": "agentlimb",
-  "version": "0.6.6",
-  "agentlimbBuild": "l15",
+  "version": "0.6.7",
+  "agentlimbBuild": "l16",
   "private": true,
   "type": "module",
   "engines": {

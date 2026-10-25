@@ -9,6 +9,7 @@
 import { MESSAGE_TYPES } from '../../shared/constants.js';
 import { createDebuggerManager } from './debugger.js';
 import { createRouter } from './router.js';
+import { createTabMarker } from './tab-marker.js';
 import { createBridgeClient } from './bridge-client.js';
 
 const runtime = { ready: false };
@@ -18,13 +19,15 @@ function bootstrap() {
   runtime.ready = true;
 
   const debuggerManager = createDebuggerManager();
-  const router = createRouter({ debugger: debuggerManager, indicator: null });
+  const marker = createTabMarker();
+  void marker.recover();
+  const router = createRouter({ debugger: debuggerManager, indicator: null, marker });
   const bridge = createBridgeClient({
     onStatus: (snapshot) => {
       runtime.lastStatus = snapshot;
-      const working = snapshot.operating || snapshot.busy;
+      const working = Boolean(snapshot.busy);
       setBusy(working);
-      if (!working) router.stopAllDriving();
+      if (!snapshot.operating && !snapshot.busy) router.stopAllDriving();
     },
     onToolCall: async ({ tool, args, timeoutMs }) => {
       return Promise.race([
@@ -38,6 +41,7 @@ function bootstrap() {
 
   runtime.debugger = debuggerManager;
   runtime.router = router;
+  runtime.marker = marker;
   runtime.bridge = bridge;
   runtime.lastStatus = bridge.getStatus();
 
@@ -73,20 +77,7 @@ function bootstrap() {
 
   /** Tab-group hourglass = "the agent is doing something right now" (extension icon stays clean). */
   function setBusy(on) {
-    void markTabGroups(on);
-  }
-
-  /** Hourglass on the tab-strip chip: visible even when the user is looking at another tab. */
-  async function markTabGroups(on) {
-    try {
-      if (!chrome.tabGroups?.query) return;
-      const groups = await chrome.tabGroups.query({});
-      for (const group of groups) {
-        if (group.color !== 'orange' || !/^(⏳ )?AgentLimb$/.test(group.title || '')) continue;
-        const title = on ? '⏳ AgentLimb' : 'AgentLimb';
-        if (group.title !== title) await chrome.tabGroups.update(group.id, { title });
-      }
-    } catch (_) { /* grouping is cosmetic */ }
+    void marker.setBusy(on);
   }
 
   function setPanelBehavior() {    chrome.sidePanel?.setPanelBehavior?.({ openPanelOnActionClick: false }).catch(() => {});

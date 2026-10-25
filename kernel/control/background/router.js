@@ -43,9 +43,15 @@ for (let d = 0; d <= 9; d++) KEY_MAP[String(d)] = { key: String(d), code: `Digit
 
 const INJECTABLE = /^(https?|file):/i;
 
-export function createRouter({ debugger: dbg, indicator }) {
+export function createRouter({ debugger: dbg, indicator, marker = null }) {
   /** Tabs currently being driven by an agent (for the in-page indicator). */
   const driving = new Set();
+  /**
+   * The tab the agent is working on. Calls without a tabId stick to it instead of
+   * following whatever tab the user happens to be looking at, so switching to
+   * another tab (a video, a chat…) never redirects the agent's next action.
+   */
+  let agentTabId = null;
 
   // ── helpers ────────────────────────────────────────────────────────────────
   async function resolveTab(tabId) {
@@ -59,15 +65,27 @@ export function createRouter({ debugger: dbg, indicator }) {
       // A tab created microseconds ago reports url:'' until the navigation
       // commits. Waiting here makes every tool usable right after tab_new.
       if (!tab.url) tab = (await waitForTabUrl(tabId, { timeoutMs: 4000 })) || tab;
-      return tab;
+      return claim(tab);
+    }
+    if (agentTabId != null) {
+      const sticky = await chrome.tabs.get(agentTabId).catch(() => null);
+      if (sticky) return claim(sticky);
+      agentTabId = null; // closed: fall back to what the user is looking at
     }
     const [active] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (!active) {
       const [any] = await chrome.tabs.query({ active: true });
       if (!any) throw new Error('no active tab available');
-      return any;
+      return claim(any);
     }
-    return active;
+    return claim(active);
+  }
+
+  /** Remember the agent's tab and show it on the tab strip (cosmetic, never throws). */
+  function claim(tab) {
+    agentTabId = tab.id;
+    if (marker) void marker.mark(tab);
+    return tab;
   }
 
   /** Poll until a tab has a committed URL (or give up after timeoutMs). */
@@ -240,12 +258,14 @@ export function createRouter({ debugger: dbg, indicator }) {
       // Don't hand back a tab whose url is still '' — the very next tool call
       // (read_page / wait / computer) would be rejected by assertInjectable.
       const tab = (await waitForTabUrl(created.id, { timeoutMs: url ? 10000 : 1500 })) || created;
+      agentTabId = tab.id;
       return { ok: true, tab: describeTab(tab), group: { id: groupId, title: 'AgentLimb', color: 'orange' } };
     },
 
     async tab_close({ tabId }) {
       await chrome.tabs.remove(tabId);
       driving.delete(tabId);
+      if (agentTabId === tabId) agentTabId = null;
       return { ok: true, closed: tabId };
     },
 
@@ -507,6 +527,8 @@ export function createRouter({ debugger: dbg, indicator }) {
         dbg.restoreMute(tabId);
       }
       driving.clear();
+      if (marker) void marker.clear();
     },
+    get agentTabId() { return agentTabId; },
   };
 }

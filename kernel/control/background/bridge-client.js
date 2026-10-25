@@ -244,11 +244,23 @@ export function createBridgeClient({ onStatus, onToolCall, onAgentMessage, disco
     settleWaits();
     const connected = live(activeChannel) && clients.get(selectedId)?.paired;
     const anyOnline = [...channels.values()].some(live);
+    let browsers = 1;
+    let browserList = [];
+    for (const channel of channels.values()) {
+      if (live(channel)) {
+        if (channel.browsers > browsers) browsers = channel.browsers;
+        if (Array.isArray(channel.browserList) && channel.browserList.length > browserList.length) {
+          browserList = channel.browserList;
+        }
+      }
+    }
     return {
       status: anyOnline ? 'connected' : 'disconnected',
       port: connected ? activeChannel.port : null,
       connectedClientId: connected ? selectedId : null,
       browserIdentity: effectiveBrowserIdentity(),
+      browsers,
+      browserList,
       clients: visibleClients().map((client) => ({ ...client, online: !!channelFor(client.id),
         waiting: preferredNext?.clientId === client.id || [...waitingTools.values()].some((item) => item.channel.clientId === client.id) })),
       unauthorized: [...unauthorized.values()],
@@ -353,9 +365,19 @@ export function createBridgeClient({ onStatus, onToolCall, onAgentMessage, disco
       for (const { port, health } of results) {
         const existing = channels.get(port);
         if (!health) { if (existing) dropChannel(existing); continue; }
+        if (existing) {
+          existing.browsers = health.browsers || 1;
+          existing.browserList = Array.isArray(health.browserList) ? health.browserList : [];
+        }
         if (existing && health.client?.id && existing.clientId && health.client.id !== existing.clientId) dropChannel(existing);
         // Old bridge fixtures have no identity; only the first candidate is meaningful.
-        if (!channels.has(port) && (health.client?.id || port === candidates[0])) openStream(port);
+        if (!channels.has(port) && (health.client?.id || port === candidates[0])) {
+          const ch = openStream(port);
+          if (ch) {
+            ch.browsers = health.browsers || 1;
+            ch.browserList = Array.isArray(health.browserList) ? health.browserList : [];
+          }
+        }
       }
       chooseAvailable(); broadcast();
     })().finally(() => { scanPromise = null; });
