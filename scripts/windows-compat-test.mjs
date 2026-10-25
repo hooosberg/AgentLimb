@@ -317,7 +317,7 @@ function reportApis(section, apis) {
 }
 
 // ── 单浏览器实测：多种加载策略 × 扩展页上下文探测 ──────────────────────────
-async function testBrowser(candidate, exe, extDir, tag, bridgePort) {
+async function testBrowser(candidate, exe, extDir, tag, bridgePort, onlyFirstStrategy = false) {
   const section = `browser:${candidate.label}${tag ? `(${tag})` : ''}`;
   const version = fileVersion(exe);
   rec(section, '可执行文件存在', true, `${exe} | ProductVersion=${version || 'n/a'}`);
@@ -325,7 +325,9 @@ async function testBrowser(candidate, exe, extDir, tag, bridgePort) {
   const baselineHealth = bridgePort ? await fetchJson(`http://127.0.0.1:${bridgePort}/health`, 1000) : null;
   const baseline = baselineHealth?.browsers ?? 0;
 
-  const strategies = [
+  const strategies = onlyFirstStrategy ? [
+    { name: 'cdp:Extensions.loadUnpacked', via: 'cdp', headless: true, extra: ['--enable-unsafe-extension-debugging'] },
+  ] : [
     { name: 'cdp:Extensions.loadUnpacked', via: 'cdp', headless: true, extra: ['--enable-unsafe-extension-debugging'] },
     { name: 'flag:--load-extension', via: 'flag', headless: true, extra: [`--load-extension=${extDir}`] },
     { name: 'flag:--load-extension(headful)', via: 'flag', headless: false, extra: [`--load-extension=${extDir}`] },
@@ -429,7 +431,7 @@ async function testBrowser(candidate, exe, extDir, tag, bridgePort) {
       await cleanup();
     }
   }
-  rec(section, '结论', false, '全部加载策略失败');
+  rec(section, '结论', false, onlyFirstStrategy ? '该路径下扩展加载失败' : '全部加载策略失败');
   return null;
 }
 
@@ -461,18 +463,26 @@ async function runBrowsers() {
       await testBrowser(candidate, exe, extDir, '', bridge.port);
     }
 
-    // 中文 + 空格路径（Windows 用户目录常见）
+    // 路径变体：把"空格"和"中文"分开测，才能说清到底是谁的问题
     if (IS_WIN) {
-      const tricky = join(process.env.USERPROFILE || WORK, '测试 目录 空格', 'AgentLimb 插件');
-      try {
-        rmSync(tricky, { recursive: true, force: true });
-        stageExtension(tricky);
-        rec('paths', '中文+空格路径可写入', true, tricky);
-        const candidate = browserCandidates()[0];
-        const exe = candidate.paths.find((p) => existsSync(p));
-        if (exe) await testBrowser(candidate, exe, tricky, '中文空格路径', bridge.port);
-      } catch (error) {
-        rec('paths', '中文+空格路径可写入', false, error.message);
+      const base = process.env.USERPROFILE || WORK;
+      const variants = [
+        { label: '纯英文无空格', dir: join(base, 'AgentLimbPathTest') },
+        { label: '含空格', dir: join(base, 'Test Dir', 'AgentLimb') },
+        { label: '含中文', dir: join(base, '测试目录', 'AgentLimb') },
+        { label: '中文+空格', dir: join(base, '测试 目录 空格', 'AgentLimb 插件') },
+      ];
+      const candidate = browserCandidates()[0];
+      const exe = candidate.paths.find((p) => existsSync(p));
+      for (const variant of variants) {
+        try {
+          rmSync(variant.dir, { recursive: true, force: true });
+          stageExtension(variant.dir);
+          rec('paths', `${variant.label} 可写入`, true, variant.dir);
+          if (exe) await testBrowser(candidate, exe, variant.dir, `路径:${variant.label}`, bridge.port, true);
+        } catch (error) {
+          rec('paths', `${variant.label} 可写入`, false, error.message);
+        }
       }
     }
   } finally {
