@@ -377,12 +377,15 @@ async function main() {
     });
   });
 
-  rl.on('close', () => {
-    bridge?.stop();
-    process.exit(0);
-  });
-
-  process.stdin.on('end', () => { bridge?.stop(); process.exit(0); });
+  if (!process.env.AGENTLIMB_STANDALONE) {
+    rl.on('close', () => {
+      bridge?.stop();
+      process.exit(0);
+    });
+    process.stdin.on('end', () => { bridge?.stop(); process.exit(0); });
+  } else {
+    setInterval(() => {}, 60000);
+  }
   process.stdin.on('error', () => { bridge?.stop(); process.exit(0); });
   process.stdout.on('error', () => { bridge?.stop(); process.exit(0); });
   process.on('SIGINT', () => { bridge?.stop(); process.exit(0); });

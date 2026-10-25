@@ -7,7 +7,7 @@
 
 **官网 / 产品页（落地页）→ https://hooosberg.com/apps/agentlimb/** · [下载最新版](https://github.com/hooosberg/AgentLimb/releases/latest) · [旧版官网](https://agentlimb.com/)
 
-当前源码版本：**0.6.5 / l14**（变更记录见 [CHANGELOG.md](./CHANGELOG.md)）。
+当前源码版本：**0.6.6 / l15**（变更记录见 [CHANGELOG.md](./CHANGELOG.md)）。
 
 通用浏览器控制插件：给任意支持 MCP 的智能体软件装上「手」，让它能控制你的 Chrome。
 
@@ -174,7 +174,7 @@ tests/                         Node 原生 test runner，含端到端协议测�
 ## 验收边界
 
 - `npm test` 是自动化协议和模块测试；`node scripts/live-test.mjs` 使用独立临时 HOME、Chrome profile、扩展副本及端口进行浏览器/MCP 集成测试，并清理本轮临时数据，不触碰日常 `~/.agentlimb` 安装。
-- 已有 81/81 的 live 报告属于此前单客户端基线，不代表当前 0.6.5/l14 的多客户端 Chrome 验收。当前自动化单元测试为 109/109；多客户端真实 Chrome 验收仍在进行，尚无结果可报告。
+- 已有 81/81 的 live 报告属于此前单客户端基线，不代表当前 0.6.6/l15 的多客户端 Chrome 验收。当前自动化单元测试为 110/110；多客户端真实 Chrome 验收仍在进行，尚无结果可报告。
 - 网站记忆有独立的真实模型冒烟（不需要浏览器）：`npm run smoke:memory`（czen/hy3，20/20）。它证明模型真的调用 `site_memory`、手册真的落盘（入口/锚点/坑齐全且无凭据）、**全新会话能读回来**、关掉开关后工具会明确拒绝。浏览器那一半（配对 → 点击 → 输入）仍在 `node scripts/ai-onboarding-test.mjs`。
 - 真实智能体客户端中的配置加载/信任，以及指定模型和猴子测试仍需独立验收；没有观测证据时不宣称通过。
 

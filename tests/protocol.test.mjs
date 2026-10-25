@@ -174,6 +174,15 @@ async function post(port, frame) {
   return res.json();
 }
 
+async function postRpc(port, payload) {
+  const res = await fetch(`http://127.0.0.1:${port}/api/tool`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  return res.json();
+}
+
 async function discoverPort(expectedName, timeoutMs = 15000) {
   const deadline = Date.now() + timeoutMs;
   for (;;) {
@@ -703,4 +712,76 @@ test('multi-browser routing: two Chrome profiles connected simultaneously can be
   assert.match(badTarget.result.content[0].text, /Target browser "nonexistent" not found/);
   assert.match(badTarget.result.content[0].text, /work@example\.com/);
   assert.match(badTarget.result.content[0].text, /personal/);
+});
+
+test('HTTP Tool RPC: direct POST /api/tool call with multi-browser routing support', async (t) => {
+  const home = mkdtempSync(join(tmpdir(), 'agentlimb-rpc-'));
+  t.after(() => rmSync(home, { recursive: true, force: true }));
+
+  const mcp = new McpProcess(home, 'Rpc Agent', 'test-rpc');
+  await mcp.ready;
+  t.after(() => mcp.stop());
+
+  await mcp.request('initialize', {
+    protocolVersion: '2025-03-26',
+    capabilities: {},
+    clientInfo: { name: 'rpc-client', version: '0' },
+  });
+
+  const { port } = await discoverPort('Rpc Agent');
+
+  const sse = new SseClient(`http://127.0.0.1:${port}/events?b=tok-rpc`);
+  t.after(async () => {
+    await sse.close();
+  });
+  await sse.waitFor((f) => f.t === WIRE.HELLO);
+
+  assert.equal((await post(port, {
+    b: 'tok-rpc',
+    t: WIRE.GRANT,
+    ok: true,
+    name: 'Rpc Agent',
+    browser: { id: 'Profile-rpc01', label: 'rpc-browser' },
+  })).ok, true);
+
+  // 1. Successful tool execution over POST /api/tool
+  const rpcPromise = postRpc(port, {
+    tool: 'javascript_eval',
+    arguments: { expression: '1 + 1' },
+    timeoutMs: 5000,
+  });
+
+  const toolCall = await sse.waitFor((f) => f.t === WIRE.TOOL_CALL && f.tool === 'javascript_eval');
+  assert.equal(toolCall.args.expression, '1 + 1');
+
+  await post(port, {
+    b: 'tok-rpc',
+    t: WIRE.TOOL_RESULT,
+    tool_use_id: toolCall.tool_use_id,
+    ok: true,
+    result: 2,
+  });
+
+  const rpcRes = await rpcPromise;
+  assert.equal(rpcRes.ok, true);
+  assert.equal(rpcRes.result.result, 2);
+
+  // 2. Error handling when browser rejects or fails
+  const failPromise = postRpc(port, {
+    tool: 'click_element',
+    arguments: { selector: '#missing' },
+  });
+
+  const failCall = await sse.waitFor((f) => f.t === WIRE.TOOL_CALL && f.tool === 'click_element');
+  await post(port, {
+    b: 'tok-rpc',
+    t: WIRE.TOOL_RESULT,
+    tool_use_id: failCall.tool_use_id,
+    ok: false,
+    error: 'element not found',
+  });
+
+  const failRes = await failPromise;
+  assert.equal(failRes.ok, false);
+  assert.match(failRes.error, /element not found/);
 });

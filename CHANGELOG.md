@@ -11,6 +11,17 @@
 
 ---
 
+## 0.6.6 / l15 — 2026-10-25
+
+**HTTP Tool RPC 原生支持、独立常驻桥接服务与多端口探针自适应客户端**
+
+- **HTTP Tool RPC 原生端点 (`POST /api/tool`)**：Bridge 服务新增支持直接通过 HTTP POST 调用已挂载的浏览器工具，外部本地进程（如自动化脚本、Python/Node 客户端、独立代理程序）可直接发送 `{ tool, arguments, timeoutMs }` JSON 调用，具备毫秒级低延迟响应、精准错误透传与多浏览器 Profile 路由能力。
+- **独立常驻 Bridge 模式与 CLI 指令 (`agentlimb bridge`)**：新增 `bin/agentlimb.mjs bridge` 命令与 `AGENTLIMB_STANDALONE` 环境变量支持，支持桥接服务在脱离短周期 MCP stdio 管道的情况下长期独立驻留，为多任务、长期后台自动化工作流提供高可用桥梁。
+- **官方开箱即用 Python 客户端 (`scripts/agentlimb_client.py`)**：新增无第三方依赖的标准 Python RPC 客户端，自带 8765~8770 动态端口探针自适应（告别端口漂移困扰），并封装 `call_tool`、`eval_js`、`get_tabs` 等常用便捷接口，全面兼容多 Chrome Profile 目标定向路由。
+- **自动化稳定性与状态检测优化**：优化 Bridge 端口探测与长任务执行心跳，强化多浏览器/多窗口环境下工具调用的稳定性。
+
+---
+
 ## 0.6.5 / l14 — 2026-10-24
 
 **多浏览器 / 多 Chrome 账号轻量路由 + 关于页版本升级检测**

@@ -262,6 +262,23 @@ export function createBridge({ clientId, clientName = 'AI Agent', clientKind = '
       return;
     }
 
+    // HTTP Tool RPC: 允许本地脚本直接通过 POST /api/tool 调用任意浏览器工具
+    if (req.method === 'POST' && url.pathname === '/api/tool') {
+      const chunks = [];
+      for await (const chunk of req) chunks.push(chunk);
+      try {
+        const body = chunks.length ? JSON.parse(Buffer.concat(chunks).toString('utf8')) : {};
+        const { tool, arguments: toolArgs, timeoutMs } = body;
+        const result = await callTool(tool, toolArgs, timeoutMs || 60000);
+        res.writeHead(200, { ...cors, 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: true, result }));
+      } catch (err) {
+        res.writeHead(200, { ...cors, 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: false, error: err.message }));
+      }
+      return;
+    }
+
     // 网站记忆: the side panel is the only UI, but the host owns the files.
     // Keeping this on the bridge means the panel never needs to know a path
     // twice, and a setting survives even if the panel is closed.

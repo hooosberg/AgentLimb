@@ -19,6 +19,9 @@ try {
     case 'serve':
       await import('../host/mcp-server.mjs');
       break;
+    case 'bridge':
+      await bridge();
+      break;
     case 'install':
       await install();
       break;
@@ -172,6 +175,24 @@ async function memory() {
   }, null, 2));
 }
 
+async function bridge() {
+  const { createBridge, loadOrCreateClientId } = await import('../host/bridge-server.mjs');
+  const clientName = options.clientName || process.env.AGENTLIMB_CLIENT_NAME || 'AI Agent';
+  const clientKind = options.clientKind || process.env.AGENTLIMB_CLIENT_KIND || 'standalone';
+  const clientId = loadOrCreateClientId(clientName, clientKind);
+
+  const instance = createBridge({
+    clientId,
+    clientName,
+    clientKind,
+    onLog: (level, msg) => console.log(`[${level}]`, msg),
+  });
+
+  const port = await instance.start();
+  console.log(`AgentLimb Bridge Server running on port ${port} (client: ${clientName})`);
+  setInterval(() => {}, 60000);
+}
+
 function printHelp() {
   console.log([
     `AgentLimb ${APP_VERSION}`,
@@ -180,6 +201,7 @@ function printHelp() {
     '  agentlimb config       print MCP JSON for the installed host path',
     '  agentlimb doctor       print a JSON connection diagnostic report',
     '  agentlimb mcp          run the MCP server (stdio)',
+    '  agentlimb bridge       run standalone HTTP bridge (HTTP RPC & SSE)',
     '  agentlimb status       probe the local bridge',
     '  agentlimb pair-status  show persisted pairings',
     '  agentlimb memory       show 网站记忆 location and what is recorded',
