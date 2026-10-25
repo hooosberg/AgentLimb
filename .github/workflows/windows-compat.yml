@@ -1,0 +1,48 @@
+name: Windows 兼容性实测
+
+# 只在专门的分支 / 手动触发时跑，不干扰主 CI。
+# 目的：拿到真实 Windows 上的结论 —— 单测通过率、Edge/Chrome 能否加载扩展并连上桥接、
+# 中文+空格路径、install 与桥接探测。
+on:
+  push:
+    branches: [test/windows-compat]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compat:
+    runs-on: windows-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: 环境基线
+        run: node scripts/windows-compat-test.mjs env
+        continue-on-error: true
+
+      - name: 单元测试（Windows）
+        shell: bash
+        run: node --test --test-force-exit --test-concurrency=1 tests/*.test.mjs
+        continue-on-error: true
+
+      - name: 浏览器加载实测（Edge / Chrome）
+        run: node scripts/windows-compat-test.mjs browsers
+        continue-on-error: true
+
+      - name: 安装与桥接实测
+        run: node scripts/windows-compat-test.mjs install
+        continue-on-error: true
+
+      - name: 上传报告
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-compat-report
+          path: windows-compat-report-*.json
+          if-no-files-found: warn

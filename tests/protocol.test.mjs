@@ -142,7 +142,15 @@ class SseClient {
         }
       })
       .catch((error) => {
-        if (error.name !== 'AbortError') throw error;
+        // The MCP child is killed during teardown. On POSIX that closes the
+        // socket gracefully (reader.read() returns done), but on Windows the
+        // process is terminated with TerminateProcess and the peer sends RST,
+        // which undici surfaces as `TypeError: terminated`. Both mean "the
+        // server went away", so neither should escape as an unhandled
+        // rejection that fails an otherwise passing test.
+        if (error.name === 'AbortError') return;
+        if (error.name === 'TypeError' && /terminated/i.test(error.message || '')) return;
+        throw error;
       })
       .finally(() => this._resolveClosed());
   }
