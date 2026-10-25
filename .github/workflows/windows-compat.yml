@@ -38,10 +38,31 @@ jobs:
       # 同一批路径，改用命令行 --load-extension 再加载一遍。
       # 目的：区分「Windows 浏览器本身不认中文路径」和「CDP 的 UTF-8 路径转码出错」——
       # 前者说明用户走图形界面也装不上，后者说明只有自动化通道受影响，课件口径完全不同。
+      # 注意：Edge 155 / Chrome 156 已移除该开关，所以这一步必须用 Chrome for Testing。
+      - name: 下载 Chrome for Testing
+        shell: pwsh
+        run: |
+          $version = "149.0.7827.55"
+          $url = "https://storage.googleapis.com/chrome-for-testing-public/$version/win64/chrome-win64.zip"
+          Invoke-WebRequest -Uri $url -OutFile cft.zip
+          Expand-Archive cft.zip -DestinationPath C:\cft
+          "CFT_PATH=C:\cft\chrome-win64\chrome.exe" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          Get-Item "C:\cft\chrome-win64\chrome.exe" | Select-Object -ExpandProperty VersionInfo | Select-Object ProductVersion
+        continue-on-error: true
+
       - name: 路径变体（命令行加载方式交叉验证）
         env:
           AGENTLIMB_STRATEGY: flag
-        run: node scripts/windows-compat-test.mjs pathsonly
+        shell: pwsh
+        run: |
+          $cft = "C:\cft\chrome-win64\chrome.exe"
+          if (Test-Path $cft) {
+            $env:AGENTLIMB_BROWSER_OVERRIDE = $cft
+            node scripts/windows-compat-test.mjs pathsonly
+          } else {
+            Write-Host "Chrome for Testing 未就绪，跳过命令行交叉验证"
+            exit 0
+          }
         continue-on-error: true
 
       - name: 安装与桥接实测
