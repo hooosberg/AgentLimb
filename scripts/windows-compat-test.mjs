@@ -317,7 +317,7 @@ function reportApis(section, apis) {
 }
 
 // ── 单浏览器实测：多种加载策略 × 扩展页上下文探测 ──────────────────────────
-async function testBrowser(candidate, exe, extDir, tag, bridgePort, onlyFirstStrategy = false) {
+async function testBrowser(candidate, exe, extDir, tag, bridgePort, strategyMode = '') {
   const section = `browser:${candidate.label}${tag ? `(${tag})` : ''}`;
   const version = fileVersion(exe);
   rec(section, '可执行文件存在', true, `${exe} | ProductVersion=${version || 'n/a'}`);
@@ -325,14 +325,19 @@ async function testBrowser(candidate, exe, extDir, tag, bridgePort, onlyFirstStr
   const baselineHealth = bridgePort ? await fetchJson(`http://127.0.0.1:${bridgePort}/health`, 1000) : null;
   const baseline = baselineHealth?.browsers ?? 0;
 
-  const strategies = onlyFirstStrategy ? [
-    { name: 'cdp:Extensions.loadUnpacked', via: 'cdp', headless: true, extra: ['--enable-unsafe-extension-debugging'] },
-  ] : [
+  // strategyMode：
+  //   'first' —— 只试 CDP（路径变体快速筛查用）
+  //   'flag'  —— 只试命令行 --load-extension（用来区分"浏览器不认中文路径" vs "CDP 通道转码出错"）
+  //   ''      —— 全试
+  const ALL = [
     { name: 'cdp:Extensions.loadUnpacked', via: 'cdp', headless: true, extra: ['--enable-unsafe-extension-debugging'] },
     { name: 'flag:--load-extension', via: 'flag', headless: true, extra: [`--load-extension=${extDir}`] },
     { name: 'flag:--load-extension(headful)', via: 'flag', headless: false, extra: [`--load-extension=${extDir}`] },
     { name: 'flag:--load-extension+disable-feature', via: 'flag', headless: true, extra: [`--load-extension=${extDir}`, '--disable-features=DisableLoadExtensionCommandLineSwitch'] },
   ];
+  let strategies = ALL;
+  if (strategyMode === 'first') strategies = ALL.slice(0, 1);
+  if (strategyMode === 'flag') strategies = ALL.filter((s) => s.via === 'flag');
 
   for (const strategy of strategies) {
     const port = 9300 + Math.floor(Math.random() * 500);
@@ -431,7 +436,7 @@ async function testBrowser(candidate, exe, extDir, tag, bridgePort, onlyFirstStr
       await cleanup();
     }
   }
-  rec(section, '结论', false, onlyFirstStrategy ? '该路径下扩展加载失败' : '全部加载策略失败');
+  rec(section, '结论', false, strategyMode ? '该路径下扩展加载失败' : '全部加载策略失败');
   return null;
 }
 
@@ -450,8 +455,9 @@ function runEnv() {
 
 // ── browsers ───────────────────────────────────────────────────────────────
 async function runBrowsers() {
-  const extDir = stageExtension(join(WORK, 'ext-plain'));
-  rec('browsers', '扩展暂存目录', true, extDir);
+  // AGENTLIMB_EXT_DIR 可直接指定已就位的扩展目录（用于"中文路径"这类对照实验）
+  const extDir = process.env.AGENTLIMB_EXT_DIR || stageExtension(join(WORK, 'ext-plain'));
+  rec('browsers', '扩展目录', true, extDir);
 
   const bridge = await startBridge();
   rec('browsers', '桥接启动', Boolean(bridge.port), bridge.port ? `port=${bridge.port}` : '未拿到端口');
@@ -464,29 +470,37 @@ async function runBrowsers() {
     }
 
     // 路径变体：把"空格"和"中文"分开测，才能说清到底是谁的问题
-    if (IS_WIN) {
-      const base = process.env.USERPROFILE || WORK;
-      const variants = [
-        { label: '纯英文无空格', dir: join(base, 'AgentLimbPathTest') },
-        { label: '含空格', dir: join(base, 'Test Dir', 'AgentLimb') },
-        { label: '含中文', dir: join(base, '测试目录', 'AgentLimb') },
-        { label: '中文+空格', dir: join(base, '测试 目录 空格', 'AgentLimb 插件') },
-      ];
-      const candidate = browserCandidates()[0];
-      const exe = candidate.paths.find((p) => existsSync(p));
-      for (const variant of variants) {
-        try {
-          rmSync(variant.dir, { recursive: true, force: true });
-          stageExtension(variant.dir);
-          rec('paths', `${variant.label} 可写入`, true, variant.dir);
-          if (exe) await testBrowser(candidate, exe, variant.dir, `路径:${variant.label}`, bridge.port, true);
-        } catch (error) {
-          rec('paths', `${variant.label} 可写入`, false, error.message);
-        }
-      }
-    }
+    await runPathVariants(bridge.port);
   } finally {
     try { bridge.child.kill('SIGKILL'); } catch {}
+  }
+}
+
+/** 同一批路径 × 指定加载方式。用来区分「浏览器不认中文路径」和「CDP 通道转码出错」。 */
+async function runPathVariants(bridgePort) {
+  if (!IS_WIN) { rec('paths', '跳过', null, '路径变体只在 Windows 上跑'); return; }
+  const base = process.env.USERPROFILE || WORK;
+  const variants = [
+    { label: '纯英文无空格', dir: join(base, 'AgentLimbPathTest') },
+    { label: '含空格', dir: join(base, 'Test Dir', 'AgentLimb') },
+    { label: '含中文', dir: join(base, '测试目录', 'AgentLimb') },
+    { label: '中文+空格', dir: join(base, '测试 目录 空格', 'AgentLimb 插件') },
+  ];
+  const candidate = browserCandidates()[0];
+  const exe = candidate.paths.find((p) => existsSync(p));
+  const strategyMode = process.env.AGENTLIMB_STRATEGY === 'flag' ? 'flag' : 'first';
+  rec('paths', '加载策略', null, strategyMode === 'flag'
+    ? '命令行 --load-extension（原生宽字符路径，可区分是否 CDP 转码问题）'
+    : 'CDP Extensions.loadUnpacked（UTF-8 字符串转 FilePath）');
+  for (const variant of variants) {
+    try {
+      rmSync(variant.dir, { recursive: true, force: true });
+      stageExtension(variant.dir);
+      rec('paths', `${variant.label} 可写入`, true, variant.dir);
+      if (exe) await testBrowser(candidate, exe, variant.dir, `路径:${variant.label}`, bridgePort, strategyMode);
+    } catch (error) {
+      rec('paths', `${variant.label} 可写入`, false, error.message);
+    }
   }
 }
 
@@ -556,7 +570,16 @@ const cmd = process.argv[2] || 'all';
 try {
   if (cmd === 'env' || cmd === 'all') runEnv();
   if (cmd === 'browsers' || cmd === 'all') await runBrowsers();
-  if (cmd === 'paths' || cmd === 'install' || cmd === 'all') await runInstall();
+  if (cmd === 'install' || cmd === 'all') await runInstall();
+  if (cmd === 'pathsonly') {
+    const bridge = await startBridge();
+    rec('paths', '桥接启动', Boolean(bridge.port), `port=${bridge.port}`);
+    try {
+      await runPathVariants(bridge.port);
+    } finally {
+      try { bridge.child.kill('SIGKILL'); } catch {}
+    }
+  }
 } catch (error) {
   rec('fatal', '脚本异常', false, error.stack || error.message);
 } finally {

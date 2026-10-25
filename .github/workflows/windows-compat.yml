@@ -35,6 +35,15 @@ jobs:
         run: node scripts/windows-compat-test.mjs browsers
         continue-on-error: true
 
+      # 同一批路径，改用命令行 --load-extension 再加载一遍。
+      # 目的：区分「Windows 浏览器本身不认中文路径」和「CDP 的 UTF-8 路径转码出错」——
+      # 前者说明用户走图形界面也装不上，后者说明只有自动化通道受影响，课件口径完全不同。
+      - name: 路径变体（命令行加载方式交叉验证）
+        env:
+          AGENTLIMB_STRATEGY: flag
+        run: node scripts/windows-compat-test.mjs pathsonly
+        continue-on-error: true
+
       - name: 安装与桥接实测
         run: node scripts/windows-compat-test.mjs install
         continue-on-error: true
