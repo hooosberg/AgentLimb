@@ -399,6 +399,15 @@ async function testBrowser(candidate, exe, extDir, tag, bridgePort, strategyMode
         extId = mine?.id || null;
         rec(section, '从 profile 读扩展 id', Boolean(extId), extId || `已注册 ${ids.length} 个扩展`);
       }
+      if (!extId && strategy.via === 'flag' && bridgePort) {
+        // --load-extension 加载的扩展不会写进 Preferences，所以"读不到 id"不代表失败。
+        // 改看桥接：扩展真跑起来了就一定会来连。
+        const wait = await waitForExtensionConnected(bridgePort, 30000, baseline);
+        rec(section, '扩展连上桥接（browsers 增加）', wait.connected,
+          wait.connected ? `port=${bridgePort} browsers ${baseline}→${wait.health?.browsers}` : '30s 内未连上');
+        await cleanup();
+        return { browserString, strategy: strategy.name, extId: null, apis: null, viaBridge: wait.connected };
+      }
       if (!extId) {
         await cleanup();
         continue;
