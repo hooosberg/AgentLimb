@@ -4,7 +4,7 @@ AgentLimb HTTP RPC Client (agentlimb_client.py)
 Directly calls http://127.0.0.1:8765/api/tool with dynamic port discovery and multi-profile routing.
 
 Features:
-  - Dynamic discovery of bridge port (8765-8770)
+  - Dynamic discovery of bridge port (8765-8780)
   - Universal call_tool(tool, arguments, timeout)
   - Profile-aware routing via "browser" argument
   - Convenience wrappers: eval_js(), get_tabs(), get_status()
@@ -108,7 +108,7 @@ if __name__ == "__main__":
     print("Testing AgentLimb RPC Client...")
     status = get_status()
     if not status:
-        print("❌ No running AgentLimb bridge server found on ports 8765-8770.")
+        print("❌ No running AgentLimb bridge server found on ports 8765-8780.")
     else:
         print(f"✅ Bridge found on port {status.get('port')}: version {status.get('version')}")
         browsers = status.get("browserList", [])

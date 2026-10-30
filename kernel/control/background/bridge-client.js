@@ -485,13 +485,6 @@ export function createBridgeClient({ onStatus, onToolCall, onAgentMessage, disco
           const sameClient = (live(activeChannel) && activeChannel.clientId === channel.clientId) || channel.clientId === selectedId;
           const noLiveOwner = !live(activeChannel);
           if (!locked() || (activeTools === 0 && !sending && (sameClient || noLiveOwner))) {
-            if (sameClient) {
-              for (const ch of [...channels.values()]) {
-                if (ch !== channel && ch.clientId === channel.clientId) {
-                  dropChannel(ch);
-                }
-              }
-            }
             activate(channel);
           } else {
             if (deadline <= Date.now()) return;
@@ -547,13 +540,6 @@ export function createBridgeClient({ onStatus, onToolCall, onAgentMessage, disco
       const sameClient = channel.clientId && (channel.clientId === selectedId || (activeChannel && activeChannel.clientId === channel.clientId));
       const canActivate = !locked() || (activeTools === 0 && !sending && (sameClient || !live(activeChannel)));
       if (canActivate) {
-        if (sameClient) {
-          for (const ch of [...channels.values()]) {
-            if (ch !== channel && ch.clientId === channel.clientId) {
-              dropChannel(ch);
-            }
-          }
-        }
         activate(channel);
         drainWaiting();
       } else {

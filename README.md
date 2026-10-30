@@ -75,7 +75,7 @@ Check in this order. Each step rules out one stage, and passing one stage says n
 │  AI client   │ ◄──────────► │  host/mcp-server.mjs │ ◄─────────── │ Extension service    │
 │ (any client) │  JSON-RPC    │  host/bridge-server  │  POST (back) │ worker: persistent   │
 └─────────────┘              └──────────────────────┘              │ debugger session +   │
-                        127.0.0.1:8765-8770 (up to six hosts)       │ content scripts      │
+                        127.0.0.1:8765-8780 (up to 16 hosts)        │ content scripts      │
                                                                     └─────────────────────┘
 ```
 

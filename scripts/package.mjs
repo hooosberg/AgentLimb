@@ -8,7 +8,7 @@ execFileSync('zip', [
   '-r', 'dist/agentlimb-chrome.zip',
   'manifest.json', 'package.json', 'README.md',
   'kernel', 'host', 'bin', 'scripts', 'ui', 'icons', 'assets',
-  '-x', '*.DS_Store',
+  '-x', '*.DS_Store', '*__pycache__*', '*.pyc',
 ], { stdio: 'inherit' });
 
 const buf = readFileSync('dist/agentlimb-chrome.zip');

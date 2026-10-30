@@ -184,11 +184,13 @@ function bootstrap() {
       }
 
       case MESSAGE_TYPES.SELECT_CLIENT:
+        router.resetAgentTab?.();
         return bridge.selectClient(message.clientId);
 
       case MESSAGE_TYPES.DISCONNECT_CLIENT: {
         // Disconnect is not a "flow": revoke the trust, tell the agent in plain
         // words, and drop the in-page indicators. Nothing else to unwind.
+        router.resetAgentTab?.();
         return bridge.disconnectClient(message.clientId);
       }
 

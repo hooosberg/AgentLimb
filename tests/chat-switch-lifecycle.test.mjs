@@ -211,3 +211,35 @@ test('router sticky agentTabId resets on stopAllDriving so subsequent chats star
   assert.equal(tabs.get(102).url, 'https://new-session.com');
   assert.equal(tabs.get(101).url, 'https://site-chat1.com', 'old tab from previous chat untouched');
 });
+
+test('same-client multi-session switching does not drop peer channels and allows both sessions to call tools', async (t) => {
+  const { bridge, openPort, emit, call, executed, ports, sources } = await setupChatSwitch(t);
+
+  // 1. Session A on port 0 connects and runs a tool without calling say
+  openPort(0);
+  await emit(0, { t: WIRE.HELLO, client: { id: 'workbuddy', name: 'WorkBuddy' } });
+  await call(0, 'tool-turn-1-port-0');
+  assert.equal(bridge.getStatus().port, ports[0]);
+
+  // 2. Session B on port 1 connects (e.g. user opens second chat tab in WorkBuddy)
+  openPort(1);
+  await emit(1, { t: WIRE.HELLO, client: { id: 'workbuddy', name: 'WorkBuddy' } });
+  assert.equal(bridge.getStatus().port, ports[1]);
+
+  // Session B runs a tool
+  await call(1, 'tool-turn-2-port-1');
+  assert.deepEqual(executed.map((c) => c.args.id), ['tool-turn-1-port-0', 'tool-turn-2-port-1']);
+
+  // 3. Verification: Port 0 must NOT have been dropped (its EventSource remains open)
+  assert.equal(sources.has(ports[0]), true, 'port 0 must remain connected, not dropped');
+
+  // 4. User switches back to Session A on port 0 and executes a tool
+  await call(0, 'tool-turn-3-port-0-resumed');
+  assert.equal(bridge.getStatus().port, ports[0], 'port 0 takes over back as active');
+  assert.deepEqual(executed.map((c) => c.args.id), [
+    'tool-turn-1-port-0',
+    'tool-turn-2-port-1',
+    'tool-turn-3-port-0-resumed',
+  ]);
+});
+
