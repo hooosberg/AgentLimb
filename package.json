@@ -1,7 +1,7 @@
 {
   "name": "agentlimb",
-  "version": "0.6.9",
-  "agentlimbBuild": "l18",
+  "version": "0.7.0",
+  "agentlimbBuild": "l19",
   "private": true,
   "type": "module",
   "engines": {
@@ -9,6 +9,7 @@
   },
   "scripts": {
     "test": "node --test --test-force-exit --test-concurrency=1 tests/*.test.mjs",
+    "package": "node scripts/package.mjs",
     "bench": "node scripts/pairing-bench.mjs",
     "monkey": "node scripts/pairing-monkey.mjs",
     "monkey:panel": "node scripts/panel-monkey.mjs",

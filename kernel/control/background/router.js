@@ -527,7 +527,11 @@ export function createRouter({ debugger: dbg, indicator, marker = null }) {
         dbg.restoreMute(tabId);
       }
       driving.clear();
+      agentTabId = null;
       if (marker) void marker.clear();
+    },
+    resetAgentTab() {
+      agentTabId = null;
     },
     get agentTabId() { return agentTabId; },
   };

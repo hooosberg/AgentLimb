@@ -15,7 +15,7 @@ import urllib.request
 import urllib.error
 from typing import Any, Dict, List, Optional, Tuple
 
-DEFAULT_PORTS: Tuple[int, ...] = (8765, 8766, 8767, 8768, 8769, 8770)
+DEFAULT_PORTS: Tuple[int, ...] = tuple(range(8765, 8781))
 
 
 def get_bridge_url(host: str = "127.0.0.1", ports: Tuple[int, ...] = DEFAULT_PORTS) -> str:

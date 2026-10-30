@@ -564,10 +564,10 @@ async function runInstall() {
     try { bridge.kill('SIGKILL'); } catch {}
   }
 
-  // 端口占用情况（8765-8770）
+  // 端口占用情况（8765-8780）
   if (IS_WIN) {
-    const ports = ps(`(Get-NetTCPConnection -State Listen -ErrorAction SilentlyContinue | Where-Object { $_.LocalPort -ge 8765 -and $_.LocalPort -le 8770 } | Select-Object -ExpandProperty LocalPort | Sort-Object -Unique) -join ','`);
-    rec('bridge', '8765-8770 占用', null, ports ? `已占用: ${ports}` : '全部空闲');
+    const ports = ps(`(Get-NetTCPConnection -State Listen -ErrorAction SilentlyContinue | Where-Object { $_.LocalPort -ge 8765 -and $_.LocalPort -le 8780 } | Select-Object -ExpandProperty LocalPort | Sort-Object -Unique) -join ','`);
+    rec('bridge', '8765-8780 占用', null, ports ? `已占用: ${ports}` : '全部空闲');
   }
 
   // 包管理器自带的 CLI 入口（npm link 在 Windows 上生成 .cmd shim）

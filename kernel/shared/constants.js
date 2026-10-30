@@ -8,12 +8,15 @@
 export const APP_ID = 'agentlimb.chrome';
 export const APP_NAME = 'AgentLimb';
 /** Display version. `manifest.json`, `package.json` and the docs mirror these two. */
-export const APP_VERSION = '0.6.9';
-export const APP_BUILD = 'l18';
+export const APP_VERSION = '0.7.0';
+export const APP_BUILD = 'l19';
 export const USER_STOP_MESSAGE = '用户请求停止当前任务：请停止后续浏览器操作，并用 say 回复确认。';
 
 /** Local bridge defaults. The host picks the first free port in the range. */
-export const BRIDGE_PORTS = [8765, 8766, 8767, 8768, 8769, 8770];
+export const BRIDGE_PORTS = [
+  8765, 8766, 8767, 8768, 8769, 8770, 8771, 8772,
+  8773, 8774, 8775, 8776, 8777, 8778, 8779, 8780,
+];
 export const BRIDGE_HOST = '127.0.0.1';
 export const BRIDGE_BASE_PORT = 8765;
 
@@ -26,7 +29,10 @@ export const BRIDGE_BASE_PORT = 8765;
  * the code under test. Keeping the two ranges apart makes tests deterministic
  * without weakening what they test.
  */
-export const TEST_BRIDGE_PORTS = [28765, 28766, 28767, 28768, 28769, 28770];
+export const TEST_BRIDGE_PORTS = [
+  28765, 28766, 28767, 28768, 28769, 28770, 28771, 28772,
+  28773, 28774, 28775, 28776, 28777, 28778, 28779, 28780,
+];
 
 /**
  * Host-side override, so a developer can point a real host at another range:

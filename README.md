@@ -7,7 +7,7 @@
 
 **Landing page → https://hooosberg.com/apps/agentlimb/** · [Download latest](https://github.com/hooosberg/AgentLimb/releases/latest) · [Legacy site](https://agentlimb.com/)
 
-Current source version: **0.6.9 / l18** (see [CHANGELOG.md](./CHANGELOG.md)).
+Current source version: **0.7.0 / l19** (see [CHANGELOG.md](./CHANGELOG.md)).
 
 A universal browser-control extension: it gives any MCP-capable agent hands, so it can drive your Chrome.
 
@@ -181,13 +181,13 @@ tests/                         Node's native test runner, including end-to-end p
 ## What is actually verified
 
 - `npm test` covers the protocol and modules automatically; `node scripts/live-test.mjs` runs a browser/MCP integration pass with its own temporary HOME, Chrome profile, extension copy, and ports, then cleans up — it never touches your daily `~/.agentlimb` install.
-- The existing 81/81 live report belongs to an earlier single-client baseline and does **not** represent multi-client Chrome acceptance for 0.6.9/l18. Automated unit tests currently pass 113/113 on Linux and 110/113 on Windows (3 skipped, 0 failed); real multi-client Chrome acceptance is still in progress and has no result to report yet.
+- The existing 81/81 live report belongs to an earlier single-client baseline and does **not** represent multi-client Chrome acceptance for 0.7.0/l19. Automated unit tests currently pass 117/117 on Linux and Windows; real multi-client Chrome acceptance is still in progress and has no result to report yet.
 - Site memory has its own real-model smoke test that needs no browser: `npm run smoke:memory` (czen/hy3, 20/20). It proves the model calls `site_memory`, the playbook lands on disk with entry/selector/pitfall and no secrets, a **fresh session** reads it back, and the off switch makes the tool refuse. The browser half (pair → click → type) still lives in `node scripts/ai-onboarding-test.mjs`.
 - Loading the config and trusting MCP inside real agent clients, plus specific models and monkey testing, still need independent acceptance. Nothing is claimed to pass without observed evidence.
 
 ## Known boundaries
 
-- At most six MCP hosts (as defined by `BRIDGE_PORTS`) are discovered at once; one controller holds the current browser task lock. Trust, chat history, and drafts are isolated per AI.
+- Up to 16 candidate MCP hosts (as defined by `BRIDGE_PORTS`, 8765~8780 to prevent Winsock TIME_WAIT exhaustion) are probed; one controller holds the current browser task lock. Trust, chat history, and drafts are isolated per AI.
 - Side-panel chat is "leave a message" semantics: a message is delivered with the agent's next tool result (it is not pushed while the agent is idle).
 - `javascript_eval` goes through CDP, so it still works on pages with a strict CSP (debugger permission).
 - The first connection depends on the service worker being awake: once installed it stays resident while Chrome runs; after a sleep, expect up to about a minute to reconnect (opening the panel triggers it immediately).

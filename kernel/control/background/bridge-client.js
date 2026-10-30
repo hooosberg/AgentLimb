@@ -307,7 +307,8 @@ export function createBridgeClient({ onStatus, onToolCall, onAgentMessage, disco
     return { ok: true };
   }
   function chooseAvailable() {
-    if (locked() || live(activeChannel)) return;
+    if (live(activeChannel)) return;
+    if (locked() && activeTools > 0) return;
     const channel = channelFor(rememberedId) || [...channels.values()].find((c) => live(c) && clients.get(c.clientId)?.paired);
     if (channel) activate(channel);
   }
@@ -464,8 +465,10 @@ export function createBridgeClient({ onStatus, onToolCall, onAgentMessage, disco
         // that connects is trusted without any click. The copy-prompt window is
         // only the stricter mode, for users who switch auto-authorize off.
         const auto = !remembered && (await chrome.storage.local.get(STORAGE_KEYS.autoTrust))[STORAGE_KEYS.autoTrust] !== false;
+        const isSameClient = client.id === selectedId || (activeChannel && activeChannel.clientId === client.id);
+        const takeOver = !remembered || isSameClient || !live(activeChannel);
         if (remembered || auto || await onboarding.consume()) {
-          await trust(record, channel, { takeOver: !remembered });
+          await trust(record, channel, { takeOver });
         } else {
           unauthorized.set(client.id, { id: client.id, name: record.name, kind: record.kind, at: new Date().toISOString() });
           await post({ t: WIRE.GRANT, ok: false, reason: 'not_authorized', browser: effectiveBrowserIdentity() }, channel).catch(() => {});
@@ -479,8 +482,18 @@ export function createBridgeClient({ onStatus, onToolCall, onAgentMessage, disco
         settleWaits();
         const deadline = Math.min(Number.isFinite(frame.deadline) ? frame.deadline : Date.now() + TOOL_TIMEOUT_MS, Date.now() + TOOL_TIMEOUT_MS);
         if (frame.tool !== 'ping' && activeChannel !== channel) {
-          if (!locked()) activate(channel);
-          else {
+          const sameClient = (live(activeChannel) && activeChannel.clientId === channel.clientId) || channel.clientId === selectedId;
+          const noLiveOwner = !live(activeChannel);
+          if (!locked() || (activeTools === 0 && !sending && (sameClient || noLiveOwner))) {
+            if (sameClient) {
+              for (const ch of [...channels.values()]) {
+                if (ch !== channel && ch.clientId === channel.clientId) {
+                  dropChannel(ch);
+                }
+              }
+            }
+            activate(channel);
+          } else {
             if (deadline <= Date.now()) return;
             const timer = setTimeout(() => {
               waitingTools.delete(frame.tool_use_id);
@@ -530,7 +543,23 @@ export function createBridgeClient({ onStatus, onToolCall, onAgentMessage, disco
     // while the agent stays blocked forever. Drop the channel instead:
     // discovery re-opens it and the handshake simply runs again.
     if (!delivered) { dropChannel(channel); return; }
-    if (takeOver) { if (!locked()) { activate(channel); drainWaiting(); } else preferredNext = channel; }
+    if (takeOver) {
+      const sameClient = channel.clientId && (channel.clientId === selectedId || (activeChannel && activeChannel.clientId === channel.clientId));
+      const canActivate = !locked() || (activeTools === 0 && !sending && (sameClient || !live(activeChannel)));
+      if (canActivate) {
+        if (sameClient) {
+          for (const ch of [...channels.values()]) {
+            if (ch !== channel && ch.clientId === channel.clientId) {
+              dropChannel(ch);
+            }
+          }
+        }
+        activate(channel);
+        drainWaiting();
+      } else {
+        preferredNext = channel;
+      }
+    }
   }
   /**
    * Clicking Copy is the whole authorization step: open the window for the next

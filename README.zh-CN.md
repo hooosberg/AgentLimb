@@ -7,7 +7,7 @@
 
 **官网 / 产品页（落地页）→ https://hooosberg.com/apps/agentlimb/** · [下载最新版](https://github.com/hooosberg/AgentLimb/releases/latest) · [旧版官网](https://agentlimb.com/)
 
-当前源码版本：**0.6.9 / l18**（变更记录见 [CHANGELOG.md](./CHANGELOG.md)）。
+当前源码版本：**0.7.0 / l19**（变更记录见 [CHANGELOG.md](./CHANGELOG.md)）。
 
 通用浏览器控制插件：给任意支持 MCP 的智能体软件装上「手」，让它能控制你的 Chrome。
 
@@ -182,13 +182,13 @@ tests/                         Node 原生 test runner，含端到端协议测�
 ## 验收边界
 
 - `npm test` 是自动化协议和模块测试；`node scripts/live-test.mjs` 使用独立临时 HOME、Chrome profile、扩展副本及端口进行浏览器/MCP 集成测试，并清理本轮临时数据，不触碰日常 `~/.agentlimb` 安装。
-- 已有 81/81 的 live 报告属于此前单客户端基线，不代表当前 0.6.9/l18 的多客户端 Chrome 验收。当前自动化单元测试 Linux 侧 113/113、Windows 侧 110/113（3 项跳过、0 失败）；多客户端真实 Chrome 验收仍在进行，尚无结果可报告。
+- 已有 81/81 的 live 报告属于此前单客户端基线，不代表当前 0.7.0/l19 的多客户端 Chrome 验收。当前自动化单元测试 Linux 侧 117/117、Windows 侧全绿守护；多客户端真实 Chrome 验收仍在进行，尚无结果可报告。
 - 网站记忆有独立的真实模型冒烟（不需要浏览器）：`npm run smoke:memory`（czen/hy3，20/20）。它证明模型真的调用 `site_memory`、手册真的落盘（入口/锚点/坑齐全且无凭据）、**全新会话能读回来**、关掉开关后工具会明确拒绝。浏览器那一半（配对 → 点击 → 输入）仍在 `node scripts/ai-onboarding-test.mjs`。
 - 真实智能体客户端中的配置加载/信任，以及指定模型和猴子测试仍需独立验收；没有观测证据时不宣称通过。
 
 ## 已知边界
 
-- 同时最多发现 `BRIDGE_PORTS` 定义的六个 MCP 宿主；一个 controller 独占当前浏览器任务锁。不同 AI 的信任、聊天记录与草稿隔离。
+- 同时最多发现 `BRIDGE_PORTS` 定义的候选 MCP 宿主（8765~8780，防 Winsock 端口枯竭）；一个 controller 独占当前浏览器任务锁。不同 AI 的信任、聊天记录与草稿隔离。
 - 侧栏聊天是「留言」语义：消息随 Agent 下一次工具结果送达（Agent 空闲时不会主动推送）。
 - `javascript_eval` 走 CDP，对 CSP 严格的页面仍可执行（debugger 权限）。
 - 首次连接依赖 SW 被唤醒：装好后 Chrome 运行时 SW 基本常驻；若遇休眠，最长约 1 分钟内自动连上（打开侧栏可立即触发）。
