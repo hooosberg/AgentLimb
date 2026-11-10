@@ -227,14 +227,23 @@ test('full authorized tool-call loop over the local bridge', { timeout: 60000 },
     clientInfo: { name: 'test-client', version: '0' },
   });
   assert.equal(init.result.serverInfo.name, 'agentlimb');
+  assert.doesNotMatch(init.result.instructions, /site_memory|SITE MEMORY|网站记忆|playbook/i);
+  assert.equal(existsSync(join(home, '.agentlimb', 'memory')), false);
+  assert.equal(existsSync(join(home, '.agentlimb', 'memory-config.json')), false);
   mcp.notify('notifications/initialized');
 
   const list = await mcp.request('tools/list');
-  assert.equal(list.result.tools.length, 17);
+  assert.equal(list.result.tools.length, 16);
+  const retiredTool = await mcp.request('tools/call', { name: 'site_memory', arguments: { action: 'status' } });
+  assert.equal(retiredTool.error.code, -32602);
 
   // 2. Bridge comes up; a "browser" connects over SSE
   const { port, body } = await discoverPort('Agent One');
   assert.equal(body.paired, false, 'fresh identity must be unpaired');
+  for (const method of ['GET', 'POST']) {
+    const response = await fetch(`http://127.0.0.1:${port}/api/memory`, { method });
+    assert.equal(response.status, 404);
+  }
   const sse = new SseClient(`http://127.0.0.1:${port}/events?b=tok-1`);
   const hello = await sse.waitFor((f) => f.t === WIRE.HELLO);
   assert.equal(hello.client.name, 'Agent One');

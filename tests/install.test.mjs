@@ -35,6 +35,12 @@ test('install creates the ESM runtime, emits absolute-path JSON, and preserves p
     const existingPairings = '{"existing":{"id":"existing","name":"Other client"}}\n';
     writeFileSync(join(runtime, 'paired-clients.json'), existingPairings);
     writeFileSync(join(runtime, 'other-client-config.json'), '{"keep":true}\n');
+    // An upgrade retires executable code, while existing user notes stay intact.
+    mkdirSync(join(runtime, 'host'));
+    mkdirSync(join(runtime, 'memory'));
+    writeFileSync(join(runtime, 'host', 'memory.mjs'), 'legacy module');
+    writeFileSync(join(runtime, 'memory', 'user-notes.md'), 'Keep my SOP.\n');
+    writeFileSync(join(runtime, 'memory-config.json'), '{"enabled":false}\n');
 
     const output = runCli(['install', '--client-name', 'WorkBuddy', '--client-kind', 'workbuddy'], env);
     const start = output.indexOf('{\n  "mcpServers"');
@@ -47,6 +53,10 @@ test('install creates the ESM runtime, emits absolute-path JSON, and preserves p
     assert.equal(server.env.AGENTLIMB_CLIENT_KIND, 'workbuddy');
     assert.equal(readFileSync(join(runtime, 'paired-clients.json'), 'utf8'), existingPairings);
     assert.equal(readFileSync(join(runtime, 'other-client-config.json'), 'utf8'), '{"keep":true}\n');
+    assert.equal(existsSync(join(runtime, 'host', 'memory.mjs')), false);
+    assert.equal(readFileSync(join(runtime, 'memory', 'user-notes.md'), 'utf8'), 'Keep my SOP.\n');
+    assert.equal(readFileSync(join(runtime, 'memory-config.json'), 'utf8'), '{"enabled":false}\n');
+    assert.doesNotMatch(output, /site_memory|网站记忆|Site memory/);
 
     for (const rel of [
       'host/mcp-server.mjs', 'host/bridge-server.mjs', 'host/diagnostics.mjs',
@@ -60,6 +70,16 @@ test('install creates the ESM runtime, emits absolute-path JSON, and preserves p
       `import(${JSON.stringify(pathToFileURL(join(runtime, 'host', 'bridge-server.mjs')).href)}).then(m => { if (typeof m.loadOrCreateClientId !== 'function') process.exit(2); })`,
     ], { env, encoding: 'utf8' });
     assert.equal(moduleCheck.status, 0, moduleCheck.stderr);
+  });
+});
+
+test('a clean install creates no site knowledge store or configuration', () => {
+  withHome(({ home, env }) => {
+    runCli(['install'], env);
+    const runtime = join(home, '.agentlimb');
+    for (const rel of ['memory', 'memory-config.json', 'host/memory.mjs']) {
+      assert.equal(existsSync(join(runtime, rel)), false, `${rel} must not be created`);
+    }
   });
 });
 

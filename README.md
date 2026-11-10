@@ -7,7 +7,7 @@
 
 **Landing page → https://hooosberg.com/apps/agentlimb/** · [Download latest](https://github.com/hooosberg/AgentLimb/releases/latest) · [Legacy site](https://agentlimb.com/)
 
-Current source version: **0.7.0 / l19** (see [CHANGELOG.md](./CHANGELOG.md)).
+Current source version: **0.8.0 / l20** (see [CHANGELOG.md](./CHANGELOG.md)).
 
 A universal browser-control extension: it gives any MCP-capable agent hands, so it can drive your Chrome.
 
@@ -121,27 +121,15 @@ The archived 0.2 line used HTTP polling for its control path, and every hop cost
 | 5 | Fixed-quality PNG screenshots, frequently over the size limit | Adaptive JPEG quality (75→10), ~1.2MB base64 budget |
 | 6 | One tool call per step, RTT stacking up | `browser_batch` submits up to 20 actions in one call |
 | 7 | Four task tools (`task_plan` / `task_step_done` / `task_complete` / `task_fail`) plus side-panel progress rendering, all overhead | **The whole progress mechanism is gone** (14 browser tools, plus local `say` and `ping`) |
-| 8 | Three muscle-memory tools permanently in the catalog | Removed here (recoverable from `archive/cowork-local` as an opt-in switch) |
+| 8 | Three muscle-memory tools permanently in the catalog | Removed here |
 
 Other details: every CDP command has a timeout; console/network are captured continuously on the persistent session (200-entry ring buffer); password and sensitive fields are redacted inside the a11y tree; same-origin iframes and shadow DOM are walked into the tree with coordinate offsets.
 
-## Tool catalog (17, including local `say`, `ping` and `site_memory`)
+## Tool catalog (16, including local `say` and `ping`)
 
 `tabs_context` `tab_new` `tab_close` `tab_activate` `read_page` `find` `computer`
 `form_input` `navigate` `javascript_eval` `wait` `read_console_messages`
-`read_network_requests` `browser_batch` `say` `site_memory` `ping`
-
-`site_memory` never touches the browser: it reads and writes the per-site playbooks described below.
-
-## Site memory (网站记忆)
-
-A folder of plain Markdown files that lets any MCP-connected AI reuse what it already learned about a website — the direct URL, the element anchors, the pitfalls, and how to tell success from "looks like it worked".
-
-- **On by default after `agentlimb install`**, at `~/.agentlimb/memory` (`--memory-root <dir>` to move it, `--no-memory` to skip). `agentlimb memory` prints the location and what is recorded.
-- **Delivered as a soft prompt, not a plugin feature**: when enabled, the MCP `initialize` instructions carry "read the playbook first → do the work → write back what was new". Every MCP client receives it on connect, so nothing has to be installed per AI tool; turn it off in the side panel and the block disappears.
-- **One file per site, ~100 lines**: entry URL, steps, selectors, pitfalls, success criteria. The run log is one small file per run and is never read on the hot path — `brief` is a single file read (~13 ms with 433 sites), so recording more never slows an operation down.
-- **Not tied to AgentLimb**: the folder is a valid `kb` library layout, so another browser MCP, another AI client, or the standalone CLI can use the same notes.
-- **Operation knowledge only**: never accounts, passwords, cookies, tokens, verification codes, or data copied from the site. Two consecutive failures mark a playbook `stale` so the next run re-verifies anchors instead of trusting a stale selector.
+`read_network_requests` `browser_batch` `say` `ping`
 
 ## Multi-browser / multi-profile routing
 
@@ -181,8 +169,7 @@ tests/                         Node's native test runner, including end-to-end p
 ## What is actually verified
 
 - `npm test` covers the protocol and modules automatically; `node scripts/live-test.mjs` runs a browser/MCP integration pass with its own temporary HOME, Chrome profile, extension copy, and ports, then cleans up — it never touches your daily `~/.agentlimb` install.
-- The existing 81/81 live report belongs to an earlier single-client baseline and does **not** represent multi-client Chrome acceptance for 0.7.0/l19. Automated unit tests currently pass 117/117 on Linux and Windows; real multi-client Chrome acceptance is still in progress and has no result to report yet.
-- Site memory has its own real-model smoke test that needs no browser: `npm run smoke:memory` (czen/hy3, 20/20). It proves the model calls `site_memory`, the playbook lands on disk with entry/selector/pitfall and no secrets, a **fresh session** reads it back, and the off switch makes the tool refuse. The browser half (pair → click → type) still lives in `node scripts/ai-onboarding-test.mjs`.
+- Earlier live and cross-platform reports are historical baselines; they do not establish acceptance for the current source version.
 - Loading the config and trusting MCP inside real agent clients, plus specific models and monkey testing, still need independent acceptance. Nothing is claimed to pass without observed evidence.
 
 ## Known boundaries
@@ -195,7 +182,7 @@ tests/                         Node's native test runner, including end-to-end p
 ## Relationship to the old version
 
 `main` in this repository is the maintained line (the contents of this working tree). The 0.2 era version (cowork_local) is archived on the
-[`archive/cowork-local`](https://github.com/hooosberg/AgentLimb/tree/archive/cowork-local) branch and is no longer updated. The assets it deliberately kept (task progress mechanism, muscle web memory, HTTP polling bridge, 12-language i18n, the agentlimb.com site) can be brought back on demand.
+[`archive/cowork-local`](https://github.com/hooosberg/AgentLimb/tree/archive/cowork-local) branch and is no longer updated. The old line retains its task progress mechanism, HTTP polling bridge, 12-language i18n and agentlimb.com site.
 
 ## Links
 

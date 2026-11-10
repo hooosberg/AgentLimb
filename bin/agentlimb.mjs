@@ -7,7 +7,6 @@ import { join } from 'node:path';
 import { BRIDGE_HOST, APP_VERSION, resolveBridgePorts } from '../kernel/shared/constants.js';
 import { agentlimbHome } from '../host/bridge-server.mjs';
 import { installHost, makeMcpConfig } from '../host/install.mjs';
-import { listSites, memoryState, stats as memoryStats, writeMemoryConfig } from '../host/memory.mjs';
 
 const [command = 'help', ...args] = process.argv.slice(2);
 let options;
@@ -40,9 +39,6 @@ try {
     case 'pair-status':
       await pairStatus();
       break;
-    case 'memory':
-      await memory();
-      break;
     default:
       printHelp();
   }
@@ -53,12 +49,10 @@ try {
 
 function parseOptions(argv) {
   const result = {};
-  const withValue = { '--client-name': 'clientName', '--client-kind': 'clientKind', '--memory-root': 'memoryRoot' };
+  const withValue = { '--client-name': 'clientName', '--client-kind': 'clientKind' };
   for (let i = 0; i < argv.length; i += 1) {
     const key = argv[i];
-    if (key === '--no-memory') {
-      result.noMemory = true;
-    } else if (withValue[key]) {
+    if (withValue[key]) {
       const value = argv[i + 1];
       if (!value || value.startsWith('--')) throw new Error(`${key} requires a value`);
       result[withValue[key]] = value;
@@ -78,16 +72,9 @@ function clientOptions() {
 }
 
 async function install() {
-  const { home, memory } = await installHost({ memory: !options.noMemory, memoryRoot: options.memoryRoot });
+  const { home } = await installHost();
   console.log(`AgentLimb host installed to ${home}`);
   console.log('Existing pairing data and other client configuration were preserved.');
-  if (memory.enabled) {
-    console.log(`网站记忆 / Site memory: ${memory.root}`);
-    console.log('  Every MCP client gets this as a soft prompt; the AI records how each site is operated and reuses it next time.');
-    console.log('  Move it any time with --memory-root <dir>, or turn it off in the side panel → Settings → 网站记忆.');
-  } else {
-    console.log('网站记忆 / Site memory: off (--no-memory). Turn it on later in the side panel → Settings → 网站记忆.');
-  }
   console.log('Copy this JSON into the target client\'s MCP settings (adapt the format if needed):');
   console.log(JSON.stringify(makeMcpConfig({ ...clientOptions(), home }), null, 2));
   console.log('In the target software, enable/trust this MCP entry if required, then reload MCP or restart the software.');
@@ -145,36 +132,6 @@ async function pairStatus() {
   console.log(readFileSync(file, 'utf8'));
 }
 
-/** Inspect (or relocate / toggle) 网站记忆 without opening the browser. */
-async function memory() {
-  const state = memoryState();
-  if (options.memoryRoot) {
-    writeMemoryConfig({ enabled: true, root: String(options.memoryRoot) }, {});
-  }
-  if (options.noMemory) {
-    writeMemoryConfig({ enabled: false }, {});
-  }
-  const current = memoryState();
-  const summary = memoryStats(current.root);
-  console.log(JSON.stringify({
-    enabled: current.enabled,
-    configured: current.configured,
-    root: current.root,
-    exists: current.exists,
-    sites: summary.sites,
-    runs: summary.sessions,
-    latest: summary.latest || null,
-    sitesDetail: listSites(current.root).map((site) => ({
-      domain: site.fm.domain || site.domain,
-      status: site.fm.status || 'draft',
-      lastVerified: site.fm.last_verified || null,
-      runs: site.fm.runs || 0,
-    })),
-    changed: Boolean(options.memoryRoot || options.noMemory),
-    before: state.root,
-  }, null, 2));
-}
-
 async function bridge() {
   const { createBridge, loadOrCreateClientId } = await import('../host/bridge-server.mjs');
   const clientName = options.clientName || process.env.AGENTLIMB_CLIENT_NAME || 'AI Agent';
@@ -204,11 +161,8 @@ function printHelp() {
     '  agentlimb bridge       run standalone HTTP bridge (HTTP RPC & SSE)',
     '  agentlimb status       probe the local bridge',
     '  agentlimb pair-status  show persisted pairings',
-    '  agentlimb memory       show 网站记忆 location and what is recorded',
     '  agentlimb uninstall    remove ~/.agentlimb',
     '',
     '  --client-name NAME --client-kind KIND  set the target client identity labels',
-    '  --memory-root DIR                      keep 网站记忆 in DIR (default ~/.agentlimb/memory)',
-    '  --no-memory                            install without 网站记忆',
   ].join('\n'));
 }

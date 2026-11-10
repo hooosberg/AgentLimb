@@ -7,7 +7,7 @@
 
 **官网 / 产品页（落地页）→ https://hooosberg.com/apps/agentlimb/** · [下载最新版](https://github.com/hooosberg/AgentLimb/releases/latest) · [旧版官网](https://agentlimb.com/)
 
-当前源码版本：**0.7.0 / l19**（变更记录见 [CHANGELOG.md](./CHANGELOG.md)）。
+当前源码版本：**0.8.0 / l20**（变更记录见 [CHANGELOG.md](./CHANGELOG.md)）。
 
 通用浏览器控制插件：给任意支持 MCP 的智能体软件装上「手」，让它能控制你的 Chrome。
 
@@ -122,29 +122,18 @@ npm test                         # 协议端到端测试（含模拟扩展）
 | 5 | 截图固定 PNG，动辄超限 | JPEG 自适应质量（75→10 降级），base64 预算 ~1.2MB |
 | 6 | 一步一个工具调用，来回 RTT 叠加 | `browser_batch` 一次提交最多 20 个动作 |
 | 7 | task_plan / task_step_done / task_complete / task_fail 四个工具 + 侧栏进度渲染纯开销 | **整个进度机制移除**（14 个浏览器工具，另有本地 `say` 与 `ping`） |
-| 8 | muscle 记忆三件套常驻工具列表 | 本版移除（需要时可从归档分支 `archive/cowork-local` 迁回，做成开关） |
+| 8 | muscle 记忆三件套常驻工具列表 | 本版移除 |
 
 其他细节：CDP 命令全部带超时；console/network 在持久会话上常驻捕获（环形缓冲 200 条）；
 密码/敏感字段在 a11y 树里直接脱敏；同源 iframe 与 shadow DOM 可走入树并带坐标偏移。
 
-## 工具清单（17 个，含本地 `say`、连通检查 `ping` 与 `site_memory`）
+## 工具清单（16 个，含本地 `say` 与连通检查 `ping`）
 
 `tabs_context` `tab_new` `tab_close` `tab_activate` `read_page` `find` `computer`
 `form_input` `navigate` `javascript_eval` `wait` `read_console_messages`
-`read_network_requests` `browser_batch` `say` `site_memory` `ping`
+`read_network_requests` `browser_batch` `say` `ping`
 
 目录定义在 `kernel/control/host/tools.js`，扩展和 MCP 宿主共用同一份——改一处，两端同步。
-`site_memory` 不碰浏览器，只读写下面的网站记忆。
-
-## 网站记忆（Site memory）
-
-本机的一个纯 Markdown 文件夹，让任何接了 MCP 的 AI 复用「这个网站怎么操作」：直达 URL、元素锚点、坑、成功判定。
-
-- **安装即带**：`agentlimb install` 默认在 `~/.agentlimb/memory` 建库（`--memory-root <目录>` 改位置，`--no-memory` 跳过）；`agentlimb memory` 查看位置与已记录站点。
-- **以软提示词注入，不是插件功能**：开启时 MCP `initialize` 的 `instructions` 会带上「先查手册 → 再动手 → 按增量写回」。任何 MCP 客户端连上就收到，**不需要给每个 AI 工具单独装 skill**；在侧栏关掉，这段提示立刻消失。
-- **一个网站一个文件，约 100 行**：入口、步骤、锚点、坑、成功判定。运行日志每次一行、不参与检索——`brief` 只读一个文件（433 站实测约 13ms），**记录再多也不会拖慢操作**。
-- **不绑定 AgentLimb**：目录就是合法的 `kb` 库布局，换浏览器 MCP、换 AI 工具、或独立的 CLI 都能读同一份。
-- **只记操作知识**：不记账号、密码、Cookie、Token、验证码，也不记网站上抓到的内容。连续失败 2 次自动标 `stale`，下次先验锚点再照做。
 
 ## 多浏览器 / 多账号路由（Multi-browser routing）
 
@@ -182,8 +171,7 @@ tests/                         Node 原生 test runner，含端到端协议测�
 ## 验收边界
 
 - `npm test` 是自动化协议和模块测试；`node scripts/live-test.mjs` 使用独立临时 HOME、Chrome profile、扩展副本及端口进行浏览器/MCP 集成测试，并清理本轮临时数据，不触碰日常 `~/.agentlimb` 安装。
-- 已有 81/81 的 live 报告属于此前单客户端基线，不代表当前 0.7.0/l19 的多客户端 Chrome 验收。当前自动化单元测试 Linux 侧 117/117、Windows 侧全绿守护；多客户端真实 Chrome 验收仍在进行，尚无结果可报告。
-- 网站记忆有独立的真实模型冒烟（不需要浏览器）：`npm run smoke:memory`（czen/hy3，20/20）。它证明模型真的调用 `site_memory`、手册真的落盘（入口/锚点/坑齐全且无凭据）、**全新会话能读回来**、关掉开关后工具会明确拒绝。浏览器那一半（配对 → 点击 → 输入）仍在 `node scripts/ai-onboarding-test.mjs`。
+- 此前的 live 与跨平台测试报告属于历史基线，不代表当前源码版本的验收结果。
 - 真实智能体客户端中的配置加载/信任，以及指定模型和猴子测试仍需独立验收；没有观测证据时不宣称通过。
 
 ## 已知边界
@@ -197,8 +185,8 @@ tests/                         Node 原生 test runner，含端到端协议测�
 
 本仓库 `main` 分支就是当前维护线（即此工作树的内容）。0.2 时代的旧版（cowork_local）
 已归档到分支 [`archive/cowork-local`](https://github.com/hooosberg/AgentLimb/tree/archive/cowork-local)，
-不再更新；它刻意保留的资产（任务进度机制、muscle 网页记忆、HTTP 轮询桥接、
-12 语言 i18n、agentlimb.com 官网）需要时可按需迁回。
+不再更新；旧版保留任务进度机制、HTTP 轮询桥接、
+12 语言 i18n 与 agentlimb.com 官网。
 
 ## 链接
 

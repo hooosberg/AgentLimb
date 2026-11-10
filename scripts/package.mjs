@@ -1,9 +1,11 @@
 #!/usr/bin/env node
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 
 mkdirSync('dist', { recursive: true });
+// Rebuild from scratch so removed modules cannot survive in an existing archive.
+rmSync('dist/agentlimb-chrome.zip', { force: true });
 execFileSync('zip', [
   '-r', 'dist/agentlimb-chrome.zip',
   'manifest.json', 'package.json', 'README.md',
