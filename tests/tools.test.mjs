@@ -1,5 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 
 import { HOST_TOOLS, findTool } from '../kernel/control/host/tools.js';
 import { buildConnectionPrompt } from '../kernel/prompt/build-prompt.js';
@@ -73,4 +75,14 @@ test('the prompt never sends the agent to an approval page or a pasted code', ()
   assert.match(prompt, /click the copy-prompt button/);
   assert.ok(!/pairing page/.test(prompt));
   assert.ok(!/[\u4e00-\u9fff]/.test(prompt));
+});
+
+test('Chrome manifest requests no scripting permission and retains static content scripts', () => {
+  const manifestPath = fileURLToPath(new URL('../manifest.json', import.meta.url));
+  const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+  assert.ok(!manifest.permissions.includes('scripting'));
+  assert.deepEqual(
+    manifest.content_scripts.map((script) => script.js),
+    [['kernel/control/content/a11y-tree.js'], ['kernel/control/content/indicator.js']],
+  );
 });

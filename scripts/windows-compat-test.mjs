@@ -195,7 +195,6 @@ async function probeAnyExtensionTarget(port, id, ms = 15000) {
         sidePanelClose: typeof chrome?.sidePanel?.close === 'function',
         debugger: has('debugger'),
         tabGroups: has('tabGroups'),
-        scripting: has('scripting'),
         tabs: has('tabs'),
         storage: has('storage'),
         alarms: has('alarms'),
@@ -237,7 +236,6 @@ async function probeExtensionApis(client, target) {
       sidePanelClose: typeof chrome?.sidePanel?.close === 'function',
       debugger: has('debugger'),
       tabGroups: has('tabGroups'),
-      scripting: has('scripting'),
       tabs: has('tabs'),
       storage: has('storage'),
       alarms: has('alarms'),
@@ -306,7 +304,6 @@ function reportApis(section, apis) {
   rec(section, 'sidePanel.close()', apis.sidePanelClose, '（141+ 才有，缺失仅影响"再按一次关闭"）');
   rec(section, 'chrome.debugger', apis.debugger, '（没有它就没有自动化）');
   rec(section, 'chrome.tabGroups', apis.tabGroups, '');
-  rec(section, 'chrome.scripting', apis.scripting, '');
   rec(section, 'chrome.alarms', apis.alarms, '');
   rec(section, 'chrome.identity', apis.identity, '');
   rec(section, 'runtime.getContexts()', apis.runtimeGetContexts, '（116+，已 try/catch 兜底）');

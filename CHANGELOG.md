@@ -11,6 +11,13 @@
 
 ---
 
+## 0.8.1 / l21 — 2026-11-11
+
+**Chrome Web Store 权限合规修复**
+
+- 移除未使用的 `scripting` 权限；保留 manifest 声明的静态 content scripts。
+- Windows 兼容性自检不再要求 `chrome.scripting` API。
+
 ## 0.8.0 / l20 — 2026-11-10
 
 **移除网站记忆功能**
