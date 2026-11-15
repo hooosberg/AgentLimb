@@ -11,6 +11,13 @@
 
 ---
 
+## 0.8.2 / l22 — 2026-11-15
+
+**修复被占用端口返回非 2xx 时的连接/内存泄漏（感谢 PR #3）**
+
+- 在 `kernel/control/background/bridge-client.js` 的 `probe()` `finally` 块中补充 `controller.abort()`：当局部端口被其他服务占用并返回 HTTP 404 等非 2xx 响应时，立即释放未消费的响应体与传输句柄，避免后台轮询持续累积未关闭请求与内存。
+- 新增 `tests/discovery-cleanup.test.mjs` 与 `tests/pairing-speed.test.mjs` 端口碰撞回归测试。
+
 ## 0.8.1 / l21 — 2026-11-11
 
 **Chrome Web Store 权限合规修复**
