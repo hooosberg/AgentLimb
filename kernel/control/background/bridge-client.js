@@ -355,7 +355,11 @@ export function createBridgeClient({ onStatus, onToolCall, onAgentMessage, disco
       const response = await fetch(`http://127.0.0.1:${candidate}/health`, { signal: controller.signal });
       const body = response.ok ? await response.json() : null;
       return body?.service === 'agentlimb-bridge' ? body : null;
-    } catch { return null; } finally { clearTimeout(timer); }
+    } catch { return null; } finally {
+      clearTimeout(timer);
+      // Another local service can return an ignored error body; release it now.
+      controller.abort();
+    }
   }
   async function discover() {
     if (stopped) return;

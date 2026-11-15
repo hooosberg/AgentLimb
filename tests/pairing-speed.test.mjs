@@ -13,11 +13,48 @@
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { createServer } from 'node:http';
+import { once } from 'node:events';
 
 import { DISCOVERY, ONBOARD_WINDOW_MS, STORAGE_KEYS } from '../kernel/shared/constants.js';
-import { createHost, createBrowser, sandboxHome, waitUntil, sleep } from '../scripts/lib/pairing-harness.mjs';
+import { createHost, createBrowser, sandboxHome, waitUntil, sleep, PORTS } from '../scripts/lib/pairing-harness.mjs';
 
 const WINDOW = () => Date.now() + ONBOARD_WINDOW_MS;
+
+test('bridge skips an occupied port and discovery pairs through the next port', { timeout: 10000 }, async () => {
+  const home = sandboxHome();
+  const ports = PORTS.slice(0, 2);
+  const requests = [];
+  const unrelated = createServer((request, response) => {
+    requests.push(request.url);
+    response.writeHead(404, { 'Content-Type': 'text/plain' });
+    response.end('not found');
+  });
+  let host;
+  let browser;
+  try {
+    unrelated.listen(ports[0], '127.0.0.1');
+    await once(unrelated, 'listening');
+    host = await createHost({ clientName: 'Port Collision Test', clientId: 'port-collision-test', ports });
+    assert.equal(host.port, ports[1], 'the bridge must bind the next available port');
+
+    browser = await createBrowser({ ports, onboardUntil: WINDOW() });
+    await browser.start();
+    await waitUntil(() => host.bridge.getActiveBrowser(), { timeout: 3000, label: 'pairing after port collision' });
+    assert.equal(browser.client.getStatus().status, 'connected');
+    assert.ok(requests.includes('/health'), 'discovery must encounter the unrelated HTTP service');
+    assert.ok(requests.every((url) => url === '/health'), 'discovery must not connect to an unrelated service');
+    const result = await host.bridge.callTool('ping', {}, 3000);
+    assert.equal(result.result.pong, true);
+  } finally {
+    browser?.restore();
+    host?.bridge.stop();
+    const closed = new Promise((resolve) => unrelated.close(resolve));
+    unrelated.closeAllConnections();
+    await closed;
+    home.restore();
+  }
+});
 
 test('the first pairing completes in well under a second', { timeout: 20000 }, async () => {
   const home = sandboxHome();
